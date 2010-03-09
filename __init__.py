@@ -573,10 +573,6 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
             funcname, self.backend_name)
         return funcdef.as_sql(self.backend_name, args)
 
-    def func_sqlname(self, funcname):
-        funcdef = self.function_description(funcname)
-        return funcdef.backend_name(self.backend_name)
-
     def system_database(self):
         """return the system database for the given driver"""
         raise NotImplementedError('not supported by this DBMS')
