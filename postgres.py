@@ -180,7 +180,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         cmd = [cmd]
         cmd += args
         if dbhost or self.dbhost:
-            cmd.append('--host=%s' % (dbhost or delf.dbhost))
+            cmd.append('--host=%s' % (dbhost or self.dbhost))
         if dbport or self.dbport:
             cmd.append('--port=%s' % (dbport or self.dbport))
         if dbuser or self.dbuser:
