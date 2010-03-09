@@ -8,7 +8,7 @@ Full-text search based on MyISAM full text search capabilities.
 """
 __docformat__ = "restructuredtext en"
 
-from logilab import db
+from logilab import database as db
 from logilab.database.fti import normalize_words, tokenize
 
 class _MySqlDBAdapter(db.DBAPIAdapter):

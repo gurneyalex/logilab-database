@@ -21,7 +21,7 @@ __docformat__ = "restructuredtext en"
 from os.path import join, dirname, isfile
 from warnings import warn
 
-from logilab import db
+from logilab import database as db
 from logilab.database.fti import normalize_words, tokenize
 
 

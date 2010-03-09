@@ -17,7 +17,7 @@ import re
 import threading
 import StringIO
 
-from logilab import db
+from logilab import database as db
 
 class _BaseSqlServerAdapter(db.DBAPIAdapter):
     driver = 'Override in subclass'

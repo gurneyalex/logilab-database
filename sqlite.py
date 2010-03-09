@@ -15,7 +15,7 @@ import os
 import re
 
 from logilab.common.date import strptime
-from logilab import db
+from logilab import database as db
 
 class _PySqlite2Adapter(db.DBAPIAdapter):
     """Simple pysqlite2 Adapter to DBAPI
