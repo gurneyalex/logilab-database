@@ -2,7 +2,7 @@ import unittest
 
 from logilab.common.testlib import MockConnection
 
-from logilab.db import get_db_helper
+from logilab.database import get_db_helper
 
 from unittest_fti import IndexableObject
 

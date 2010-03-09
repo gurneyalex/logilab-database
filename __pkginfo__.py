@@ -1,4 +1,4 @@
-"""logilab.db packaging information.
+"""logilab.database packaging information.
 
 :copyright: 2002-2010 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 :contact: http://www.logilab.fr/ -- mailto:contact@logilab.fr
@@ -7,7 +7,7 @@
 __docformat__ = "restructuredtext en"
 
 distname = 'logilab-database'
-modname = 'db'
+modname = 'database'
 numversion = (1, 0, 0)
 version = '.'.join([str(num) for num in numversion])
 copyright = '2000-2010 LOGILAB S.A. (Paris, FRANCE), all rights reserved.'

@@ -5,11 +5,11 @@ import socket
 
 from logilab.common.testlib import TestCase, unittest_main
 from logilab.common.shellutils import getlogin
-from logilab.db import *
-from logilab.db import _PREFERED_DRIVERS as PREFERED_DRIVERS
-from logilab.db.postgres import _PGAdvFuncHelper
-from logilab.db.sqlite import _SqliteAdvFuncHelper
-from logilab.db import mysql, sqlserver # trigger registration
+from logilab.database import *
+from logilab.database import _PREFERED_DRIVERS as PREFERED_DRIVERS
+from logilab.database.postgres import _PGAdvFuncHelper
+from logilab.database.sqlite import _SqliteAdvFuncHelper
+from logilab.database import mysql, sqlserver # trigger registration
 
 # from logilab.common.adbh import (_GenericAdvFuncHelper, _SqliteAdvFuncHelper,
 #                                  _PGAdvFuncHelper, _MyAdvFuncHelper,

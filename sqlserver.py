@@ -254,9 +254,9 @@ db._PREFERED_DRIVERS.update({
     'sqlserver2005' : ['pyodbc', 'adodbapi', ],
     'sqlserver2008' : ['pyodbc', 'adodbapi', ],
     # for use in multithreaded applications, e.g. CubicWeb
-    'sqlserver2000_mt' : ['logilab.db._pyodbcwrap'],
-    'sqlserver2005_mt' : ['logilab.db._pyodbcwrap'],
-    'sqlserver2008_mt' : ['logilab.db._pyodbcwrap'],
+    'sqlserver2000_mt' : ['logilab.database._pyodbcwrap'],
+    'sqlserver2005_mt' : ['logilab.database._pyodbcwrap'],
+    'sqlserver2008_mt' : ['logilab.database._pyodbcwrap'],
     })
 db._ADAPTER_DIRECTORY.update({
     'sqlserver2000' : {'adodbapi': _AdodbapiSqlServer2000Adapter,
@@ -265,9 +265,9 @@ db._ADAPTER_DIRECTORY.update({
                        'pyodbc': _PyodbcSqlServer2005Adapter},
     'sqlserver2008' : {'adodbapi': _AdodbapiSqlServer2008Adapter,
                        'pyodbc': _PyodbcSqlServer2008Adapter},
-    'sqlserver2000_mt' : {'logilab.db._pyodbcwrap': _PyodbcSqlServer2000AdapterMT},
-    'sqlserver2005_mt' : {'logilab.db._pyodbcwrap': _PyodbcSqlServer2005AdapterMT},
-    'sqlserver2008_mt' : {'logilab.db._pyodbcwrap': _PyodbcSqlServer2008AdapterMT},
+    'sqlserver2000_mt' : {'logilab.database._pyodbcwrap': _PyodbcSqlServer2000AdapterMT},
+    'sqlserver2005_mt' : {'logilab.database._pyodbcwrap': _PyodbcSqlServer2005AdapterMT},
+    'sqlserver2008_mt' : {'logilab.database._pyodbcwrap': _PyodbcSqlServer2008AdapterMT},
     })
 
 
@@ -314,7 +314,7 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
     @staticmethod
     def _do_backup():
         import time
-        from logilab.db import get_connection
+        from logilab.database import get_connection
         dbhost = sys.argv[2]
         dbname = sys.argv[3]
         filename = sys.argv[4]
@@ -342,7 +342,7 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
     @staticmethod
     def _do_restore():
         """return the SQL statement to restore a backup of the given database"""
-        from logilab.db import get_connection
+        from logilab.database import get_connection
         dbhost = sys.argv[2]
         dbname = sys.argv[3]
         filename = sys.argv[4]

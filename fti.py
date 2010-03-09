@@ -178,8 +178,8 @@ CREATE INDEX appears_word_id ON appears (word_id);
     def fulltext_search(self, query_string, cursor=None):
         """execute a full text query and return a list of 2-uple (rating, uid)
         """
-        from logilab.db.ftiparser import IndexerQuery, IndexerQueryScanner
-        from logilab.db.ftiquery import Query
+        from logilab.database.ftiparser import IndexerQuery, IndexerQueryScanner
+        from logilab.database.ftiquery import Query
         query = Query(normalize)
         parser = IndexerQuery(IndexerQueryScanner(REM_PUNC.sub(' ', query_string)))
         parser.goal(query)

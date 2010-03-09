@@ -22,7 +22,7 @@ from os.path import join, dirname, isfile
 from warnings import warn
 
 from logilab import db
-from logilab.db.fti import normalize_words, tokenize
+from logilab.database.fti import normalize_words, tokenize
 
 
 TSEARCH_SCHEMA_PATH = ('/usr/share/postgresql/?.?/contrib/tsearch2.sql', # current debian
@@ -158,14 +158,14 @@ class _PgsqlAdapter(db.DBAPIAdapter):
 
 
 db._PREFERED_DRIVERS['postgres'] = [
-    #'logilab.db._pyodbcwrap',
+    #'logilab.database._pyodbcwrap',
     'psycopg2', 'psycopg', 'pgdb', 'pyPgSQL.PgSQL',
     ]
 db._ADAPTER_DIRECTORY['postgres'] = {
     'pgdb' : _PgdbAdapter,
     'psycopg' : _PsycopgAdapter,
     'psycopg2' : _Psycopg2Adapter,
-    #'logilab.db._pyodbcwrap':  _pyodbcwrappedPsycoPg2Adapter,
+    #'logilab.database._pyodbcwrap':  _pyodbcwrappedPsycoPg2Adapter,
     'pyPgSQL.PgSQL' : _PgsqlAdapter,
     }
 

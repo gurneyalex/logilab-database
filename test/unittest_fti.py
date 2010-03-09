@@ -3,7 +3,7 @@ import unittest
 
 from logilab.common.testlib import MockConnection
 
-from logilab.db.fti import FTIndexerMixIn, tokenize, normalize
+from logilab.database.fti import FTIndexerMixIn, tokenize, normalize
 
 def _tokenize(string):
     words = []

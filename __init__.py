@@ -25,7 +25,7 @@ __docformat__ = "restructuredtext en"
 import sys
 import logging
 
-_LOGGER = logging.getLogger('logilab.db')
+_LOGGER = logging.getLogger('logilab.database')
 
 USE_MX_DATETIME = False
 
@@ -34,7 +34,7 @@ _ADV_FUNC_HELPER_DIRECTORY = {}
 
 def _ensure_module_loaded(driver):
     if driver in ('postgres', 'sqlite', 'mysql', 'sqlserver'):
-        __import__('logilab.db.%s' % driver)
+        __import__('logilab.database.%s' % driver)
 # main functions ###############################################################
 
 def get_db_helper(driver):
@@ -317,7 +317,7 @@ class DBAPIAdapter(object):
 
 # advanced database helper #####################################################
 
-from logilab.db.fti import FTIndexerMixIn
+from logilab.database.fti import FTIndexerMixIn
 
 class BadQuery(Exception):
     pass

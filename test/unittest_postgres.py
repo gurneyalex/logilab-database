@@ -4,7 +4,7 @@ from logilab.common.testlib import MockConnection
 
 from unittest_fti import IndexableObject
 
-from logilab.db import get_db_helper
+from logilab.database import get_db_helper
 
 
 class PGHelperTC(TestCase):

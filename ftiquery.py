@@ -7,7 +7,7 @@
 """
 __docformat__ = "restructuredtext en"
 
-from logilab.db.fti import StopWord, tokenize
+from logilab.database.fti import StopWord, tokenize
 
 class Query(object):
     """ a query is the object manipulated by the indexer
