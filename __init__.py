@@ -495,18 +495,8 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
 
     An exception is raised when the functionality is not emulatable
     """
-    # DBMS resources descriptors and accessors
-
-    backend_name = None # overridden in subclasses ('postgres', 'sqlite', etc.)
-    needs_from_clause = False
-    union_parentheses_support = True
-    intersect_all_support = True
-    users_support = True
-    groups_support = True
-    ilike_support = True
-    alter_column_support = True
-    case_sensitive = False
-
+    # 'canonical' types are `yams` types. This dictionnary map those types to
+    # backend specific types
     TYPE_MAPPING = {
         'String' :   'text',
         'Int' :      'integer',
@@ -520,6 +510,21 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         'Password' : 'bytea',
         'Bytes' :    'bytea',
         }
+
+    # DBMS resources descriptors and accessors
+    backend_name = None # overridden in subclasses ('postgres', 'sqlite', etc.)
+    needs_from_clause = False
+    union_parentheses_support = True
+    intersect_all_support = True
+    users_support = True
+    groups_support = True
+    ilike_support = True
+    alter_column_support = True
+    case_sensitive = False
+
+    # allow call to [backup|restore]_commands without previous call to
+    # record_connection_information but by specifying argument explicitly
+    dbhost = dbport = dbuser = dbpassword = dbextraargs = dbencoding = None
 
     def __init__(self, encoding='utf-8', _cnx=None):
         self.dbencoding = encoding
