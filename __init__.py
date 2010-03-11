@@ -314,6 +314,9 @@ class DBAPIAdapter(object):
                 return unicode(value, encoding, 'replace')
         return value
 
+    def binary_to_str(self, value):
+        """turn raw value returned by the db-api module into a python string"""
+        return str(value)
 
 # advanced database helper #####################################################
 

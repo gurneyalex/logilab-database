@@ -77,7 +77,14 @@ class _MySqlDBAdapter(db.DBAPIAdapter):
             if binarywrap is None:
                 return value
             return binarywrap(value)
-        return db.DBAPIAdapter.process_value(self, value, description, encoding, binarywrap)
+        return db.DBAPIAdapter.process_value(self, value, description, encoding,
+                                             binarywrap)
+
+    def binary_to_str(self, value):
+        """turn raw value returned by the db-api module into a python string"""
+        if hasattr(value, 'tostring'): # may be an array
+            return value.tostring()
+        return value
 
     def type_code_test(self, cursor):
         for typename in ('STRING', 'BOOLEAN', 'BINARY', 'DATETIME', 'NUMBER'):
