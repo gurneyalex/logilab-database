@@ -109,32 +109,6 @@ class _Psycopg2Adapter(_PsycopgAdapter):
             #import cStringIO
             #extensions.register_adapter(cStringIO.StringIO, adapt_stringio)
 
-class _pyodbcwrappedPsycoPg2Adapter(_Psycopg2Adapter):
-    """
-    used to test and debug _pyodbcwrap under Linux.
-    No sense in using this class in production.
-    """
-    def process_value(self, value, description, encoding='utf-8', binarywrap=None):
-        #return _Psycopg2Adapter.process_value(self, value, description, encoding, binarywrap)
-        # if the dbapi module isn't supporting type codes, override to return value directly
-        typecode = description[1]
-        assert typecode is not None, self
-        if typecode == self.STRING:
-            if isinstance(value, str):
-                return unicode(value, encoding, 'replace')
-        elif typecode == self.BOOLEAN:
-            return bool(value)
-        elif typecode == self.BINARY and not binarywrap is None:
-            #print "*"*500
-            #print 'binary', binarywrap(value.getbinary())
-            return binarywrap(value.getbinary())
-        elif typecode == self.UNKNOWN:
-            # may occurs on constant selection for instance (e.g. SELECT 'hop')
-            # with postgresql at least
-            if isinstance(value, str):
-                return unicode(value, encoding, 'replace')
-        return value
-
 
 class _PgsqlAdapter(db.DBAPIAdapter):
     """Simple pyPgSQL Adapter to DBAPI
@@ -165,7 +139,6 @@ db._ADAPTER_DIRECTORY['postgres'] = {
     'pgdb' : _PgdbAdapter,
     'psycopg' : _PsycopgAdapter,
     'psycopg2' : _Psycopg2Adapter,
-    #'logilab.database._pyodbcwrap':  _pyodbcwrappedPsycoPg2Adapter,
     'pyPgSQL.PgSQL' : _PgsqlAdapter,
     }
 
