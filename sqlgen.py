@@ -14,7 +14,7 @@ class SQLGenerator :
     Helper class to generate SQL strings to use with python's DB-API.
     """
 
-    def where(self, keys, addon=None) :
+    def where(self, keys, addon=None):
         """
         :param keys: list of keys
 
@@ -31,7 +31,7 @@ class SQLGenerator :
             restriction.insert(0, addon)
         return " AND ".join(restriction)
 
-    def set(self, keys) :
+    def set(self, keys):
         """
         :param keys: list of keys
 
@@ -43,7 +43,7 @@ class SQLGenerator :
         """
         return ", ".join(["%s = %%(%s)s" % (x, x) for x in keys])
 
-    def insert(self, table, params) :
+    def insert(self, table, params):
         """
         :param table: name of the table
         :param params:  dictionary that will be used as in cursor.execute(sql,params)
@@ -59,7 +59,7 @@ class SQLGenerator :
         sql = 'INSERT INTO %s ( %s ) VALUES ( %s )' % (table, keys, values)
         return sql
 
-    def select(self, table, params) :
+    def select(self, table, params=None, selection=None):
         """
         :param table: name of the table
         :param params:  dictionary that will be used as in cursor.execute(sql,params)
@@ -72,10 +72,15 @@ class SQLGenerator :
         >>> s.select('test',{'nom':'dupont','prenom':'jean'})
         'SELECT * FROM test WHERE nom = %(nom)s AND prenom = %(prenom)s'
         """
-        sql = 'SELECT * FROM %s' % table
-        where = self.where(params.keys())
-        if where :
-            sql = sql + ' WHERE %s' % where
+        if selection is None:
+            sql = 'SELECT * FROM %s' % table
+        else:
+            sql = 'SELECT %s FROM %s' % (','.join(col for col in selection),
+                                         table)
+        if params is not None:
+            where = self.where(params.keys())
+            if where :
+                sql = sql + ' WHERE %s' % where
         return sql
 
     def adv_select(self, model, tables, params, joins=None) :
@@ -131,6 +136,7 @@ class SQLGenerator :
         set = self.set([key for key in params if key not in unique])
         sql = 'UPDATE %s SET %s WHERE %s' % (table, set, where)
         return sql
+
 
 class BaseTable:
     """
