@@ -1,4 +1,4 @@
-Source: logilab-common
+Source: logilab-database
 Section: python
 Priority: optional
 Maintainer: Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>
