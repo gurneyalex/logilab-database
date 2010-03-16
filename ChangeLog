@@ -1,7 +1,9 @@
 Changelog for logilab database package
 ======================================
 
---
-
-    - initial release, containing code originally in logilab.common.db, logilab.
+2010-03-16  --  1.0.0
+    * initial release, containing code originally in logilab.common.db, logilab.
       common.adbh, and the indexer package
+
+
+
