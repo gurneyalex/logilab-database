@@ -18,18 +18,11 @@ build-stamp:
 
 	# python module build
 	NO_SETUPTOOLS=1 python setup.py -q build --build-purelib=build/lib
-
-	# build doc
-	$(MAKE) -C doc
-
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-
-	# clean doc
-	$(MAKE) -C doc clean
 
 	NO_SETUPTOOLS=1 python setup.py clean
 
@@ -59,8 +52,6 @@ binary-indep: build install
 	dh_pysupport -i
 	dh_installchangelogs -i ChangeLog
 	dh_installexamples -i
-	dh_installdocs -i 	README doc/apidoc/
-	dh_installman -i
 	dh_link -i
 	dh_compress -i		-X.py -X.ini -X.xml -Xtest/ -Xapidoc/
 	dh_fixperms -i
