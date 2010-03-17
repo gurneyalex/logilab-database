@@ -36,6 +36,4 @@ mailinglist = "mailto://python-projects@lists.logilab.org"
 subpackage_of = 'logilab'
 subpackage_master = True
 
-from os.path import join
-include_dirs = [join('test', 'data')]
 pyversions = ['2.4', '2.5', '2.6']
