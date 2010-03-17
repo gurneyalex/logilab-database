@@ -41,9 +41,11 @@ install: build
 		--root=$(CURDIR)/debian/python-logilab-database/ \
 		--install-layout=deb
 	# remove sub-package __init__ file (created in postinst)
-	rm debian/python-logilab-database/usr/lib/python*/site-packages/logilab/__init__.py
+	rm -f debian/python-logilab-database/usr/lib/python*/site-packages/logilab/__init__.py
+	rm -f debian/python-logilab-database/usr/lib/python2.6/dist-packages/logilab/__init__.py #karmic
 	# remove test directory
 	rm -rf debian/python-logilab-database/usr/lib/python*/site-packages/logilab/database/test
+	rm -rf debian/python-logilab-database/usr/lib/python*/dist-packages/logilab/database/test #karmic
 
 # Build architecture-independent files here.
 binary-indep: build install
