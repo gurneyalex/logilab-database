@@ -37,10 +37,11 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-
 	NO_SETUPTOOLS=1 python setup.py -q install --prefix=/usr --no-compile \
 		--root=$(CURDIR)/debian/python-logilab-database/ \
 		--install-layout=deb
+	# remove sub-package __init__ file (created in postinst)
+	rm debian/python-logilab-database/usr/lib/python*/site-packages/logilab/__init__.py
 	# remove test directory
 	rm -rf debian/python-logilab-database/usr/lib/python*/site-packages/logilab/database/test
 
