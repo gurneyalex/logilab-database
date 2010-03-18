@@ -62,7 +62,7 @@ def get_connection(driver='postgres', host='', database='', user='',
                   pywrap=False, extra_args=None):
     """return a db connection according to given arguments"""
     _ensure_module_loaded(driver)
-    module, modname = _import_driver_module(driver, drivers, ['connect'])
+    module, modname = _import_driver_module(driver, drivers)
     try:
         adapter = _ADAPTER_DIRECTORY.get_adapter(driver, modname)
     except NoAdapterFound, err:
@@ -150,7 +150,7 @@ _ADAPTER_DIRECTORY = _AdapterDirectory()
 del _AdapterDirectory
 
 
-def _import_driver_module(driver, drivers, imported_elements=None, quiet=True):
+def _import_driver_module(driver, drivers, quiet=True):
     """Imports the first module found in 'drivers' for 'driver'
 
     :rtype: tuple
@@ -159,7 +159,6 @@ def _import_driver_module(driver, drivers, imported_elements=None, quiet=True):
     """
     if not driver in drivers:
         raise UnknownDriver(driver)
-    imported_elements = imported_elements or []
     for modname in drivers[driver]:
         try:
             if not quiet:
@@ -172,9 +171,6 @@ def _import_driver_module(driver, drivers, imported_elements=None, quiet=True):
             continue
     else:
         raise ImportError('Unable to import a %s module' % driver)
-    if not imported_elements:
-        for part in modname.split('.')[1:]:
-            module = getattr(module, part)
     return module, modname
 
 
