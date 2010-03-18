@@ -25,6 +25,8 @@ __docformat__ = "restructuredtext en"
 import sys
 import logging
 
+from logilab.common.modutils import load_module_from_name
+
 _LOGGER = logging.getLogger('logilab.database')
 
 USE_MX_DATETIME = False
@@ -162,7 +164,7 @@ def _import_driver_module(driver, drivers, imported_elements=None, quiet=True):
         try:
             if not quiet:
                 print >> sys.stderr, 'Trying %s' % modname
-            module = __import__(modname, globals(), locals(), imported_elements)
+            module = load_module_from_name(modname, use_sys=False)
             break
         except ImportError:
             if not quiet:
