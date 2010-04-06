@@ -656,8 +656,18 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
         return 'ALTER TABLE %s ALTER COLUMN %s %s NOT NULL' % (
             table, column, cmd)
 
+    def temporary_table_name(self, table_name):
+        """
+        return a temporary table name constructed from the table_name argument
+        (e.g. for SQL Server, prepend a '#' to the name)
+        Standard implementation returns the argument unchanged. 
+        """
+        return table_name
+
+
     def sql_temporary_table(self, table_name, table_schema,
                             drop_on_commit=True):
+        table_name = self.temporary_table_name(table_name)
         return "CREATE TEMPORARY TABLE %s (%s);" % (table_name, table_schema)
 
     def boolean_value(self, value):
