@@ -35,7 +35,7 @@ _PREFERED_DRIVERS = {}
 _ADV_FUNC_HELPER_DIRECTORY = {}
 
 def _ensure_module_loaded(driver):
-    if driver in ('postgres', 'sqlite', 'mysql', 'sqlserver'):
+    if driver in ('postgres', 'sqlite', 'mysql', 'sqlserver2005'):
         __import__('logilab.database.%s' % driver)
 # main functions ###############################################################
 
