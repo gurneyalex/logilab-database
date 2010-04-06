@@ -406,7 +406,13 @@ class RANDOM(FunctionDescr):
     name_mapping = {'postgres': 'RANDOM',
                     'mysql': 'RAND',
                     }
-
+class SUBSTRING(FunctionDescr):
+    rtype = 'String'
+    minargs = maxargs = 3
+    name_mapping = {'postgres': 'SUBSTR',
+                    'mysql': 'SUBSTRING',
+                    'sqlite': 'SUBSTR',
+                    'sqlserver': 'SUBSTRING'}
 
 class ExtractDateField(FunctionDescr):
     rtype = 'Int'
@@ -480,7 +486,7 @@ for func_class in (
     MIN, MAX, SUM, COUNT, AVG,
     # transformation functions
     UPPER, LOWER, LENGTH, DATE, RANDOM,
-    YEAR, MONTH, DAY, HOUR, MINUTE, SECOND,
+    YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, SUBSTRING,
     # keyword function
     IN):
     SQL_FUNCTIONS_REGISTRY.register_function(func_class())
