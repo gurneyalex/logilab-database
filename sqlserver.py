@@ -12,12 +12,8 @@ Use the sqlserverNNNN module as driver name
 """
 __docformat__ = "restructuredtext en"
 
-import os
-import sys
 import datetime
 import re
-import threading
-import StringIO
 
 from logilab import database as db
 
@@ -25,7 +21,6 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
     driver = 'Override in subclass'
     _use_trusted_connection = False
     _use_autocommit = False
-    _fetch_lock = threading.Lock()
 
     @classmethod
     def use_trusted_connection(cls, use_trusted=False):
@@ -62,14 +57,12 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
         Windows Authentication, and therefore no login/password is
         required.
         """
-        lock = self._fetch_lock
         class SqlServerCursor(object):
             """cursor adapting usual dict format to pyodbc/adobdapi format
             in SQL queries
             """
             def __init__(self, cursor):
                 self._cursor = cursor
-                self._fetch_lock = lock
 
             def _replace_parameters(self, sql, kwargs, _date_class=datetime.date, many=False):
                 if not many:
@@ -118,26 +111,14 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
 
             def fetchone(self):
                 smalldate_cols = self._get_smalldate_columns()
-                self._fetch_lock.acquire()
-                try:
-                    row = self._cursor.fetchone()
-                finally:
-                    self._fetch_lock.release()
+                row = self._cursor.fetchone()
                 return self._replace_smalldate(row, smalldate_cols)
 
             def fetchall (self):
                 smalldate_cols = self._get_smalldate_columns()
                 rows = []
-                while True:
-                    self._fetch_lock.acquire()
-                    try:
-                        batch = self._cursor.fetchmany(1024)
-                    finally:
-                        self._fetch_lock.release()
-                    if not batch:
-                        break
-                    for row in batch:
-                        rows.append(self._replace_smalldate(row, smalldate_cols))
+                for row in self._cursor.fetchall():
+                    rows.append(self._replace_smalldate(row, smalldate_cols))
                 return rows
 
             def _replace_smalldate(self, row, smalldate_cols):
@@ -148,6 +129,7 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
                     return new_row
                 else:
                     return row
+
             def __getattr__(self, attrname):
                 return getattr(self._cursor, attrname)
 
@@ -182,7 +164,8 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
 
 
 class _PyodbcAdapter(_BaseSqlServerAdapter):
-    def _connect(self, host='', database='', user='', password='', port=None, extra_args=None):
+    def _connect(self, host='', database='', user='', password='',
+                 port=None, extra_args=None):
         if extra_args is not None:
             self._process_extra_args(extra_args)
         #cnx_string_bits = ['DRIVER={%(driver)s}']
@@ -202,7 +185,8 @@ class _PyodbcAdapter(_BaseSqlServerAdapter):
 
 class _AdodbapiAdapter(_BaseSqlServerAdapter):
 
-    def _connect(self, host='', database='', user='', password='', port=None, extra_args=None):
+    def _connect(self, host='', database='', user='', password='',
+                 port=None, extra_args=None):
         if extra_args is not None:
             self._process_extra_args(extra_args)
         if self._use_trusted_connection:
