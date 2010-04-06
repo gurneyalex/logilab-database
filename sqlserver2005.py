@@ -8,8 +8,12 @@ Supported drivers, in order of preference:
 :contact: http://www.logilab.fr/ -- mailto:contact@logilab.fr
 :license: General Public License version 2 - http://www.gnu.org/licenses
 """
+import os
+import sys
 
+from logilab import database as db
 from logilab.database.sqlserver import _PyodbcAdapter, _AdodbapiAdapter
+import StringIO
 
 class _PyodbcSqlServer2005Adapter(_PyodbcAdapter):
     driver = "SQL Server Native Client 10.0"
@@ -67,17 +71,17 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
                 ]
 
 
-        
+
     def sql_temporary_table(self, table_name, table_schema,
                             drop_on_commit=True):
         table_name = self.temporary_table_name(table_name)
         return "CREATE TABLE %s (%s);" % (table_name, table_schema)
-        
+
     def temporary_table_name(self, table_name):
         if not table_name.startswith('#'):
             table_name = '#' + table_name
         return table_name
-        
+
 
 
     @staticmethod

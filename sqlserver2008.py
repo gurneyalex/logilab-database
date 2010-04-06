@@ -11,6 +11,7 @@ Supported drivers, in order of preference:
 :license: General Public License version 2 - http://www.gnu.org/licenses
 """
 
+from logilab import database as db
 from logilab.database.sqlserver import _PyodbcAdapter, _AdodbapiAdapter
 
 class _PyodbcSqlServer2008Adapter(_PyodbcAdapter):
