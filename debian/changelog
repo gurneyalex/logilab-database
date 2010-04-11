@@ -1,0 +1,18 @@
+logilab-database (1.0.1-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Pierre-Yves David <pierre-yves.david@logilab.fr>  Thu, 18 Mar 2010 09:41:42 +0100
+
+logilab-database (1.0.0-2) unstable; urgency=low
+
+  * fix conflict with python-logilab-common
+  * fix package build for karmic
+
+ -- Pierre-Yves David <pierre-yves.david@logilab.fr>  Wed, 17 Mar 2010 17:14:42 +0100
+
+logilab-database (1.0.0-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Sylvain Thénault <sylvain.thenault@logilab.fr>  Tue, 16 Mar 2010 13:44:59 +0100

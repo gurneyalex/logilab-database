@@ -1,0 +1,17 @@
+Changelog for logilab database package
+======================================
+
+--
+* new SUBSTRING function
+
+2010-03-18  --  1.0.1
+    * remove non existant test/data dir from __pkginfo__.includes_dir
+
+
+
+2010-03-16  --  1.0.0
+    * initial release, containing code originally in logilab.common.db, logilab.
+      common.adbh, and the indexer package
+
+
+

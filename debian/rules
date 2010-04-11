@@ -1,0 +1,70 @@
+#!/usr/bin/make -f
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+#
+# adapted by Logilab for automatic generation by debianize
+# (part of the devtools project, http://www.logilab.org/projects/devtools)
+#
+# Copyright (c) 2003-2010 LOGILAB S.A. (Paris, FRANCE).
+# http://www.logilab.fr/ -- mailto:contact@logilab.fr
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+PY_VERSION:=$(shell pyversions -vd)
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+
+	# python module build
+	NO_SETUPTOOLS=1 python setup.py -q build --build-purelib=build/lib
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+
+	NO_SETUPTOOLS=1 python setup.py clean
+
+	[ ! -d build ] || rm -rf build
+
+	find . -name "*.pyc" -delete
+
+	dh_clean build-stamp
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+	NO_SETUPTOOLS=1 python setup.py -q install --prefix=/usr --no-compile \
+		--root=$(CURDIR)/debian/python-logilab-database/ \
+		--install-layout=deb
+	# remove sub-package __init__ file (created in postinst)
+	rm -f debian/python-logilab-database/usr/lib/python*/site-packages/logilab/__init__.py
+	rm -f debian/python-logilab-database/usr/lib/python2.6/dist-packages/logilab/__init__.py #karmic
+	# remove test directory
+	rm -rf debian/python-logilab-database/usr/lib/python*/site-packages/logilab/database/test
+	rm -rf debian/python-logilab-database/usr/lib/python*/dist-packages/logilab/database/test #karmic
+
+# Build architecture-independent files here.
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_install -i
+	dh_pysupport -i
+	dh_installchangelogs -i ChangeLog
+	dh_installexamples -i
+	dh_installdocs -i
+	dh_link -i
+	dh_compress -i		-X.py -X.ini -X.xml -Xtest/ -Xapidoc/
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+binary-arch:
+
+binary: binary-indep
+.PHONY: build clean binary binary-indep binary-arch

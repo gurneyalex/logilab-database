@@ -1,0 +1,24 @@
+Source: logilab-database
+Section: python
+Priority: optional
+Maintainer: Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>
+Uploaders: Alexandre Fayolle <afayolle@debian.org>,
+	   Sandro Tosi <morph@debian.org>,
+Build-Depends: debhelper (>= 5.0.38), python (>= 2.4.6-2)
+Build-Depends-Indep: python-support, python-epydoc, graphviz
+XS-Python-Version: all
+Standards-Version: 3.8.2
+Homepage: http://www.logilab.org/project/logilab-database
+
+Package: python-logilab-database
+Architecture: all
+Provides: ${python:Provides}
+Depends: ${python:Depends}, ${misc:Depends}, python-logilab-common
+Description: true unified databases access
+ logilab-database provides some classes to make unified access
+ to different RDBMS possible:
+ .
+  * actually compatible db-api from different drivers
+  * extensions functions for common tasks such as creating database, index,
+    users, dump and restore, etc...
+  * additional api for full text search
