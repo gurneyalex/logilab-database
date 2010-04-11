@@ -49,8 +49,10 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
 
     def list_tables(self, cursor):
         """return the list of tables of a database"""
-        cursor.tables()
-        return  [row.table_name for row in cursor.fetchall()]
+        cursor.execute('''sys.sp_tables @table_type = "'TABLE'"''')
+        return [row[2] for row in cursor.fetchall()]
+#        cursor.tables()
+#        return  [row.table_name for row in cursor.fetchall()]
 
     def binary_value(self, value):
         return StringIO.StringIO(value)
@@ -126,7 +128,6 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
 
 
 db._ADV_FUNC_HELPER_DIRECTORY['sqlserver2005'] = _SqlServer2005FuncHelper
-db._ADV_FUNC_HELPER_DIRECTORY['sqlserver2005_mt'] = _SqlServer2005FuncHelper
 
 
 
