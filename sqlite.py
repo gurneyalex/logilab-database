@@ -11,6 +11,7 @@ Supported drivers, in order of preference:
 """
 __docformat__ = "restructuredtext en"
 
+from os.path import abspath
 import os
 import re
 
@@ -169,7 +170,10 @@ class _PySqlite2Adapter(db.DBAPIAdapter):
             def __getattr__(self, attrname):
                 return getattr(self._cnx, attrname)
 
-        cnx = sqlite.connect(database, detect_types=sqlite.PARSE_DECLTYPES)
+        # abspath so we can change cwd without breaking further queries on the
+        # database
+        cnx = sqlite.connect(abspath(database), 
+                             detect_types=sqlite.PARSE_DECLTYPES)
         return self._wrap_if_needed(PySqlite2CnxWrapper(cnx))
 
     def process_value(self, value, description, encoding='utf-8', binarywrap=None):
