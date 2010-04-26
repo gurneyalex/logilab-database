@@ -11,7 +11,7 @@ modname = 'database'
 numversion = (1, 0, 2)
 version = '.'.join([str(num) for num in numversion])
 copyright = '2000-2010 LOGILAB S.A. (Paris, FRANCE), all rights reserved.'
-license = 'GPL'
+license = 'LGPL'
 
 author = "Logilab"
 author_email = "devel@logilab.fr"
