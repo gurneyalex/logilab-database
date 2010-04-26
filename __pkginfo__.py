@@ -37,3 +37,8 @@ subpackage_of = 'logilab'
 subpackage_master = True
 
 pyversions = ['2.4', '2.5', '2.6']
+
+
+install_requires = [
+    'logilab-common >= 0.49.0',
+    ]
