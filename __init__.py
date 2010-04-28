@@ -1,3 +1,20 @@
+# copyright 2003-2010 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
+#
+# This file is part of logilab-database.
+#
+# logilab-database is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published by the
+# Free Software Foundation, either version 2.1 of the License, or (at your
+# option) any later version.
+#
+# logilab-database is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+# for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License along
+# with logilab-database. If not, see <http://www.gnu.org/licenses/>.
 """Wrappers to get actually replaceable DBAPI2 compliant modules and
 database connection whatever the database and client lib used.
 
@@ -16,9 +33,6 @@ Additional helpers are also provided for advanced functionalities such
 as listing existing users or databases, creating database... Get the
 helper for your database using the `get_db_helper` function.
 
-:copyright: 2002-2010 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
-:contact: http://www.logilab.fr/ -- mailto:contact@logilab.fr
-:license: Lesser General Public License version 2 - http://www.gnu.org/licenses
 """
 __docformat__ = "restructuredtext en"
 

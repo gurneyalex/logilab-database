@@ -1,3 +1,20 @@
+# copyright 2003-2010 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
+#
+# This file is part of logilab-database.
+#
+# logilab-database is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published by the
+# Free Software Foundation, either version 2.1 of the License, or (at your
+# option) any later version.
+#
+# logilab-database is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+# for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License along
+# with logilab-database. If not, see <http://www.gnu.org/licenses/>.
 """Sqlserver RDBMS support
 
 Supported drivers, in order of preference:
@@ -6,9 +23,6 @@ Supported drivers, in order of preference:
 
 Use the sqlserverNNNN module as driver name
 
-:copyright: 2009-2010 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
-:contact: http://www.logilab.fr/ -- mailto:contact@logilab.fr
-:license: Lesser General Public License version 2 - http://www.gnu.org/licenses
 """
 __docformat__ = "restructuredtext en"
 
