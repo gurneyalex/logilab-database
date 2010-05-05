@@ -95,7 +95,7 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         filename = sys.argv[4]
         cnx = get_connection(driver='sqlserver2005', host=dbhost, database=dbname, extra_args='autocommit;trusted_connection')
         cursor = cnx.cursor()
-        cursor.execute("BACKUP DATABASE ? TO DISK= ? ", (dbname, filename,))
+        cursor.execute("BACKUP DATABASE %(db)s TO DISK= %(path)s ", {'db':dbname, 'path':filename,})
         prev_size = -1
         err_count = 0
         same_size_count = 0
@@ -123,7 +123,16 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         filename = sys.argv[4]
         cnx = get_connection(driver='sqlserver2005', host=dbhost, database='master', extra_args='autocommit;trusted_connection')
         cursor = cnx.cursor()
-        cursor.execute("RESTORE DATABASE ? FROM DISK= ? WITH REPLACE", (dbname, filename,))
+        cursor.execute("RESTORE DATABASE %(db)s FROM DISK= %(path)s WITH REPLACE", {'db':dbname, 'path':filename,})
+        import time
+        sleeptime = 10
+        while True:
+            time.sleep(sleeptime)
+            try:
+                cnx = get_connection(driver='sqlserver2005', host=dbhost, database=dbname, extra_args='trusted_connection')
+                break
+            except:
+                sleeptime = min(sleeptime*2, 300)
         sys.exit(0)
 
 
