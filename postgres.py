@@ -36,7 +36,7 @@ from os.path import join, dirname, isfile
 from warnings import warn
 
 from logilab import database as db
-from logilab.database.fti import normalize_words, tokenize
+from logilab.database.fti import normalize_words, tokenize, tokenize_query
 
 
 TSEARCH_SCHEMA_PATH = ('/usr/share/postgresql/?.?/contrib/tsearch2.sql', # current debian
@@ -305,16 +305,22 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
                            "VALUES (%(uid)s,to_tsvector(%(config)s, %(wrds)s));",
                            {'config': self.config, 'uid':uid, 'wrds': ' '.join(words)})
 
+    def _fti_query_to_tsquery_words(self, querystr):
+        if isinstance(querystr, str):
+            querystr = unicode(querystr, self.dbencoding)
+        words = normalize_words(tokenize_query(querystr))
+        # XXX replace '%' since it makes tsearch fail, dunno why yet, should
+        # be properly fixed
+        return '&'.join(words).replace('*', ':*').replace('%', '')
+
     def fulltext_search(self, querystr, cursor=None):
         """Execute a full text query and return a list of 2-uple (rating, uid).
         """
-        if isinstance(querystr, str):
-            querystr = unicode(querystr, self.dbencoding)
-        words = normalize_words(tokenize(querystr))
         cursor = cursor or self._cnx.cursor()
         cursor.execute('SELECT 1, uid FROM appears '
                        "WHERE words @@ to_tsquery(%(config)s, %(words)s)",
-                       {'config': self.config, 'words': '&'.join(words)})
+                       {'config': self.config,
+                        'words': self._fti_query_to_tsquery_words(querystr)})
         return cursor.fetchall()
 
     def fti_restriction_sql(self, tablename, querystr, jointo=None, not_=False):
@@ -323,9 +329,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         if isinstance(querystr, str):
             querystr = unicode(querystr, self.dbencoding)
         words = normalize_words(tokenize(querystr))
-        # XXX replace '%' since it makes tsearch fail, dunno why yet, should
-        # be properly fixed
-        searched = '&'.join(words).replace('%', '')
+        searched = self._fti_query_to_tsquery_words(querystr)
         sql = "%s.words @@ to_tsquery('%s', '%s')" % (tablename, self.config, searched)
         if not_:
             sql = 'NOT (%s)' % sql
