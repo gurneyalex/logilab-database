@@ -17,7 +17,7 @@
 # with logilab-database. If not, see <http://www.gnu.org/licenses/>.
 import unittest
 
-from logilab.common.testlib import MockConnection
+from logilab.common.testlib import TestCase, MockConnection
 
 from unittest_fti import IndexableObject
 
