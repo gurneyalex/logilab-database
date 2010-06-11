@@ -1,8 +1,19 @@
 Changelog for logilab database package
 ======================================
 
---
-* new SUBSTRING function
+2010-06-11  --  1.0.3
+    * add support for wildcard search when using postgres (require postgres >= 8.4)
+
+    * repair backup/restore for sqlserver
+
+    * fix licensing information (LGPL)
+
+
+
+2010-04-11  --  1.0.2
+    * new SUBSTRING function
+
+
 
 2010-03-18  --  1.0.1
     * remove non existant test/data dir from __pkginfo__.includes_dir
