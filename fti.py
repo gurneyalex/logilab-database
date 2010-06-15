@@ -62,15 +62,18 @@ def normalize_words(rawwords):
             continue
     return words
 
-# a word has no punctuation
-RE_WORD = "[^ ,.;:!?\"\n\r\t)(«»\\<\\>/\\\\\\|\\[\\]{}^#@$£_'=+\\-*&§]+"
 RE_DATE = r"\d{2,4}[/-]\d{2,2}[/-]\d{2,4}"
 RE_HOUR = r"\d{1,2}[:h]\d{2,2}:?\d{0,2}"
-#
-TOKENIZE_RE = re.compile('(?:%s)|(?:%s)|(?:%s)' % (RE_DATE, RE_HOUR, RE_WORD),
-                         re.L & re.U)
-
-tokenize = TOKENIZE_RE.findall
+# indexation tokenizer
+RE_WORD_INDEX = "[^ ,.;:!?\"\n\r\t)(«»\\<\\>/\\\\\\|\\[\\]{}^#@$£_'=+\\-&§]+"
+TOKENIZE_RE_INDEX = re.compile('(?:%s)|(?:%s)|(?:%s)' % (RE_DATE, RE_HOUR, RE_WORD_INDEX),
+                               re.L & re.U)
+tokenize = TOKENIZE_RE_INDEX.findall
+# query tokenizer
+RE_WORD_QUERY = "[^ ,.;:!?\"\n\r\t)(«»\\<\\>/\\\\\\|\\[\\]{}^#@$£_'=+\\-&§]+"
+TOKENIZE_RE_QUERY = re.compile('(?:%s)|(?:%s)|(?:%s)' % (RE_DATE, RE_HOUR, RE_WORD_QUERY),
+                               re.L & re.U)
+tokenize_query = TOKENIZE_RE_QUERY.findall
 
 
 class FTIndexerMixIn(object):

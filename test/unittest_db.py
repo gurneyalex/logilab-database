@@ -77,10 +77,10 @@ class PreferedDriverTC(TestCase):
 class GetCnxTC(TestCase):
     def setUp(self):
         try:
-            socket.gethostbyname('hercules')
+            socket.gethostbyname('centaurus')
         except:
             self.skip("those tests require specific DB configuration")
-        self.host = 'hercules'
+        self.host = 'centaurus'
         self.db = 'template1'
         self.user = getlogin()
         self.passwd = getlogin()
@@ -170,10 +170,6 @@ class DBAPIAdaptersTC(TestCase):
     def setUp(self):
         """Memorize original PREFERED_DRIVERS"""
         self.old_drivers = PREFERED_DRIVERS['postgres'][:]
-        self.host = 'crater.logilab.fr'
-        self.db = 'gincotest2'
-        self.user = 'adim'
-        self.passwd = 'adim'
 
     def tearDown(self):
         """Reset PREFERED_DRIVERS as it was"""
