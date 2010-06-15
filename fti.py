@@ -155,9 +155,11 @@ CREATE INDEX appears_word_id ON appears (word_id);
 
     def cursor_index_object(self, uid, obj, cursor):
         position = 0
-        for word in obj.get_words():
-            self._save_word(uid, word, position, cursor)
-            position += 1
+        # sort for test predictability
+        for weight, words in sorted(obj.get_words().iteritems()):
+            for word in words:
+                self._save_word(uid, word, position, cursor)
+                position += 1
 
     def cursor_unindex_object(self, uid, cursor):
         cursor.execute('DELETE FROM appears WHERE uid=%s' % uid)
@@ -218,6 +220,9 @@ CREATE INDEX appears_word_id ON appears (word_id);
         if jointo is None:
             return sql
         return '%s AND %s.uid=%s' % (sql, tablename, jointo)
+
+    def fti_rank_order(self, tablename, querystr):
+        return None
 
     def sql_init_fti(self):
         """return the sql definition of table()s used by the full text index"""
