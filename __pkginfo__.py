@@ -15,16 +15,12 @@
 #
 # You should have received a copy of the GNU Lesser General Public License along
 # with logilab-database. If not, see <http://www.gnu.org/licenses/>.
-"""logilab.database packaging information.
-
-"""
-__docformat__ = "restructuredtext en"
+"""logilab.database packaging information."""
 
 distname = 'logilab-database'
 modname = 'database'
-numversion = (1, 0, 2)
+numversion = (1, 0, 3)
 version = '.'.join([str(num) for num in numversion])
-copyright = '2000-2010 LOGILAB S.A. (Paris, FRANCE), all rights reserved.'
 license = 'LGPL'
 
 author = "Logilab"
@@ -51,7 +47,6 @@ subpackage_of = 'logilab'
 subpackage_master = True
 
 pyversions = ['2.4', '2.5', '2.6']
-
 
 install_requires = [
     'logilab-common >= 0.49.0',

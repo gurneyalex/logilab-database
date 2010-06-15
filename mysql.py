@@ -18,7 +18,6 @@
 """Mysql RDBMS support, using the mysqldb driver
 
 Full-text search based on MyISAM full text search capabilities.
-
 """
 __docformat__ = "restructuredtext en"
 

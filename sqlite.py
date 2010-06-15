@@ -186,7 +186,7 @@ class _PySqlite2Adapter(db.DBAPIAdapter):
 
         # abspath so we can change cwd without breaking further queries on the
         # database
-        cnx = sqlite.connect(abspath(database), 
+        cnx = sqlite.connect(abspath(database),
                              detect_types=sqlite.PARSE_DECLTYPES)
         return self._wrap_if_needed(PySqlite2CnxWrapper(cnx))
 

@@ -17,7 +17,7 @@
 # with logilab-database. If not, see <http://www.gnu.org/licenses/>.
 import unittest
 
-from logilab.common.testlib import MockConnection
+from logilab.common.testlib import TestCase, MockConnection
 
 from unittest_fti import IndexableObject
 
@@ -46,11 +46,23 @@ class PGHelperTC(TestCase):
                              'config': 'default',
                              'uid': 1})])
 
-    def test_fulltext_search(self):
+    def test_fulltext_search_base(self):
         self.helper.fulltext_search(u'ginco-jpl')
         self.assertEquals(self.cnx.received,
                           [("SELECT 1, uid FROM appears WHERE words @@ to_tsquery(%(config)s, %(words)s)",
                             {'config': 'default', 'words': 'ginco&jpl'})])
+
+    def test_fulltext_search_prefix_1(self):
+        self.helper.fulltext_search(u'ginco*')
+        self.assertEquals(self.cnx.received,
+                          [("SELECT 1, uid FROM appears WHERE words @@ to_tsquery(%(config)s, %(words)s)",
+                            {'config': 'default', 'words': 'ginco:*'})])
+
+    def test_fulltext_search_prefix_2(self):
+        self.helper.fulltext_search(u'ginc*o')
+        self.assertEquals(self.cnx.received,
+                          [("SELECT 1, uid FROM appears WHERE words @@ to_tsquery(%(config)s, %(words)s)",
+                            {'config': 'default', 'words': 'ginc:*o'})])
 
     # def test_embedded_tsearch2_is_found(self):
     #     # just make sure that something is found
