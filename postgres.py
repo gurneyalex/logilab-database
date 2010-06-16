@@ -358,7 +358,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
             querystr = unicode(querystr, self.dbencoding)
         words = normalize_words(tokenize(querystr))
         searched = self._fti_query_to_tsquery_words(querystr)
-        return "ts_rank(%s.words, to_tsquery('%s', '%s'))*%s.weight DESC" % (
+        return "ts_rank(%s.words, to_tsquery('%s', '%s'))*%s.weight" % (
             tablename, self.config, searched, tablename)
 
     # XXX not needed with postgres >= 8.3 right?
