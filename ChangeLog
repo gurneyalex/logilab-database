@@ -1,6 +1,9 @@
 Changelog for logilab database package
 ======================================
 
+--
+* fix sqlite datetime parsing
+
 2010-06-11  --  1.0.3
     * add support for wildcard search when using postgres (require postgres >= 8.4)
 

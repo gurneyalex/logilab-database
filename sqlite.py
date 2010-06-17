@@ -142,10 +142,10 @@ class _PySqlite2Adapter(db.DBAPIAdapter):
                     microseconds = int(float("0." + timepart_full[1]) * 1000000)
                 else:
                     microseconds = 0
-                data = timedelta(days,
+                return timedelta(days,
                                  hours*3600 + minutes*60 + seconds,
                                  microseconds)
-                return data
+
             sqlite.register_converter('interval', convert_timedelta)
 
 
@@ -274,6 +274,7 @@ db._ADV_FUNC_HELPER_DIRECTORY['sqlite'] = _SqliteAdvFuncHelper
 def init_sqlite_connexion(cnx):
     def _parse_sqlite_date(date):
         if type(date) is unicode:
+            date = date.split('.')[0] # remove microseconds
             try:
                 date = strptime(date, '%Y-%m-%d %H:%M:%S')
             except:
