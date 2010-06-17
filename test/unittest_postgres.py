@@ -39,8 +39,12 @@ class PGHelperTC(TestCase):
     def test_index_object(self):
         self.helper.index_object(1, IndexableObject())
         self.assertEquals(self.cnx.received,
-                          [("INSERT INTO appears(uid, words) VALUES (%(uid)s,to_tsvector(%(config)s, %(wrds)s));",
-                            {'config': 'default', 'wrds': 'ginco jpl bla blip blop blap', 'uid': 1})])
+                          [("INSERT INTO appears(uid, words, weight) "
+                            "VALUES (%(uid)s, setweight(to_tsvector(%(config)s, %(wrds_A)s), 'A')||setweight(to_tsvector(%(config)s, %(wrds_B)s), 'B'), 1.0);",
+                            {'wrds_B': 'cubic',
+                             'wrds_A': 'ginco jpl bla blip blop blap',
+                             'config': 'default',
+                             'uid': 1})])
 
     def test_fulltext_search_base(self):
         self.helper.fulltext_search(u'ginco-jpl')

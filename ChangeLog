@@ -1,6 +1,9 @@
 Changelog for logilab database package
 ======================================
 
+	--
+    * support for ranking control when using postgres
+
 2010-06-11  --  1.0.3
     * add support for wildcard search when using postgres (require postgres >= 8.4)
 
@@ -12,7 +15,6 @@ Changelog for logilab database package
 
 2010-04-11  --  1.0.2
     * new SUBSTRING function
-
 
 
 2010-03-18  --  1.0.1
