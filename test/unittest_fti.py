@@ -39,8 +39,10 @@ class TokenizeTC(unittest.TestCase):
 
 
 class IndexableObject:
+    entity_weight = 1.0
     def get_words(self):
-        return tokenize(u'gïnco-jpl blâ blîp blôp blàp')
+        return {'A': tokenize(u'gïnco-jpl blâ blîp blôp blàp'),
+                'B': tokenize(u'cubic')}
 
 
 class IndexerTC(unittest.TestCase):
@@ -53,7 +55,7 @@ class IndexerTC(unittest.TestCase):
 
     def test_index_object(self):
         self.indexer.index_object(1, IndexableObject())
-        self.assertEquals(self.cnx.received,
+        self.assertListEquals(self.cnx.received,
                           [('SELECT word_id FROM word WHERE word=%(word)s;', {'word': 'ginco'}),
                            ('INSERT INTO appears(uid, word_id, pos) VALUES (%(uid)s,%(wid)s,%(position)s);', {'position': 0, 'wid': 1, 'uid': 1}),
                            ('SELECT word_id FROM word WHERE word=%(word)s;', {'word': 'jpl'}),
@@ -65,7 +67,9 @@ class IndexerTC(unittest.TestCase):
                            ('SELECT word_id FROM word WHERE word=%(word)s;', {'word': 'blop'}),
                            ('INSERT INTO appears(uid, word_id, pos) VALUES (%(uid)s,%(wid)s,%(position)s);', {'position': 4, 'wid': 1, 'uid': 1}),
                            ('SELECT word_id FROM word WHERE word=%(word)s;', {'word': 'blap'}),
-                           ('INSERT INTO appears(uid, word_id, pos) VALUES (%(uid)s,%(wid)s,%(position)s);', {'position': 5, 'wid': 1, 'uid': 1})])
+                           ('INSERT INTO appears(uid, word_id, pos) VALUES (%(uid)s,%(wid)s,%(position)s);', {'position': 5, 'wid': 1, 'uid': 1}),
+                           ('SELECT word_id FROM word WHERE word=%(word)s;', {'word': 'cubic'}),
+                           ('INSERT INTO appears(uid, word_id, pos) VALUES (%(uid)s,%(wid)s,%(position)s);', {'position': 6, 'wid': 1, 'uid': 1})])
 
     def test_fulltext_search(self):
         list(self.indexer.fulltext_search(u'ginco'))
