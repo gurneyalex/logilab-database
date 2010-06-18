@@ -65,8 +65,18 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         """return the list of tables of a database"""
         cursor.execute('''sys.sp_tables @table_type = "'TABLE'"''')
         return [row[2] for row in cursor.fetchall()]
-#        cursor.tables()
-#        return  [row.table_name for row in cursor.fetchall()]
+        # cursor.tables()
+        # return  [row.table_name for row in cursor.fetchall()]
+
+    def list_indices(self, cursor, table=None):
+        """return the list of indices of a database, only for the given table if specified"""
+        sql = "SELECT name FROM sys.indexes"
+        if table:
+            sql = ("SELECT ind.name FROM sys.indexes as ind, sys.objects as obj WHERE "
+                   "obj.object_id = ind.object_id AND obj.name = '%s'"
+                   % table)
+        cursor.execute(sql)
+        return [r[0] for r in cursor.fetchall()]
 
     def binary_value(self, value):
         return StringIO.StringIO(value)
@@ -75,8 +85,7 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
                         dbname=None, dbhost=None, dbport=None, dbuser=None):
         return [[sys.executable, os.path.normpath(__file__),
                  "_SqlServer2005FuncHelper._do_backup", dbhost or self.dbhost,
-                 dbname or self.dbname, backupfile]
-                ]
+                 dbname or self.dbname, backupfile]]
 
     def restore_commands(self, backupfile, keepownership=True, drop=True,
                          dbname=None, dbhost=None, dbport=None, dbuser=None,
