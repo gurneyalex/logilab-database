@@ -22,7 +22,6 @@ Supported drivers, in order of preference:
 - adodbapi
 
 Use the sqlserverNNNN module as driver name
-
 """
 __docformat__ = "restructuredtext en"
 

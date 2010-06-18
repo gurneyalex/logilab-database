@@ -32,8 +32,8 @@ you can control which one you want to use using the
 Additional helpers are also provided for advanced functionalities such
 as listing existing users or databases, creating database... Get the
 helper for your database using the `get_db_helper` function.
-
 """
+
 __docformat__ = "restructuredtext en"
 
 import sys
@@ -635,6 +635,9 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
 
     def sql_current_timestamp(self):
         return 'CURRENT_TIMESTAMP'
+
+    def sql_concat_string(self, lhs, rhs):
+        return '%s || %s' % (lhs, rhs)
 
     def sql_create_index(self, table, column, unique=False):
         idx = self._index_name(table, column, unique)
