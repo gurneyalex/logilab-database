@@ -87,6 +87,8 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
                 ]
 
 
+    def sql_concat_string(self, lhs, rhs):
+        return '%s + %s' % (lhs, rhs)
 
     def sql_temporary_table(self, table_name, table_schema,
                             drop_on_commit=True):
