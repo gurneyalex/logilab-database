@@ -2,8 +2,10 @@ Changelog for logilab database package
 ======================================
 
 --
+* new sql_concat_string method on db-helpers, with specific implementation for 
+  sqlserver
+* list_indices implementation for sqlserver
 * fix sqlite datetime parsing
-* new sql_concat_string method on db-helpers, with specific implementation for sqlserver
 
 2010-06-11  --  1.0.3
     * add support for wildcard search when using postgres (require postgres >= 8.4)
