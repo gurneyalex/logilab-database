@@ -91,6 +91,8 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
                             arg = kwarg[key]
                             if arg.__class__ == _date_class:
                                 arg = datetime.datetime.combine(arg, datetime.time(0))
+                            elif isinstance(arg, str):
+                                arg = arg.decode('utf-8')
                             args.append(arg)
                         args_list.append(tuple(args))
 
