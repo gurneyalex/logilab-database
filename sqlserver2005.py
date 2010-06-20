@@ -115,6 +115,13 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         table_name = self.temporary_table_name(table_name)
         return "CREATE TABLE %s (%s);" % (table_name, table_schema)
 
+    def sql_set_null_allowed(self, table, column, coltype, null_allowed):
+        if null_allowed:
+            cmd = 'ALTER TABLE %s ALTER COLUMN %s %s NULL'
+        else:
+            cmd = 'ALTER TABLE %s ALTER COLUMN %s %s NOT NULL'
+        return cmd % (table, column, coltype)
+
     def temporary_table_name(self, table_name):
         if not table_name.startswith('#'):
             table_name = '#' + table_name
