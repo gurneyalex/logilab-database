@@ -530,6 +530,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         'Interval' : 'interval',
         'Password' : 'bytea',
         'Bytes' :    'bytea',
+        'SizeConstrainedString': 'varchar(%s)',
         }
 
     # DBMS resources descriptors and accessors

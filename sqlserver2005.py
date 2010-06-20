@@ -59,6 +59,7 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         'Interval' : 'interval',
         'Password' : 'varbinary(255)',
         'Bytes' :    'varbinary(max)',
+        'SizeConstrainedString': 'nvarchar(%s)',
         }
 
     def list_tables(self, cursor):
