@@ -19,14 +19,14 @@
 
 distname = 'logilab-database'
 modname = 'database'
-numversion = (1, 0, 3)
+numversion = (1, 0, 4)
 version = '.'.join([str(num) for num in numversion])
 license = 'LGPL'
 
 author = "Logilab"
 author_email = "devel@logilab.fr"
 
-short_desc = "true unified database access"
+description = "true unified database access"
 
 long_desc = """logilab-database provides some classes to make unified access
 to different RDBMS possible:
