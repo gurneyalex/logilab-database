@@ -41,7 +41,7 @@ class MyHelperTC(unittest.TestCase):
         self.helper.index_object(1, IndexableObject())
         self.assertEquals(self.cnx.received,
                           [('INSERT INTO appears(uid, words) VALUES (%(uid)s, %(wrds)s);',
-                            {'wrds': 'ginco jpl bla blip blop blap', 'uid': 1})])
+                            {'wrds': 'ginco jpl bla blip blop blap cubic', 'uid': 1})])
 
     def test_fulltext_search(self):
         self.helper.fulltext_search(u'ginco-jpl')

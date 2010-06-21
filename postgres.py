@@ -28,8 +28,8 @@ Full-text search based on the tsearch2 extension from the openfts project
 
 Warning: you will need to run the tsearch2.sql script with super user privileges
 on the database.
-
 """
+
 __docformat__ = "restructuredtext en"
 
 from os.path import join, dirname, isfile
@@ -202,7 +202,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
                            '-E', dbencoding or self.dbencoding)
         cmd.append(dbname)
         cmds.append(cmd)
-        cmd = self.pgdbcmd('pg_restore', dbhost, dbport, dbuser, '-Fc')
+        cmd = self.pgdbcmd('/usr/lib/postgresql/8.4/bin/pg_restore', dbhost, dbport, dbuser, '-Fc')
         cmd.append('--dbname')
         cmd.append(dbname)
         if not keepownership:
@@ -228,11 +228,14 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         return "CREATE TEMPORARY TABLE %s (%s) ON COMMIT DROP;" % (table_name,
                                                                    table_schema)
 
-    def create_database(self, cursor, dbname, owner=None, dbencoding=None):
+    def create_database(self, cursor, dbname, owner=None, dbencoding=None,
+                        template=None):
         """create a new database"""
         sql = "CREATE DATABASE %(dbname)s"
         if owner:
             sql += " WITH OWNER=%(owner)s"
+        if template:
+            sql += " TEMPLATE %(template)s"
         dbencoding = dbencoding or self.dbencoding
         if dbencoding:
             sql += " ENCODING='%(dbencoding)s'"
@@ -292,18 +295,28 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
     def cursor_index_object(self, uid, obj, cursor):
         """Index an object, using the db pointed by the given cursor.
         """
-        uid = int(uid)
-        words = normalize_words(obj.get_words())
-        size = 0
-        for i, word in enumerate(words):
-            size += len(word) + 1
-            if size > self.max_indexed:
-                words = words[:i]
+        ctx = {'config': self.config, 'uid': int(uid)}
+        tsvectors, size, oversized = [], 0, False
+        # sort for test predictability
+        for (weight, words) in sorted(obj.get_words().iteritems()):
+            words = normalize_words(words)
+            for i, word in enumerate(words):
+                size += len(word) + 1
+                if size > self.max_indexed:
+                    words = words[:i]
+                    oversized = True
+                    break
+            if words:
+                tsvectors.append("setweight(to_tsvector(%%(config)s, "
+                                 "%%(wrds_%(w)s)s), '%(w)s')"
+                                 % {'w': weight})
+                ctx['wrds_%s' % weight] = ' '.join(words)
+            if oversized:
                 break
-        if words:
-            cursor.execute("INSERT INTO appears(uid, words) "
-                           "VALUES (%(uid)s,to_tsvector(%(config)s, %(wrds)s));",
-                           {'config': self.config, 'uid':uid, 'wrds': ' '.join(words)})
+        if tsvectors:
+            cursor.execute("INSERT INTO appears(uid, words, weight) "
+                           "VALUES (%%(uid)s, %s, %s);"
+                           % ('||'.join(tsvectors), obj.entity_weight), ctx)
 
     def _fti_query_to_tsquery_words(self, querystr):
         if isinstance(querystr, str):
@@ -336,6 +349,17 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         if jointo is None:
             return sql
         return "%s AND %s.uid=%s" % (sql, tablename, jointo)
+
+
+    def fti_rank_order(self, tablename, querystr):
+        """Execute a full text query and return a list of 2-uple (rating, uid).
+        """
+        if isinstance(querystr, str):
+            querystr = unicode(querystr, self.dbencoding)
+        words = normalize_words(tokenize(querystr))
+        searched = self._fti_query_to_tsquery_words(querystr)
+        return "ts_rank(%s.words, to_tsquery('%s', '%s'))*%s.weight" % (
+            tablename, self.config, searched, tablename)
 
     # XXX not needed with postgres >= 8.3 right?
     def find_tsearch2_schema(self):
@@ -378,7 +402,8 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         return """
 CREATE table appears(
   uid     INTEGER PRIMARY KEY NOT NULL,
-  words   tsvector
+  words   tsvector,
+  weight  FLOAT
 );
 """
 
