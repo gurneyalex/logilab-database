@@ -1,15 +1,18 @@
 Changelog for logilab database package
 ======================================
 
---
+2010-06-21  --  1.0.4
     * enhanced sqlserver support:
-        * list_indices implementation
-        * sql_change_col_type, sql_set_null_allowed implementation
+
+    * list_indices implementation
+
+    * sql_change_col_type, sql_set_null_allowed implementation
 
     * new sql_concat_string method on db-helpers, with specific implementation
       for sqlserver
 
     * fix sqlite datetime parsing
+
 
 
 2010-06-11  --  1.0.3
