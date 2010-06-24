@@ -544,6 +544,11 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
     alter_column_support = True
     case_sensitive = False
 
+    # some backends (e.g. sqlserver) must perform some schema inspection 
+    # before altering table columns, and therefore need an additional cursor 
+    # argument on some sql_* methods
+    alter_table_requires_cursor = False
+
     # allow call to [backup|restore]_commands without previous call to
     # record_connection_information but by specifying argument explicitly
     dbhost = dbport = dbuser = dbpassword = dbextraargs = dbencoding = None

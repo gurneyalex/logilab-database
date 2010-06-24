@@ -61,6 +61,7 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         'Bytes' :    'varbinary(max)',
         'SizeConstrainedString': 'nvarchar(%s)',
         }
+    alter_table_requires_cursor = True
 
     def list_tables(self, cursor):
         """return the list of tables of a database"""
@@ -68,16 +69,6 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         return [row[2] for row in cursor.fetchall()]
         # cursor.tables()
         # return  [row.table_name for row in cursor.fetchall()]
-
-    def list_indices(self, cursor, table=None):
-        """return the list of indices of a database, only for the given table if specified"""
-        sql = "SELECT name FROM sys.indexes"
-        if table:
-            sql = ("SELECT ind.name FROM sys.indexes as ind, sys.objects as obj WHERE "
-                   "obj.object_id = ind.object_id AND obj.name = '%s'"
-                   % table)
-        cursor.execute(sql)
-        return [r[0] for r in cursor.fetchall()]
 
     def list_indices(self, cursor, table=None):
         """return the list of indices of a database, only for the given table if specified"""
@@ -105,7 +96,35 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
                 "_SqlServer2005FuncHelper._do_restore", dbhost or self.dbhost,
                  dbname or self.dbname, backupfile],
                 ]
-
+                
+    def _index_names(self, sql_exec, table, column):
+        """
+        return the list of index_information for table.column
+        index_information is a tuple:
+        (name, index_type, is_unique, is_unique_constraint)
+        
+        See http://msdn.microsoft.com/en-us/library/ms173760.aspx for more 
+        information
+        """
+        has_index_sql = """\
+SELECT i.name AS index_name,
+       i.type_desc,
+       i.is_unique,
+       i.is_unique_constraint
+FROM sys.indexes AS i, sys.index_columns as j, sys.columns as k
+WHERE is_hypothetical = 0 AND i.index_id <> 0
+AND i.object_id = j.object_id
+AND i.index_id = j.index_id
+AND i.object_id = OBJECT_ID('%(table)s')
+AND k.name = '%(col)s'
+AND k.object_id=i.object_id
+AND j.column_id = k.column_id;"""
+        return sql_exec(has_index_sql % {'table': table, 'col': column}).fetchall()
+        
+        
+    def index_exists(self, cursor, table, column, unique=False):
+        indexes = self._index_names(cursor, table, column)
+        return len(indexes) > 0
 
     def sql_concat_string(self, lhs, rhs):
         return '%s + %s' % (lhs, rhs)
@@ -115,22 +134,40 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         table_name = self.temporary_table_name(table_name)
         return "CREATE TABLE %s (%s);" % (table_name, table_schema)
 
-    def sql_change_col_type(self, table, column, coltype, null_allowed):
-        if null_allowed:
-            cmd = 'ALTER TABLE %s ALTER COLUMN %s %s NULL'
-        else:
-            cmd = 'ALTER TABLE %s ALTER COLUMN %s %s NOT NULL'
-        return cmd % (table, column, coltype)
+    def sql_change_col_type(self, table, column, coltype, null_allowed, cursor):
+        alter = []
+        drops = []
+        creates = []
+        print "change col type for %s.%s to %s %s" % (table, column, coltype, null_allowed and 'NULL' or 'NOT NULL')
+        
+        for idx_name, idx_type, is_unique, is_unique_cstr in self._index_names(cursor, table, column):
+            if is_unique_cstr:
+                drops.append('ALTER TABLE %s DROP CONSTRAINT %s' % (table, idx_name))
+                creates.append('ALTER TABLE %s ADD CONSTRAINT %s UNIQUE (%s)' % (table, idx_name, column))
+            else:
+                drops.append('DROP INDEX %s ON %s' % (idx_name, table))
+                if is_unique:
+                    unique = 'UNIQUE'
+                else:
+                    unique = ''
+                creates.append('CREATE %s %s INDEX %s ON %s(%s)' % (unique, idx_type, idx_name, table, column))
 
-    def sql_set_null_allowed(self, table, column, coltype, null_allowed):
-        return self.sql_change_col_type(table, column, coltype, null_allowed)
+        if null_allowed:
+            null = 'NULL'
+        else:
+            null = 'NOT NULL'
+        alter.append('ALTER TABLE %s ALTER COLUMN %s %s %s' % (table, column, coltype, null))
+        
+        return ' ; '.join(drops + alter + creates)
+
+    def sql_set_null_allowed(self, table, column, coltype, null_allowed, cursor):
+        print "set null allowed %s on %s.%s" % (null_allowed, table, column)
+        return self.sql_change_col_type(table, column, coltype, null_allowed, cursor)
 
     def temporary_table_name(self, table_name):
         if not table_name.startswith('#'):
             table_name = '#' + table_name
         return table_name
-
-
 
     @staticmethod
     def _do_backup():
