@@ -119,7 +119,11 @@ AND i.object_id = OBJECT_ID('%(table)s')
 AND k.name = '%(col)s'
 AND k.object_id=i.object_id
 AND j.column_id = k.column_id;"""
-        return sql_exec(has_index_sql % {'table': table, 'col': column}).fetchall()
+        if hasattr(sql_exec, 'execute'):
+            sql_exec.execute(has_index_sql % {'table': table, 'col': column})
+            return sql_exec.fetchall()
+        else:
+            return sql_exec(has_index_sql % {'table': table, 'col': column})
         
         
     def index_exists(self, cursor, table, column, unique=False):
