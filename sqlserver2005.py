@@ -24,6 +24,7 @@ Supported drivers, in order of preference:
 """
 import os
 import sys
+import shutil
 
 from logilab import database as db
 from logilab.database.sqlserver import _PyodbcAdapter, _AdodbapiAdapter
@@ -180,16 +181,23 @@ AND j.column_id = k.column_id;"""
         dbhost = sys.argv[2]
         dbname = sys.argv[3]
         filename = sys.argv[4]
-        cnx = get_connection(driver='sqlserver2005', host=dbhost, database=dbname, extra_args='autocommit;trusted_connection')
+        cnx = get_connection(driver='sqlserver2005', 
+                             host=dbhost, database=dbname, 
+                             extra_args='autocommit;trusted_connection')
         cursor = cnx.cursor()
-        cursor.execute("BACKUP DATABASE %(db)s TO DISK= %(path)s ", {'db':dbname, 'path':filename,})
+        sql_server_local_filename = r"C:\Backups\%s" % dbname
+        file_share_filename = r"\\%s\Backups\%s" % (dbhost, dbname)
+        cursor.execute("BACKUP DATABASE %(db)s TO DISK= %(path)s ", 
+                       {'db':dbname, 
+                        'path':sql_server_local_filename,
+                        })
         prev_size = -1
         err_count = 0
         same_size_count = 0
         while err_count < 10 and same_size_count < 10:
             time.sleep(1)
             try:
-                size = os.path.getsize(filename)
+                size = os.path.getsize(file_share_filename)
             except OSError, exc:
                 err_count += 1
                 print exc
@@ -198,6 +206,8 @@ AND j.column_id = k.column_id;"""
                 prev_size = size
             else:
                 same_size_count += 1
+        shutil.copy(file_share_filename, filename)
+        os.remove(file_share_filename)
         cnx.close()
         sys.exit(0)
 
@@ -208,18 +218,30 @@ AND j.column_id = k.column_id;"""
         dbhost = sys.argv[2]
         dbname = sys.argv[3]
         filename = sys.argv[4]
-        cnx = get_connection(driver='sqlserver2005', host=dbhost, database='master', extra_args='autocommit;trusted_connection')
+        sql_server_local_filename = r"C:\Backups\%s" % dbname
+        file_share_filename = r"\\%s\Backups\%s" % (dbhost, dbname)
+        shutil.copy(filename, file_share_filename)
+        cnx = get_connection(driver='sqlserver2005', 
+                             host=dbhost, database='master', 
+                             extra_args='autocommit;trusted_connection')
+        
         cursor = cnx.cursor()
-        cursor.execute("RESTORE DATABASE %(db)s FROM DISK= %(path)s WITH REPLACE", {'db':dbname, 'path':filename,})
+        cursor.execute("RESTORE DATABASE %(db)s FROM DISK= %(path)s WITH REPLACE", 
+                       {'db':dbname, 
+                        'path':sql_server_local_filename,
+                        })
         import time
         sleeptime = 10
         while True:
             time.sleep(sleeptime)
             try:
-                cnx = get_connection(driver='sqlserver2005', host=dbhost, database=dbname, extra_args='trusted_connection')
+                cnx = get_connection(driver='sqlserver2005', 
+                                     host=dbhost, database=dbname, 
+                                     extra_args='trusted_connection')
                 break
             except:
                 sleeptime = min(sleeptime*2, 300)
+        os.remove(file_share_filename)
         sys.exit(0)
 
 
