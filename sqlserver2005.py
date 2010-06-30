@@ -20,8 +20,8 @@
 Supported drivers, in order of preference:
 - pyodbc (recommended, others are not well tested)
 - adodbapi
-
 """
+
 import os
 import sys
 import shutil
@@ -103,8 +103,8 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         return the list of index_information for table.column
         index_information is a tuple:
         (name, index_type, is_unique, is_unique_constraint)
-        
-        See http://msdn.microsoft.com/en-us/library/ms173760.aspx for more 
+
+        See http://msdn.microsoft.com/en-us/library/ms173760.aspx for more
         information
         """
         has_index_sql = """\
@@ -144,7 +144,7 @@ AND j.column_id = k.column_id;"""
         drops = []
         creates = []
         print "change col type for %s.%s to %s %s" % (table, column, coltype, null_allowed and 'NULL' or 'NOT NULL')
-        
+
         for idx_name, idx_type, is_unique, is_unique_cstr in self._index_names(cursor, table, column):
             if is_unique_cstr:
                 drops.append('ALTER TABLE %s DROP CONSTRAINT %s' % (table, idx_name))
@@ -181,14 +181,14 @@ AND j.column_id = k.column_id;"""
         dbhost = sys.argv[2]
         dbname = sys.argv[3]
         filename = sys.argv[4]
-        cnx = get_connection(driver='sqlserver2005', 
-                             host=dbhost, database=dbname, 
+        cnx = get_connection(driver='sqlserver2005',
+                             host=dbhost, database=dbname,
                              extra_args='autocommit;trusted_connection')
         cursor = cnx.cursor()
         sql_server_local_filename = r"C:\Backups\%s" % dbname
         file_share_filename = r"\\%s\Backups\%s" % (dbhost, dbname)
-        cursor.execute("BACKUP DATABASE %(db)s TO DISK= %(path)s ", 
-                       {'db':dbname, 
+        cursor.execute("BACKUP DATABASE %(db)s TO DISK= %(path)s ",
+                       {'db':dbname,
                         'path':sql_server_local_filename,
                         })
         prev_size = -1
@@ -221,13 +221,13 @@ AND j.column_id = k.column_id;"""
         sql_server_local_filename = r"C:\Backups\%s" % dbname
         file_share_filename = r"\\%s\Backups\%s" % (dbhost, dbname)
         shutil.copy(filename, file_share_filename)
-        cnx = get_connection(driver='sqlserver2005', 
-                             host=dbhost, database='master', 
+        cnx = get_connection(driver='sqlserver2005',
+                             host=dbhost, database='master',
                              extra_args='autocommit;trusted_connection')
-        
+
         cursor = cnx.cursor()
-        cursor.execute("RESTORE DATABASE %(db)s FROM DISK= %(path)s WITH REPLACE", 
-                       {'db':dbname, 
+        cursor.execute("RESTORE DATABASE %(db)s FROM DISK= %(path)s WITH REPLACE",
+                       {'db':dbname,
                         'path':sql_server_local_filename,
                         })
         import time
@@ -235,8 +235,8 @@ AND j.column_id = k.column_id;"""
         while True:
             time.sleep(sleeptime)
             try:
-                cnx = get_connection(driver='sqlserver2005', 
-                                     host=dbhost, database=dbname, 
+                cnx = get_connection(driver='sqlserver2005',
+                                     host=dbhost, database=dbname,
                                      extra_args='trusted_connection')
                 break
             except:
