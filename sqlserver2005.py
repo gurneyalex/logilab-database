@@ -62,7 +62,6 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         'Bytes' :    'varbinary(max)',
         'SizeConstrainedString': 'nvarchar(%s)',
         }
-    alter_table_requires_cursor = True
 
     def list_tables(self, cursor):
         """return the list of tables of a database"""
@@ -97,8 +96,8 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
                 "_SqlServer2005FuncHelper._do_restore", dbhost or self.dbhost,
                  dbname or self.dbname, backupfile],
                 ]
-                
-    def _index_names(self, sql_exec, table, column):
+
+    def _index_names(self, cursor, table, column):
         """
         return the list of index_information for table.column
         index_information is a tuple:
@@ -120,13 +119,9 @@ AND i.object_id = OBJECT_ID('%(table)s')
 AND k.name = '%(col)s'
 AND k.object_id=i.object_id
 AND j.column_id = k.column_id;"""
-        if hasattr(sql_exec, 'execute'):
-            sql_exec.execute(has_index_sql % {'table': table, 'col': column})
-            return sql_exec.fetchall()
-        else:
-            return sql_exec(has_index_sql % {'table': table, 'col': column}).fetchall()
-        
-        
+        cursor.execute(has_index_sql % {'table': table, 'col': column})
+        return cursor.fetchall()
+
     def index_exists(self, cursor, table, column, unique=False):
         indexes = self._index_names(cursor, table, column)
         return len(indexes) > 0
@@ -139,7 +134,13 @@ AND j.column_id = k.column_id;"""
         table_name = self.temporary_table_name(table_name)
         return "CREATE TABLE %s (%s);" % (table_name, table_schema)
 
-    def sql_change_col_type(self, table, column, coltype, null_allowed, cursor):
+    def sql_change_col_type(self, table, column, coltype, null_allowed):
+        raise NotImplementedError('use .change_col_type()')
+
+    def sql_set_null_allowed(self, table, column, coltype, null_allowed):
+        raise NotImplementedError('use .set_null_allowed()')
+
+    def change_col_type(self, cursor, table, column, coltype, null_allowed):
         alter = []
         drops = []
         creates = []
@@ -162,12 +163,11 @@ AND j.column_id = k.column_id;"""
         else:
             null = 'NOT NULL'
         alter.append('ALTER TABLE %s ALTER COLUMN %s %s %s' % (table, column, coltype, null))
-        
-        return ' ; '.join(drops + alter + creates)
+        for stmt in drops + alter + creates:
+            cursor.execute(stmt)
 
-    def sql_set_null_allowed(self, table, column, coltype, null_allowed, cursor):
-        print "set null allowed %s on %s.%s" % (null_allowed, table, column)
-        return self.sql_change_col_type(table, column, coltype, null_allowed, cursor)
+    def set_null_allowed(self, cursor, table, column, coltype, null_allowed):
+        return self.change_col_type(cursor, table, column, coltype, null_allowed)
 
     def temporary_table_name(self, table_name):
         if not table_name.startswith('#'):
