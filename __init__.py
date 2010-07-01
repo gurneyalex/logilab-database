@@ -686,7 +686,6 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
         """
         return table_name
 
-
     def sql_temporary_table(self, table_name, table_schema,
                             drop_on_commit=True):
         table_name = self.temporary_table_name(table_name)
@@ -737,9 +736,11 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
         """return True if a user with the given username exists"""
         return username in self.list_users(cursor)
 
-    def list_users(self, cursor):
-        """return the list of existing database users"""
-        raise NotImplementedError('not supported by this DBMS')
+    def change_col_type(self, cursor, table, column, coltype, null_allowed):
+        cursor.execute(self.sql_change_col_type(table, column, coltype, null_allowed))
+
+    def set_null_allowed(self, cursor, table, column, coltype, null_allowed):
+        cursor.execute(self.sql_set_null_allowed(table, column, coltype, null_allowed))
 
     def create_database(self, cursor, dbname, owner=None, dbencoding=None):
         """create a new database"""
@@ -747,6 +748,10 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
 
     def list_databases(self):
         """return the list of existing databases"""
+        raise NotImplementedError('not supported by this DBMS')
+
+    def list_users(self, cursor):
+        """return the list of existing database users"""
         raise NotImplementedError('not supported by this DBMS')
 
     def list_tables(self, cursor):
