@@ -158,6 +158,9 @@ class _PySqlite2Adapter(db.DBAPIAdapter):
             in SQL queries
             """
             def _replace_parameters(self, sql, kwargs):
+                for k,v in kwargs.iteritems():
+                    if type(v) is str:
+                        kwargs[k] = v.decode('utf-8')
                 if isinstance(kwargs, dict):
                     return re.sub(r'%\(([^\)]+)\)s', r':\1', sql)
                 # XXX dumb
