@@ -1,8 +1,10 @@
 Changelog for logilab database package
 ======================================
 
-	--
-    * support for ranking control when using postgres
+2010-07-05  --  1.1.0
+    * change fti api to allow support for ranking control when using postgres
+
+
 
 2010-07-02  --  1.0.5
     * provide new change_col_type / set_null_allowed method on advanced
@@ -10,6 +12,7 @@ Changelog for logilab database package
       taking a cursor as argument and actually doing necessary stuff. You
       should prefer those method to the sql_* ones since in some case we're
       unable to do what's necessary in those (eg sqlserver2005).
+
 
 
 2010-06-21  --  1.0.4
@@ -25,6 +28,7 @@ Changelog for logilab database package
     * fix sqlite datetime parsing
 
 
+
 2010-06-11  --  1.0.3
     * add support for wildcard search when using postgres (require postgres >= 8.4)
 
@@ -33,12 +37,15 @@ Changelog for logilab database package
     * fix licensing information (LGPL)
 
 
+
 2010-04-11  --  1.0.2
     * new SUBSTRING function
 
 
+
 2010-03-18  --  1.0.1
     * remove non existant test/data dir from __pkginfo__.includes_dir
+
 
 
 2010-03-16  --  1.0.0

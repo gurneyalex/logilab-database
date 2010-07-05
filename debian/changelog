@@ -1,3 +1,9 @@
+logilab-database (1.1.0-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Sylvain Thénault <sylvain.thenault@logilab.fr>  Mon, 05 Jul 2010 18:29:59 +0200
+
 logilab-database (1.0.5-1) unstable; urgency=low
 
   * new upstream release
