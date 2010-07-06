@@ -202,7 +202,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
                            '-E', dbencoding or self.dbencoding)
         cmd.append(dbname)
         cmds.append(cmd)
-        cmd = self.pgdbcmd('/usr/lib/postgresql/8.4/bin/pg_restore', dbhost, dbport, dbuser, '-Fc')
+        cmd = self.pgdbcmd('pg_restore', dbhost, dbport, dbuser, '-Fc')
         cmd.append('--dbname')
         cmd.append(dbname)
         if not keepownership:
