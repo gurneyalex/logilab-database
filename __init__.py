@@ -401,6 +401,8 @@ class COUNT(AggrFunctionDescr):
 class AVG(AggrFunctionDescr):
     rtype = 'Float'
 
+class ABS(FunctionDescr):
+    rtype = 'Float'
 class UPPER(FunctionDescr):
     rtype = 'String'
 class LOWER(FunctionDescr):
@@ -499,7 +501,7 @@ for func_class in (
     # aggregate functions
     MIN, MAX, SUM, COUNT, AVG,
     # transformation functions
-    UPPER, LOWER, LENGTH, DATE, RANDOM,
+    ABS, UPPER, LOWER, LENGTH, DATE, RANDOM,
     YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, SUBSTRING,
     # keyword function
     IN):
