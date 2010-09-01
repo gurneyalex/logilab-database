@@ -660,7 +660,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
         sql = 'CREATE UNIQUE INDEX %s ON %s(%s);' % (idx.lower(),
                                                      table,
-                                                     ','.join(colums))
+                                                     ','.join(columns))
         return sql
 
     def sql_drop_multicol_unique_index(self, table, columns):
