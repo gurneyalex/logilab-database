@@ -656,6 +656,18 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         else:
             return 'DROP INDEX %s' % idx
 
+    def sql_create_multicol_unique_index(self, table, columns):
+        idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
+        sql = 'CREATE UNIQUE INDEX %s ON %s(%s);' % (idx.lower(),
+                                                     table,
+                                                     ','.join(colums))
+        return sql
+
+    def sql_drop_multicol_unique_index(self, table, columns):
+        idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
+        sql = 'DROP INDEX %s;' % (idx.lower())
+        return sql
+
     def sql_create_sequence(self, seq_name):
         return '''CREATE TABLE %s (last INTEGER);
 INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
@@ -684,7 +696,7 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
         """
         return a temporary table name constructed from the table_name argument
         (e.g. for SQL Server, prepend a '#' to the name)
-        Standard implementation returns the argument unchanged. 
+        Standard implementation returns the argument unchanged.
         """
         return table_name
 
