@@ -141,6 +141,7 @@ AND j.column_id = k.column_id;"""
         raise NotImplementedError('use .set_null_allowed()')
 
     def sql_drop_multicol_unique_index(self, table, columns):
+        columns = sorted(columns)
         idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
         sql = 'DROP INDEX %s ON %s;' % (idx.lower(), table)
         return sql

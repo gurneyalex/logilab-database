@@ -657,6 +657,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
             return 'DROP INDEX %s' % idx
 
     def sql_create_multicol_unique_index(self, table, columns):
+        columns = sorted(columns)
         idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
         sql = 'CREATE UNIQUE INDEX %s ON %s(%s);' % (idx.lower(),
                                                      table,
@@ -664,6 +665,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         return sql
 
     def sql_drop_multicol_unique_index(self, table, columns):
+        columns = sorted(columns)
         idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
         sql = 'DROP INDEX %s;' % (idx.lower())
         return sql
