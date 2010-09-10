@@ -1,6 +1,14 @@
 Changelog for logilab database package
 ======================================
 
+2010-09-10  --  1.2.0
+    * new methods to create/remove multi-columns unique index:
+      sql_create_multicol_unique_index / sql_drop_multicol_unique_index
+
+    * add support for sql ABS() function
+
+
+
 2010-07-05  --  1.1.0
     * change fti api to allow support for ranking control when using postgres
 
