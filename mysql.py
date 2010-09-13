@@ -215,9 +215,9 @@ class _MyAdvFuncHelper(db._GenericAdvFuncHelper):
     def sql_set_null_allowed(self, table, column, coltype, null_allowed):
         return self.sql_change_col_type(table, column, coltype, null_allowed)
 
-    def create_database(self, cursor, dbname, owner=None, encoding=None):
+    def create_database(self, cursor, dbname, owner=None, dbencoding=None):
         """create a new database"""
-        cursor.execute(self.sql_create_database(dbname, encoding))
+        cursor.execute(self.sql_create_database(dbname, dbencoding))
         if owner:
             cursor.execute('GRANT ALL ON `%s`.* to %s' % (dbname, owner))
 
