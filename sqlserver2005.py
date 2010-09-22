@@ -140,11 +140,27 @@ AND j.column_id = k.column_id;"""
     def sql_set_null_allowed(self, table, column, coltype, null_allowed):
         raise NotImplementedError('use .set_null_allowed()')
 
+    def sql_create_multicol_unique_index(self, table, columns):
+        columns = sorted(columns)
+        view = 'utv_%s_%s' % (table, '_'.join(columns))
+        where = ' AND '.join(['%s IS NOT NULL' % c for c in columns])
+        idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
+        sql = ['CREATE VIEW %s WITH SCHEMABINDING AS SELECT %s FROM dbo.%s WHERE %s ;'%(view.lower(), 
+                                                      ', '.join(columns),
+                                                      table,
+                                                      where),
+               'CREATE UNIQUE CLUSTERED INDEX %s ON %s(%s);' % (idx.lower(),
+                                                                view.lower(),
+                                                                ','.join(columns))
+            ]
+        return sql
+
     def sql_drop_multicol_unique_index(self, table, columns):
         columns = sorted(columns)
-        idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
-        sql = 'DROP INDEX %s ON %s;' % (idx.lower(), table)
+        view = 'utv_%s_%s' % (table, '_'.join(columns))
+        sql = 'DROP VIEW %s' % (view.lower()) # also drops the index
         return sql
+
 
     def change_col_type(self, cursor, table, column, coltype, null_allowed):
         alter = []
