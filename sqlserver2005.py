@@ -140,7 +140,7 @@ AND j.column_id = k.column_id;"""
     def sql_set_null_allowed(self, table, column, coltype, null_allowed):
         raise NotImplementedError('use .set_null_allowed()')
 
-    def sql_create_multicol_unique_index(self, table, columns):
+    def sqls_create_multicol_unique_index(self, table, columns):
         columns = sorted(columns)
         view = 'utv_%s_%s' % (table, '_'.join(columns))
         where = ' AND '.join(['%s IS NOT NULL' % c for c in columns])
@@ -155,11 +155,11 @@ AND j.column_id = k.column_id;"""
             ]
         return sql
 
-    def sql_drop_multicol_unique_index(self, table, columns):
+    def sqls_drop_multicol_unique_index(self, table, columns):
         columns = sorted(columns)
         view = 'utv_%s_%s' % (table, '_'.join(columns))
         sql = 'DROP VIEW %s' % (view.lower()) # also drops the index
-        return sql
+        return [sql]
 
 
     def change_col_type(self, cursor, table, column, coltype, null_allowed):
