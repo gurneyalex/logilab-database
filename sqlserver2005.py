@@ -80,9 +80,6 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         cursor.execute(sql)
         return [r[0] for r in cursor.fetchall()]
 
-    def binary_value(self, value):
-        return StringIO.StringIO(value)
-
     def backup_commands(self, backupfile, keepownership=True,
                         dbname=None, dbhost=None, dbport=None, dbuser=None):
         return [[sys.executable, os.path.normpath(__file__),
