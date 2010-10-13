@@ -548,11 +548,18 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
 
     # allow call to [backup|restore]_commands without previous call to
     # record_connection_information but by specifying argument explicitly
-    dbhost = dbport = dbuser = dbpassword = dbextraargs = dbencoding = None
+    dbname = dbhost = dbport = dbuser = dbpassword = dbextraargs = dbencoding = None
 
     def __init__(self, encoding='utf-8', _cnx=None):
         self.dbencoding = encoding
         self._cnx = _cnx
+        self.dbapi_module = get_dbapi_compliant_module(self.backend_name)
+
+    def __repr__(self):
+        if self.dbname is not None:
+            return '<lgdbhelper %s@%s [%s] @%#x>' % (self.dbname, self.dbhost,
+                                                     self.backend_name, id(self))
+        return super(_GenericAdvFuncHelper, self).__repr__()
 
     def record_connection_info(self, dbname, dbhost=None, dbport=None,
                                dbuser=None, dbpassword=None, dbextraargs=None,
@@ -565,7 +572,6 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         self.dbextraargs = dbextraargs
         if dbencoding:
             self.dbencoding = dbencoding
-        self.dbapi_module = get_dbapi_compliant_module(self.backend_name)
 
     def get_connection(self, initcnx=True):
         """open and return a connection to the database
@@ -714,7 +720,9 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
             return 'FALSE'
 
     def binary_value(self, value):
-        return value
+        """convert a value to a python object known by the driver to
+        be mapped to a binary column"""
+        return self.dbapi_module.Binary(value)
 
     def increment_sequence(self, cursor, seq_name):
         for sql in self.sqls_increment_sequence(seq_name):
