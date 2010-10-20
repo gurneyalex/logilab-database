@@ -158,6 +158,13 @@ AND j.column_id = k.column_id;"""
         sql = 'DROP VIEW %s' % (view.lower()) # also drops the index
         return [sql]
 
+    def sql_drop_index(self, table, column, unique=False):
+        if unique:
+            return super(_SqlServer2005FuncHelper, self).sql_drop_index(table, column, unique)
+        else:
+            idx = self._index_name(table, column, unique)
+            return 'DROP INDEX %s ON %s;' % (idx, table)
+
 
     def change_col_type(self, cursor, table, column, coltype, null_allowed):
         alter = []
