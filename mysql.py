@@ -215,9 +215,9 @@ class _MyAdvFuncHelper(db._GenericAdvFuncHelper):
     def sql_set_null_allowed(self, table, column, coltype, null_allowed):
         return self.sql_change_col_type(table, column, coltype, null_allowed)
 
-    def create_database(self, cursor, dbname, owner=None, encoding=None):
+    def create_database(self, cursor, dbname, owner=None, dbencoding=None):
         """create a new database"""
-        cursor.execute(self.sql_create_database(dbname, encoding))
+        cursor.execute(self.sql_create_database(dbname, dbencoding))
         if owner:
             cursor.execute('GRANT ALL ON `%s`.* to %s' % (dbname, owner))
 
@@ -264,11 +264,14 @@ class _MyAdvFuncHelper(db._GenericAdvFuncHelper):
         """Index an object, using the db pointed by the given cursor.
         """
         uid = int(uid)
-        words = normalize_words(obj.get_words())
-        if words:
+        ftwords = []
+        # sort for test predictability
+        for weight, words in sorted(obj.get_words().iteritems()):
+            ftwords += normalize_words(words)
+        if ftwords:
             cursor.execute("INSERT INTO appears(uid, words) "
                            "VALUES (%(uid)s, %(wrds)s);",
-                           {'uid':uid, 'wrds': ' '.join(words)})
+                           {'uid':uid, 'wrds': ' '.join(ftwords)})
 
     def fulltext_search(self, querystr, cursor=None):
         """Execute a full text query and return a list of 2-uple (rating, uid).

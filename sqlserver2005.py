@@ -80,9 +80,6 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         cursor.execute(sql)
         return [r[0] for r in cursor.fetchall()]
 
-    def binary_value(self, value):
-        return StringIO.StringIO(value)
-
     def backup_commands(self, backupfile, keepownership=True,
                         dbname=None, dbhost=None, dbport=None, dbuser=None):
         return [[sys.executable, os.path.normpath(__file__),
@@ -139,6 +136,35 @@ AND j.column_id = k.column_id;"""
 
     def sql_set_null_allowed(self, table, column, coltype, null_allowed):
         raise NotImplementedError('use .set_null_allowed()')
+
+    def sqls_create_multicol_unique_index(self, table, columns):
+        columns = sorted(columns)
+        view = 'utv_%s_%s' % (table, '_'.join(columns))
+        where = ' AND '.join(['%s IS NOT NULL' % c for c in columns])
+        idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
+        sql = ['CREATE VIEW %s WITH SCHEMABINDING AS SELECT %s FROM dbo.%s WHERE %s ;'%(view.lower(), 
+                                                      ', '.join(columns),
+                                                      table,
+                                                      where),
+               'CREATE UNIQUE CLUSTERED INDEX %s ON %s(%s);' % (idx.lower(),
+                                                                view.lower(),
+                                                                ','.join(columns))
+            ]
+        return sql
+
+    def sqls_drop_multicol_unique_index(self, table, columns):
+        columns = sorted(columns)
+        view = 'utv_%s_%s' % (table, '_'.join(columns))
+        sql = 'DROP VIEW %s' % (view.lower()) # also drops the index
+        return [sql]
+
+    def sql_drop_index(self, table, column, unique=False):
+        if unique:
+            return super(_SqlServer2005FuncHelper, self).sql_drop_index(table, column, unique)
+        else:
+            idx = self._index_name(table, column, unique)
+            return 'DROP INDEX %s ON %s;' % (idx, table)
+
 
     def change_col_type(self, cursor, table, column, coltype, null_allowed):
         alter = []
