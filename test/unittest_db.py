@@ -48,17 +48,17 @@ class PreferedDriverTC(TestCase):
 
     def testNormal(self):
         set_prefered_driver('pg','bar', self.drivers)
-        self.assertEquals('bar', self.drivers['pg'][0])
+        self.assertEqual('bar', self.drivers['pg'][0])
 
     def testFailuresDb(self):
         ex = self.assertRaises(UnknownDriver,
                                set_prefered_driver, 'oracle','bar', self.drivers)
-        self.assertEquals(ex.args[0], 'Unknown driver oracle')
+        self.assertEqual(ex.args[0], 'Unknown driver oracle')
 
     def testFailuresDriver(self):
         ex = self.assertRaises(UnknownDriver,
                                set_prefered_driver, 'pg','baz', self.drivers)
-        self.assertEquals(ex.args[0], 'Unknown module baz for pg')
+        self.assertEqual(ex.args[0], 'Unknown module baz for pg')
 
     def testGlobalVar(self):
         # XXX: Is this test supposed to be useful ? Is it supposed to test
@@ -67,11 +67,11 @@ class PreferedDriverTC(TestCase):
         expected = old_drivers[:]
         expected.insert(0, expected.pop(expected.index('pgdb')))
         set_prefered_driver('postgres', 'pgdb')
-        self.assertEquals(PREFERED_DRIVERS['postgres'], expected)
+        self.assertEqual(PREFERED_DRIVERS['postgres'], expected)
         set_prefered_driver('postgres', 'psycopg')
-        # self.assertEquals(PREFERED_DRIVERS['postgres'], old_drivers)
+        # self.assertEqual(PREFERED_DRIVERS['postgres'], old_drivers)
         expected.insert(0, expected.pop(expected.index('psycopg')))
-        self.assertEquals(PREFERED_DRIVERS['postgres'], expected)
+        self.assertEqual(PREFERED_DRIVERS['postgres'], expected)
 
 
 class GetCnxTC(TestCase):
@@ -79,7 +79,7 @@ class GetCnxTC(TestCase):
         try:
             socket.gethostbyname('centaurus')
         except:
-            self.skip("those tests require specific DB configuration")
+            self.skipTest("those tests require specific DB configuration")
         self.host = 'centaurus'
         self.db = 'template1'
         self.user = getlogin()
@@ -97,7 +97,7 @@ class GetCnxTC(TestCase):
                                  self.host, self.db, self.user, self.passwd,
                                  quiet=1)
         except ImportError:
-            self.skip('python-psycopg is not installed')
+            self.skipTest('python-psycopg is not installed')
 
     def testPgdb(self):
         PREFERED_DRIVERS['postgres'] = ['pgdb']
@@ -106,7 +106,7 @@ class GetCnxTC(TestCase):
                                  self.host, self.db, self.user, self.passwd,
                                  quiet=1)
         except ImportError:
-            self.skip('python-pgsql is not installed')
+            self.skipTest('python-pgsql is not installed')
 
     def testPgsql(self):
         PREFERED_DRIVERS['postgres'] = ['pyPgSQL.PgSQL']
@@ -115,7 +115,7 @@ class GetCnxTC(TestCase):
                                  self.host, self.db, self.user, self.passwd,
                                  quiet=1)
         except ImportError:
-            self.skip('python-pygresql is not installed')
+            self.skipTest('python-pygresql is not installed')
 
     def testMysql(self):
         PREFERED_DRIVERS['mysql'] = ['MySQLdb']
@@ -123,13 +123,13 @@ class GetCnxTC(TestCase):
             cnx = get_connection('mysql', self.host, database='', user='root',
                                  quiet=1)
         except ImportError:
-            self.skip('python-mysqldb is not installed')
+            self.skipTest('python-mysqldb is not installed')
         except Exception, ex:
             # no mysql running ?
             import MySQLdb
             if isinstance(ex, MySQLdb.OperationalError):
                 if ex.args[0] == 1045: # find MysqlDb
-                    self.skip('mysql test requires a specific configuration')
+                    self.skipTest('mysql test requires a specific configuration')
                 elif ex.args[0] != 2003:
                     raise
             raise
@@ -141,7 +141,7 @@ class GetCnxTC(TestCase):
                                  self.host, self.db, self.user, self.passwd,
                                  quiet=1)
         except ImportError:
-            self.skip('postgresql dbapi module not installed')
+            self.skipTest('postgresql dbapi module not installed')
         self.failIf(isinstance(cnx, PyConnection),
                     'cnx should *not* be a PyConnection instance')
         cnx = get_connection('postgres',
@@ -158,7 +158,7 @@ class GetCnxTC(TestCase):
                                  self.host, self.db, self.user, self.passwd,
                                  quiet=1, pywrap=True)
         except ImportError:
-            self.skip('postgresql dbapi module not installed')
+            self.skipTest('postgresql dbapi module not installed')
         cursor = cnx.cursor()
         self.failUnless(isinstance(cursor, PyCursor),
                         'cnx should be a PyCursor instance')
@@ -184,13 +184,13 @@ class DBAPIAdaptersTC(TestCase):
         try:
             module = get_dbapi_compliant_module('postgres')
         except ImportError:
-            self.skip('postgresql pgdb module not installed')
+            self.skipTest('postgresql pgdb module not installed')
         number_types = ('int2', 'int4', 'serial',
                         'int8', 'float4', 'float8',
                         'numeric', 'bool', 'money', 'decimal')
         for num_type in number_types:
-            yield self.assertEquals, num_type, module.NUMBER
-        yield self.assertNotEquals, 'char', module.NUMBER
+            yield self.assertEqual, num_type, module.NUMBER
+        yield self.assertNotEqual, 'char', module.NUMBER
 
     def test_pypgsql_getattr(self):
         """Tests the getattr() delegation for pyPgSQL"""
@@ -198,7 +198,7 @@ class DBAPIAdaptersTC(TestCase):
         try:
             module = get_dbapi_compliant_module('postgres')
         except ImportError:
-            self.skip('postgresql dbapi module not installed')
+            self.skipTest('postgresql dbapi module not installed')
         try:
             binary = module.BINARY
         except AttributeError, err:
@@ -209,12 +209,12 @@ class DBAPIAdaptersTC(TestCase):
         try:
             helper = get_db_helper('postgres')
         except ImportError:
-            self.skip('postgresql dbapi module not installed')
+            self.skipTest('postgresql dbapi module not installed')
         self.failUnless(isinstance(helper, _PGAdvFuncHelper))
         try:
             helper = get_db_helper('sqlite')
         except ImportError:
-            self.skip('sqlite dbapi module not installed')
+            self.skipTest('sqlite dbapi module not installed')
         self.failUnless(isinstance(helper, _SqliteAdvFuncHelper))
 
 
@@ -250,9 +250,9 @@ class DBAPIAdaptersTC(TestCase):
         pghelper = get_db_helper('postgres')
         mshelper = get_db_helper('mysql')
         slhelper = get_db_helper('sqlite')
-        self.assertEquals(slhelper.func_as_sql('MYFUNC', ()), 'SQLITE_MYFUNC()')
-        self.assertEquals(pghelper.func_as_sql('MYFUNC', ('foo',)), 'MYFUNC(foo)')
-        self.assertEquals(mshelper.func_as_sql('MYFUNC', ('foo', 'bar')), 'MYF(foo, bar)')
+        self.assertEqual(slhelper.func_as_sql('MYFUNC', ()), 'SQLITE_MYFUNC()')
+        self.assertEqual(pghelper.func_as_sql('MYFUNC', ('foo',)), 'MYFUNC(foo)')
+        self.assertEqual(mshelper.func_as_sql('MYFUNC', ('foo', 'bar')), 'MYF(foo, bar)')
 
 class BaseSqlServer(TestCase):
     def tearDown(self):
@@ -317,7 +317,7 @@ else:
                 self.cnx = get_connection(driver='sqlserver2005', database='alf',
                                       host='localhost', extra_args='Trusted_Connection')
             except pyodbc.Error, exc:
-                self.skip(str(exc))
+                self.skipTest(str(exc))
             cursor = self.cnx.cursor()
             try:
                 cursor.execute('create table TestLargeString (id int, data varchar(max))')
@@ -346,7 +346,7 @@ else:
                 self.cnx = get_connection(driver='sqlserver2005', database='alf',
                                       host='localhost', extra_args='Trusted_Connection')
             except adb.Error, exc:
-                self.skip(str(exc))
+                self.skipTest(str(exc))
             cursor = self.cnx.cursor()
             try:
 
