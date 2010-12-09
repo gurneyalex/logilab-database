@@ -137,6 +137,9 @@ AND j.column_id = k.column_id;"""
     def sql_set_null_allowed(self, table, column, coltype, null_allowed):
         raise NotImplementedError('use .set_null_allowed()')
 
+    def sql_rename_table(self, oldname, newname):
+        return  'EXEC sp_rename %s, %s' % (oldname, newname)
+
     def sqls_create_multicol_unique_index(self, table, columns):
         columns = sorted(columns)
         view = 'utv_%s_%s' % (table, '_'.join(columns))
