@@ -691,6 +691,9 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
         return 'ALTER TABLE %s RENAME COLUMN %s TO %s' % (
             table, column, newname)
 
+    def sql_rename_table(self, oldname, newname):
+        return  'ALTER TABLE %s RENAME TO %s' % (oldname, newname)
+
     def sql_change_col_type(self, table, column, coltype, null_allowed):
         return 'ALTER TABLE %s ALTER COLUMN %s TYPE %s' % (
             table, column, coltype)
