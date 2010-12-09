@@ -137,6 +137,9 @@ AND j.column_id = k.column_id;"""
     def sql_set_null_allowed(self, table, column, coltype, null_allowed):
         raise NotImplementedError('use .set_null_allowed()')
 
+    def sql_rename_table(self, oldname, newname):
+        return  'EXEC sp_rename %s, %s' % (oldname, newname)
+
     def sqls_create_multicol_unique_index(self, table, columns):
         columns = sorted(columns)
         view = 'utv_%s_%s' % (table, '_'.join(columns))
@@ -157,6 +160,13 @@ AND j.column_id = k.column_id;"""
         view = 'utv_%s_%s' % (table, '_'.join(columns))
         sql = 'DROP VIEW %s' % (view.lower()) # also drops the index
         return [sql]
+
+    def sql_drop_index(self, table, column, unique=False):
+        if unique:
+            return super(_SqlServer2005FuncHelper, self).sql_drop_index(table, column, unique)
+        else:
+            idx = self._index_name(table, column, unique)
+            return 'DROP INDEX %s ON %s;' % (idx, table)
 
 
     def change_col_type(self, cursor, table, column, coltype, null_allowed):
