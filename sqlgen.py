@@ -134,6 +134,21 @@ class SQLGenerator :
         sql = 'DELETE FROM %s WHERE %s' % (table, where)
         return sql
 
+    def delete_many(self, table, params):
+        restriction = []
+        to_pop = []
+        for col, value in params.iteritems():
+            if value.startswith('('): # we want IN
+                restriction.append('%s IN %s' % (col, value))
+                to_pop.append(col)
+            else:
+                restriction.append("%s = %%(%s)s" % (col, col))
+        for col in to_pop:
+            del params[col]
+        where = " AND ".join(restriction)
+        sql = 'DELETE FROM %s WHERE %s' % (table, where)
+        return sql
+
     def update(self, table, params, unique) :
         """
         :param table: name of the table
