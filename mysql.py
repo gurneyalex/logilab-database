@@ -190,7 +190,7 @@ class _MyAdvFuncHelper(db._GenericAdvFuncHelper):
             table_name, table_schema)
 
     def sql_create_database(self, dbname, dbencoding=None):
-        sql = "CREATE DATABASE %(dbname)s"
+        sql = 'CREATE DATABASE "%(dbname)s"'
         dbencoding = dbencoding or self.dbencoding
         if dbencoding:
             sql += " CHARACTER SET %(dbencoding)s"
