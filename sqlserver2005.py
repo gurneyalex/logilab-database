@@ -140,6 +140,91 @@ AND j.column_id = k.column_id;"""
     def sql_rename_table(self, oldname, newname):
         return  'EXEC sp_rename %s, %s' % (oldname, newname)
 
+    def sql_add_limit_offset(self, sql, limit=None, offset=0, orderby=None):
+        """
+        modify the sql statement to add LIMIT and OFFSET clauses
+        (or to emulate them if the backend does not support these SQL extensions)
+        reference: http://stackoverflow.com/questions/2135418/equivalent-of-limit-and-offset-for-sql-server
+        """
+        if limit is None and not offset:
+            return sql
+        if offset is None: # not sure if this can happen
+            offset = 0
+        if not sql.startswith('SELECT ') or 'FROM' not in sql:
+            raise ValueError(sql)
+        union_queries = sql.split('UNION ALL')
+        rewritten_union_queries = []
+        for _sql in union_queries:
+            _sql = _sql.strip()
+            raw_columns, tables = _sql.split('FROM', 1)
+            columns = raw_columns[7:].split(',') # 7 == len('SELECT ')
+            aliases_cols = [] # list of (colname, alias)
+            alias_counter = 1
+            for c in columns:
+                if 'AS' in c:
+                    aliases_cols.append(c.strip().split('AS'))
+                else:
+                    aliases_cols.append([c.strip(), '_L%02d' % alias_counter])
+                    alias_counter += 1
+            cooked_columns = ', '.join(' AS '.join(alias_col) for alias_col in aliases_cols)
+            new_sql = ' '.join(['SELECT', cooked_columns, 'FROM', tables])
+            rewritten_union_queries.append(new_sql)
+        new_sql = '\nUNION ALL\n'.join(rewritten_union_queries)
+        outer_aliases = ', '.join(alias for _colname, alias in aliases_cols)
+        if orderby is None:
+            order_by = outer_aliases
+        else:
+            order_by = []
+            for term in orderby:
+                split = term.split()
+                split[0] = aliases_cols[int(split[0])-1][1]
+                order_by.append(' '.join(split))
+            order_by = ', '.join(order_by)
+        new_query = ['WITH orderedrows AS (',
+                     'SELECT ', outer_aliases, ', '
+                     "ROW_NUMBER() OVER (ORDER BY %s) AS __RowNumber" % order_by,
+                     'FROM (',
+                     new_sql,
+                     ') AS _SQ1 )',
+                     #columns,
+                     'SELECT ', outer_aliases,
+                     'FROM orderedrows WHERE ']
+        limitation = []
+        if limit is not None:
+            limitation.append('__RowNumber <= %d' % (offset+limit))
+        if offset:
+            limitation.append('__RowNumber > %d' % offset) # row number is 1 based
+        new_query.append(' AND '.join(limitation))
+        sql = '\n'.join(new_query)
+        return sql
+
+    def sql_add_order_by(self, sql, sortterms, selection, needwrap, has_limit_or_offset):
+        """
+        add an ORDER BY clause to the SQL query, and wrap the query if necessary
+        :sql: the original sql query
+        :sortterms: a list of term with sorting order, as strings
+        :selection: the selection that must be gathered after ORDER BY
+        :needwrap: boolean, True if the query must be wrapped in a subquery
+        :has_limit_or_offset: if true, do nothing: the sorting is handled by
+                              sql_add_limit_offset
+        """
+        if has_limit_or_offset:
+            return sql
+        if sortterms and needwrap:
+            selection = ['T1.C%s' % i for i in xrange(len(selection))]
+            renamed_sortterms = []
+            for term in sortterms:
+                split = term.split()
+                split[0] = 'T1.C%s' % (int(split[0])-1)
+                renamed_sortterms.append(' '.join(split))
+            sql = 'SELECT %s FROM (%s) AS T1\nORDER BY %s' % (','.join(selection),
+                                                            sql,
+                                                            ','.join(renamed_sortterms))
+        else:
+            sql += '\nORDER BY %s' % ','.join(sortterms)
+
+        return sql
+
     def sqls_create_multicol_unique_index(self, table, columns):
         columns = sorted(columns)
         view = 'utv_%s_%s' % (table, '_'.join(columns))
@@ -173,8 +258,6 @@ AND j.column_id = k.column_id;"""
         alter = []
         drops = []
         creates = []
-        print "change col type for %s.%s to %s %s" % (table, column, coltype, null_allowed and 'NULL' or 'NOT NULL')
-
         for idx_name, idx_type, is_unique, is_unique_cstr in self._index_names(cursor, table, column):
             if is_unique_cstr:
                 drops.append('ALTER TABLE %s DROP CONSTRAINT %s' % (table, idx_name))

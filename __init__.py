@@ -687,6 +687,38 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
         return ('UPDATE %s SET last=last+1;' % seq_name,
                 'SELECT last FROM %s;' % seq_name)
 
+    def sql_add_limit_offset(self, sql, limit=None, offset=0, orderby=None):
+        """
+        modify the sql statement to add LIMIT and OFFSET clauses
+        (or to emulate them if the backend does not support these SQL extensions)
+
+        `orderby` argument may be needed for some backend (e.g. sqlserver)
+        """
+        if limit is None and not offset:
+            return sql
+        sql = [sql]
+        if limit is not None:
+            sql.append('LIMIT %d' % limit)
+        if offset is not None and offset > 0:
+            sql.append('OFFSET %d' % offset)
+        return '\n'.join(sql)
+
+    def sql_add_order_by(self, sql, sortterms, selection, needwrap, has_limit_or_offset):
+        """
+        add an ORDER BY clause to the SQL query, and wrap the query if necessary
+        :sql: the original sql query
+        :sortterms: a list of term with sorting order, as strings
+        :selection: the selection that must be gathered after ORDER BY
+        :needwrap: boolean, True if the query must be wrapped in a subquery
+        :has_limit_or_offset: not used (sqlserver helper needs this)
+        """
+        sql += '\nORDER BY %s' % ','.join(sortterms)
+        if sortterms and needwrap:
+            selection = ['T1.C%s' % i for i in xrange(len(selection))]
+            sql = 'SELECT %s FROM (%s) AS T1' % (','.join(selection), sql)
+        return sql
+
+
     def sql_rename_col(self, table, column, newname, coltype, null_allowed):
         return 'ALTER TABLE %s RENAME COLUMN %s TO %s' % (
             table, column, newname)
