@@ -232,11 +232,11 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
     def create_database(self, cursor, dbname, owner=None, dbencoding=None,
                         template=None):
         """create a new database"""
-        sql = "CREATE DATABASE %(dbname)s"
+        sql = 'CREATE DATABASE "%(dbname)s"'
         if owner:
-            sql += " WITH OWNER=%(owner)s"
+            sql += ' WITH OWNER="%(owner)s"'
         if template:
-            sql += " TEMPLATE %(template)s"
+            sql += ' TEMPLATE "%(template)s"'
         dbencoding = dbencoding or self.dbencoding
         if dbencoding:
             sql += " ENCODING='%(dbencoding)s'"
