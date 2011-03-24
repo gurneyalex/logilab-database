@@ -1,4 +1,4 @@
-# copyright 2003-2010 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# copyright 2003-2011 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 # contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
 #
 # This file is part of logilab-database.
@@ -27,7 +27,6 @@ class SQLiteHelperTC(unittest.TestCase):
     def setUp(self):
         self.cnx = MockConnection( () )
         self.helper = get_db_helper('sqlite')
-        self.helper._cnx = self.cnx
 
     def test_type_map(self):
         self.assertEqual(self.helper.TYPE_MAPPING['Datetime'], 'timestamp')
