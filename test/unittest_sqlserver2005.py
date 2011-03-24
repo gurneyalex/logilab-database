@@ -24,7 +24,7 @@ from unittest_fti import IndexableObject
 from logilab.database import get_db_helper
 
 from logilab import database as db
-def _import_driver_module(driver, drivers, quiet=True):
+def monkey_patch_import_driver_module(driver, drivers, quiet=True):
     if not driver in drivers:
         raise db.UnknownDriver(driver)
     for modname in drivers[driver]:
@@ -41,8 +41,13 @@ def _import_driver_module(driver, drivers, quiet=True):
         return None, drivers[driver][0]
     return module, modname
 
-db._import_driver_module = _import_driver_module
+def setUpModule():
+    db._backup_import_driver_module = db._import_driver_module
+    db._import_driver_module = monkey_patch_import_driver_module
 
+def tearDownModule():
+    db._import_driver_module = db._backup_import_driver_module
+    del db._backup_import_driver_module
 
 class SqlServer2005HelperTC(TestCase):
     def setUp(self):
