@@ -1,6 +1,10 @@
 Changelog for logilab database package
 ======================================
 
+2011-03-29  --  1.4.1
+    * fix deprecation warning and depend on common 0.55.1
+
+
 2011-01-13  --  1.3.2
     * fix index dropping on sql server 2005
 

@@ -50,7 +50,7 @@ def normalize(word):
         raise StopWord()
     except ValueError:
         pass
-    word = unormalize(word.lower(), ignorenonascii=True)
+    word = unormalize(word.lower(), substitute='')
     return word.encode('ascii', 'ignore')
 
 def normalize_words(rawwords):
