@@ -163,6 +163,10 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
     """
 
     backend_name = 'postgres'
+    TYPE_MAPPING = db._GenericAdvFuncHelper.TYPE_MAPPING.copy()
+    TYPE_MAPPING.update({
+        'TZTime' :   'time with time zone',
+        'TZDatetime':'timestamp with time zone'})
 
     def pgdbcmd(self, cmd, dbhost, dbport, dbuser, *args):
         cmd = [cmd]

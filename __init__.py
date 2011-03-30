@@ -511,6 +511,19 @@ def register_function(funcdef):
     """register the function `funcdef` on supported backends"""
     SQL_FUNCTIONS_REGISTRY.register_function(funcdef)
 
+class _TypeMapping(dict):
+    def __getitem__(self, key):
+        try:
+            return dict.__getitem__(self, key)
+        except KeyError:
+            if key == 'TZDatetime':
+                return self['Datetime']
+            if key == 'TZTime':
+                return self['Time']
+            raise
+
+    def copy(self):
+        return _TypeMapping(dict.copy(self))
 
 class _GenericAdvFuncHelper(FTIndexerMixIn):
     """Generic helper, trying to provide generic way to implement
@@ -520,7 +533,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
     """
     # 'canonical' types are `yams` types. This dictionnary map those types to
     # backend specific types
-    TYPE_MAPPING = {
+    TYPE_MAPPING = _TypeMapping({
         'String' :   'text',
         'SizeConstrainedString': 'varchar(%s)',
         'Password' : 'bytea',
@@ -533,7 +546,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         'Time' :     'time',
         'Datetime' : 'timestamp',
         'Interval' : 'interval',
-        }
+        })
 
     # DBMS resources descriptors and accessors
     backend_name = None # overridden in subclasses ('postgres', 'sqlite', etc.)
