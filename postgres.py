@@ -1,4 +1,4 @@
-# copyright 2003-2010 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# copyright 2003-2011 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 # contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
 #
 # This file is part of logilab-database.
@@ -161,7 +161,12 @@ db._ADAPTER_DIRECTORY['postgres'] = {
 class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
     """Postgres helper, taking advantage of postgres SEQUENCE support
     """
+
     backend_name = 'postgres'
+    TYPE_MAPPING = db._GenericAdvFuncHelper.TYPE_MAPPING.copy()
+    TYPE_MAPPING.update({
+        'TZTime' :   'time with time zone',
+        'TZDatetime':'timestamp with time zone'})
 
     def pgdbcmd(self, cmd, dbhost, dbport, dbuser, *args):
         cmd = [cmd]
