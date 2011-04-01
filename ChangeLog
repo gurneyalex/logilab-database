@@ -1,8 +1,13 @@
 Changelog for logilab database package
 ======================================
 
-2011-03-29  --  1.4.1
-    * fix deprecation warning and depend on common 0.55.1
+2011-04-01  --  1.5.0
+    * fix deprecation warning and depend on common 0.55.2
+
+    * TZ datetime and time support
+
+2011-04-28  --  1.4.0	
+    * abstract OFFSET LIMIT support (incl. support for MSSQL)
 
 
 2011-01-13  --  1.3.2
