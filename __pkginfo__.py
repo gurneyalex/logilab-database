@@ -19,7 +19,7 @@
 
 distname = 'logilab-database'
 modname = 'database'
-numversion = (1, 4, 0)
+numversion = (1, 5, 0)
 version = '.'.join([str(num) for num in numversion])
 license = 'LGPL'
 
@@ -49,5 +49,5 @@ subpackage_master = True
 pyversions = ['2.4', '2.5', '2.6']
 
 install_requires = [
-    'logilab-common >= 0.55.1',
+    'logilab-common >= 0.55.2',
     ]
