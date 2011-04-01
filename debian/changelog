@@ -1,3 +1,9 @@
+logilab-database (1.5.0-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Alexandre Fayolle <alexandre.fayolle@logilab.fr>  Fri, 01 Apr 2011 15:18:46 +0200
+
 logilab-database (1.4.0-1) unstable; urgency=low
 
   * new upstream release
