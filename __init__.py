@@ -38,8 +38,10 @@ __docformat__ = "restructuredtext en"
 
 import sys
 import logging
+from datetime import datetime, time
 
 from logilab.common.modutils import load_module_from_name
+from logilab.common.date import utcdatetime, utctime
 
 _LOGGER = logging.getLogger('logilab.database')
 
@@ -324,6 +326,11 @@ class DBAPIAdapter(object):
             # with postgresql at least
             if isinstance(value, str):
                 return unicode(value, encoding, 'replace')
+        elif getattr(value, 'tzinfo', None):
+            if isinstance(value, time):
+                return utctime(value)
+            assert isinstance(value, datetime), value
+            return utcdatetime(value)
         return value
 
     def binary_to_str(self, value):
