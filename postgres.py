@@ -219,6 +219,12 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
     def sql_create_sequence(self, seq_name):
         return 'CREATE SEQUENCE %s;' % seq_name
 
+    def sql_restart_sequence(self, seq_name, initial_value=1):
+        return 'ALTER SEQUENCE %s RESTART WITH %s;' % (seq_name, initial_value)
+
+    def sql_sequence_current_state(self, seq_name):
+        return 'SELECT last_value FROM %s;' % seq_name
+
     def sql_drop_sequence(self, seq_name):
         return 'DROP SEQUENCE %s;' % seq_name
 

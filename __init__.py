@@ -377,10 +377,10 @@ class FunctionDescr(object):
     def check_nbargs(cls, nbargs):
         if cls.minargs is not None and \
                nbargs < cls.minargs:
-            raise BadQuery('not enough argument for function %s' % cls.name)
+            raise BadQuery('not enough argument for function %s' % cls.__name__)
         if cls.maxargs is not None and \
                nbargs < cls.maxargs:
-            raise BadQuery('too many arguments for function %s' % cls.name)
+            raise BadQuery('too many arguments for function %s' % cls.__name__)
     check_nbargs = classmethod(check_nbargs)
 
     def as_sql(self, backend, args):
@@ -701,6 +701,12 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
     def sql_create_sequence(self, seq_name):
         return '''CREATE TABLE %s (last INTEGER);
 INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
+
+    def sql_restart_sequence(self, seq_name, initial_value=1):
+        return 'UPDATE %s SET last=%s;' % (seq_name, initial_value-1)
+
+    def sql_sequence_current_state(self, seq_name):
+        return 'SELECT last FROM %s;' % seq_name
 
     def sql_drop_sequence(self, seq_name):
         return 'DROP TABLE %s;' % seq_name
