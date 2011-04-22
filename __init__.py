@@ -69,7 +69,7 @@ def get_dbapi_compliant_module(driver, prefered_drivers=None, quiet=False,
     except NoAdapterFound, err:
         if not quiet:
             msg = 'No Adapter found for %s, returning native module'
-            print >> sys.stderr, msg % err.objname
+            _LOGGER.warning(msg,  err.objname)
         mod = err.adapted_obj
     return mod
 
@@ -83,8 +83,8 @@ def get_connection(driver='postgres', host='', database='', user='',
         adapter = _ADAPTER_DIRECTORY.get_adapter(driver, modname)
     except NoAdapterFound, err:
         if not quiet:
-            msg = 'No Adapter found for %s, using default one' % err.objname
-            print >> sys.stderr, msg
+            msg = 'No Adapter found for %s, using default one' 
+            _LOGGER.warning(msg, err.objname)
         adapted_module = DBAPIAdapter(module, pywrap)
     else:
         adapted_module = adapter(module, pywrap)
@@ -178,12 +178,12 @@ def _import_driver_module(driver, drivers, quiet=True):
     for modname in drivers[driver]:
         try:
             if not quiet:
-                print >> sys.stderr, 'Trying %s' % modname
+                _LOGGER.info('Trying %s', modname)
             module = load_module_from_name(modname, use_sys=False)
             break
         except ImportError:
             if not quiet:
-                print >> sys.stderr, '%s is not available' % modname
+                _LOGGER.warning('%s is not available', modname)
             continue
     else:
         raise ImportError('Unable to import a %s module' % driver)
@@ -280,6 +280,7 @@ class DBAPIAdapter(object):
         """
         self._native_module = native_module
         self._pywrap = pywrap
+        self.logger = _LOGGER
         # optimization: copy type codes from the native module to this instance
         # since the .process_value method may be heavily used
         for typecode in ('STRING', 'BOOLEAN', 'BINARY', 'DATETIME', 'NUMBER',
@@ -287,8 +288,8 @@ class DBAPIAdapter(object):
             try:
                 setattr(self, typecode, getattr(self, typecode))
             except AttributeError:
-                print >>sys.stderr, 'WARNING: %s adapter has no %s type code' \
-                      % (self, typecode)
+                self.logger.warning('%s adapter has no %s type code',
+                                    self, typecode)
 
     def connect(self, host='', database='', user='', password='', port='',
                 extra_args=None):
@@ -574,6 +575,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         self.dbencoding = encoding
         self._cnx = _cnx
         self.dbapi_module = get_dbapi_compliant_module(self.backend_name)
+        self.logger = _LOGGER
 
     def __repr__(self):
         if self.dbname is not None:
@@ -600,10 +602,10 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         paramaters.
         """
         if self.dbuser:
-            _LOGGER.info('connecting to %s@%s for user %s', self.dbname,
+            self.logger.info('connecting to %s@%s for user %s', self.dbname,
                          self.dbhost or 'localhost', self.dbuser)
         else:
-            _LOGGER.info('connecting to %s@%s', self.dbname,
+            self.logger.info('connecting to %s@%s', self.dbname,
                          self.dbhost or 'localhost')
         cnx = self.dbapi_module.connect(self.dbhost, self.dbname,
                                         self.dbuser,self.dbpasswd,

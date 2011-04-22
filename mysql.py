@@ -101,7 +101,7 @@ class _MySqlDBAdapter(db.DBAPIAdapter):
 
     def type_code_test(self, cursor):
         for typename in ('STRING', 'BOOLEAN', 'BINARY', 'DATETIME', 'NUMBER'):
-            print typename, getattr(self, typename)
+            self.logger.debug('%s %s', typename, getattr(self, typename))
         try:
             cursor.execute("""CREATE TABLE _type_code_test(
             varchar_field varchar(50),
@@ -114,10 +114,10 @@ class _MySqlDBAdapter(db.DBAPIAdapter):
             cursor.execute("INSERT INTO _type_code_test VALUES ('1','2','3','4', '5', '6')")
             cursor.execute("SELECT * FROM _type_code_test")
             descr = cursor.description
-            print 'db fields type codes'
+            self.logger.info('db fields type codes')
             for i, name in enumerate(('varchar', 'text', 'mediumtext',
                                       'binary', 'blob', 'longblob')):
-                print name, descr[i]
+                self.logger.info('%s %s', name, descr[i])
         finally:
             cursor.execute("DROP TABLE _type_code_test")
 
