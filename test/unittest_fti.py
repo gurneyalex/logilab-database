@@ -18,7 +18,7 @@
 # with logilab-database. If not, see <http://www.gnu.org/licenses/>.
 import unittest
 
-from logilab.common.testlib import MockConnection
+from logilab.common.testlib import MockConnection, TestCase
 
 from logilab.database.fti import FTIndexerMixIn, tokenize, normalize
 
@@ -45,7 +45,7 @@ class IndexableObject:
                 'B': tokenize(u'cubic')}
 
 
-class IndexerTC(unittest.TestCase):
+class IndexerTC(TestCase):
 
     def setUp(self):
         self.cnx = MockConnection( ([1, 2],) )
@@ -86,7 +86,7 @@ class IndexerTC(unittest.TestCase):
                            ])
 
 
-class GetSchemaTC(unittest.TestCase):
+class GetSchemaTC(TestCase):
 
     def test(self):
         indexer = FTIndexerMixIn()
