@@ -270,6 +270,10 @@ class _SqliteAdvFuncHelper(db._GenericAdvFuncHelper):
         cursor.execute(sql)
         return [r[0] for r in cursor.fetchall()]
 
+    def sql_regexp_match_expression(self, pattern):
+        """pattern matching using regexp"""
+        return "REGEXP %s" % pattern
+
 
 db._ADV_FUNC_HELPER_DIRECTORY['sqlite'] = _SqliteAdvFuncHelper
 
@@ -313,6 +317,9 @@ def init_sqlite_connexion(cnx):
     from random import random
     cnx.create_function('RANDOM', 0, random)
 
+    def regexp_match(pattern, tested_value):
+        return re.search(pattern, tested_value) is not None
+    cnx.create_function('REGEXP', 2, regexp_match)
 
 sqlite_hooks = db.SQL_CONNECT_HOOKS.setdefault('sqlite', [])
 sqlite_hooks.append(init_sqlite_connexion)

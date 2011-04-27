@@ -221,6 +221,10 @@ class _MyAdvFuncHelper(db._GenericAdvFuncHelper):
         if owner:
             cursor.execute('GRANT ALL ON `%s`.* to %s' % (dbname, owner))
 
+    def sql_regexp_match_expression(self, pattern):
+        """pattern matching using regexp"""
+        return "REGEXP %s" % pattern
+
     def boolean_value(self, value):
         if value:
             return 1
