@@ -353,7 +353,9 @@ class UnknownFunction(BadQuery):
 # mostly for sqlite'stored procedures that have to be registered...
 SQL_CONNECT_HOOKS = {}
 ALL_BACKENDS = object()
-
+# marker for cases where rtype depends on arguments passed to the function
+# In that case, functions should implement dynamic_rtype() method
+DYNAMIC_RTYPE = object()
 
 class FunctionDescr(object):
     supported_backends = ALL_BACKENDS
@@ -467,6 +469,21 @@ class MINUTE(ExtractDateField):
 class SECOND(ExtractDateField):
     field = 'SECOND'
 
+class CAST(FunctionDescr):
+    """usage is CAST(datatype, expression)
+
+    sql-92 standard says (CAST <expr> as <type>)
+    """
+    minargs = maxargs = 2
+    supported_backends = ('postgres', 'sqlite', 'mysql', 'sqlserver2005')
+    rtype = DYNAMIC_RTYPE
+
+    def as_sql(self, backend, args):
+        yamstype, varname = args
+        db_helper = get_db_helper(backend)
+        sqltype = db_helper.TYPE_MAPPING[yamstype]
+        return 'CAST(%s AS %s)' % (varname, sqltype)
+
 
 class _FunctionRegistry(object):
     def __init__(self, registry=None):
@@ -511,6 +528,8 @@ for func_class in (
     # transformation functions
     ABS, UPPER, LOWER, LENGTH, DATE, RANDOM,
     YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, SUBSTRING,
+    # cast functions
+    CAST,
     # keyword function
     IN):
     SQL_FUNCTIONS_REGISTRY.register_function(func_class())
