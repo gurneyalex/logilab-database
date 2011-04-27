@@ -216,6 +216,10 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         cmds.append(cmd)
         return cmds
 
+    def sql_regexp_match_expression(self, pattern):
+        """pattern matching using regexp"""
+        return "~ %s" % (pattern)
+
     def sql_create_sequence(self, seq_name):
         return 'CREATE SEQUENCE %s;' % seq_name
 

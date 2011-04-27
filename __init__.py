@@ -676,7 +676,6 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         raise NotImplementedError('not supported by this DBMS')
 
     # helpers to standardize SQL according to the database
-
     def sql_current_date(self):
         return 'CURRENT_DATE'
 
@@ -688,6 +687,10 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
 
     def sql_concat_string(self, lhs, rhs):
         return '%s || %s' % (lhs, rhs)
+
+    def sql_regexp_match_expression(self, pattern):
+        """pattern matching using regexp"""
+        raise NotImplementedError('not supported by this DBMS')
 
     def sql_create_index(self, table, column, unique=False):
         idx = self._index_name(table, column, unique)
