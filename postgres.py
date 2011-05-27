@@ -116,7 +116,7 @@ class _Psycopg2Adapter(_PsycopgAdapter):
             # XXX (syt) todo, see my december discussion on the psycopg2 list
             # for a working solution
             #def adapt_stringio(stringio):
-            #    print 'ADAPTING', stringio
+            #    self.logger.info('ADAPTING %s', stringio)
             #    return psycopg2.Binary(stringio.getvalue())
             #import StringIO
             #extensions.register_adapter(StringIO.StringIO, adapt_stringio)
@@ -216,8 +216,18 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         cmds.append(cmd)
         return cmds
 
+    def sql_regexp_match_expression(self, pattern):
+        """pattern matching using regexp"""
+        return "~ %s" % (pattern)
+
     def sql_create_sequence(self, seq_name):
         return 'CREATE SEQUENCE %s;' % seq_name
+
+    def sql_restart_sequence(self, seq_name, initial_value=1):
+        return 'ALTER SEQUENCE %s RESTART WITH %s;' % (seq_name, initial_value)
+
+    def sql_sequence_current_state(self, seq_name):
+        return 'SELECT last_value FROM %s;' % seq_name
 
     def sql_drop_sequence(self, seq_name):
         return 'DROP SEQUENCE %s;' % seq_name
@@ -251,10 +261,10 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         # make sure plpythonu is not directly in template1
         cursor.execute("SELECT * FROM pg_language WHERE lanname='%s';" % extlang)
         if cursor.fetchall():
-            print '%s language already installed' % extlang
+            self.logger.warning('%s language already installed', extlang)
         else:
             cursor.execute('CREATE LANGUAGE %s' % extlang)
-            print '%s language installed' % extlang
+            self.logger.info('%s language installed', extlang)
 
     def list_users(self, cursor):
         """return the list of existing database users"""
@@ -388,15 +398,15 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
             if table.startswith('pg_ts'):
                 tstables.append(table)
         if tstables:
-            print 'pg_ts_dict already present, do not execute tsearch2.sql'
+            self.logger.info('pg_ts_dict already present, do not execute tsearch2.sql')
             if owner:
-                print 'reset pg_ts* owners'
+                self.logger.info('reset pg_ts* owners')
                 for table in tstables:
                     cursor.execute('ALTER TABLE %s OWNER TO %s' % (table, owner))
         else:
             fullpath = self.find_tsearch2_schema()
             cursor.execute(open(fullpath).read())
-            print 'tsearch2.sql installed'
+            self.logger.info('tsearch2.sql installed')
 
     def sql_init_fti(self):
         """Return the sql definition of table()s used by the full text index.

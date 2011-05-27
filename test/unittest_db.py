@@ -18,6 +18,8 @@
 """
 unit tests for module logilab.common.db
 """
+from __future__ import with_statement
+
 import socket
 
 from logilab.common.testlib import TestCase, unittest_main
@@ -51,14 +53,14 @@ class PreferedDriverTC(TestCase):
         self.assertEqual('bar', self.drivers['pg'][0])
 
     def testFailuresDb(self):
-        ex = self.assertRaises(UnknownDriver,
-                               set_prefered_driver, 'oracle','bar', self.drivers)
-        self.assertEqual(ex.args[0], 'Unknown driver oracle')
+        with self.assertRaises(UnknownDriver) as cm:
+            set_prefered_driver('oracle','bar', self.drivers)
+        self.assertEqual(str(cm.exception), 'Unknown driver oracle')
 
     def testFailuresDriver(self):
-        ex = self.assertRaises(UnknownDriver,
-                               set_prefered_driver, 'pg','baz', self.drivers)
-        self.assertEqual(ex.args[0], 'Unknown module baz for pg')
+        with self.assertRaises(UnknownDriver) as cm:
+            set_prefered_driver('pg','baz', self.drivers)
+        self.assertEqual(str(cm.exception), 'Unknown module baz for pg')
 
     def testGlobalVar(self):
         # XXX: Is this test supposed to be useful ? Is it supposed to test
