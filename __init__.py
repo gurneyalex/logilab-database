@@ -566,7 +566,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         'Password' : 'bytea',
         'Bytes' :    'bytea',
         'Int' :      'integer',
-        'BigInt'     'bigint',
+        'BigInt':    'bigint',
         'Float' :    'float',
         'Decimal' :  'decimal',
         'Boolean' :  'boolean',
