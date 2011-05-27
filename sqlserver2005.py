@@ -48,20 +48,14 @@ db._ADAPTER_DIRECTORY.update({
 class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
     backend_name = 'sqlserver2005'
     ilike_support = False
-    TYPE_MAPPING = {
-        'String' :   'nvarchar(max)',
-        'Int' :      'integer',
-        'Float' :    'float',
-        'Decimal' :  'decimal',
-        'Boolean' :  'bit',
-        'Date' :     'smalldatetime',
-        'Time' :     'time',
-        'Datetime' : 'datetime',
-        'Interval' : 'interval',
-        'Password' : 'varbinary(255)',
-        'Bytes' :    'varbinary(max)',
-        'SizeConstrainedString': 'nvarchar(%s)',
-        }
+    TYPE_MAPPING = db._GenericAdvFuncHelper.TYPE_MAPPING.copy()
+    TYPE_MAPPING['String'] =   'nvarchar(max)'
+    TYPE_MAPPING['Boolean'] =  'bit'
+    TYPE_MAPPING['Date'] =     'smalldatetime'
+    TYPE_MAPPING['Datetime'] = 'datetime'
+    TYPE_MAPPING['Password'] = 'varbinary(255)'
+    TYPE_MAPPING['Bytes'] =    'varbinary(max)'
+    TYPE_MAPPING['SizeConstrainedString'] = 'nvarchar(%s)'
 
     def list_tables(self, cursor):
         """return the list of tables of a database"""
