@@ -6,6 +6,7 @@ Changelog for logilab database package
 
     * new CAST function
     * new methods on db_helpers to support regexp-based pattern matching
+    * support BigInt mapping
 
 2011-04-01  --  1.5.0
     * fix deprecation warning and depend on common 0.55.2
