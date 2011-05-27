@@ -1,12 +1,18 @@
 Changelog for logilab database package
 ======================================
 
+
+	--
+
+    * new CAST function
+    * new methods on db_helpers to support regexp-based pattern matching
+
 2011-04-01  --  1.5.0
     * fix deprecation warning and depend on common 0.55.2
 
     * TZ datetime and time support
 
-2011-04-28  --  1.4.0	
+2011-03-28  --  1.4.0
     * abstract OFFSET LIMIT support (incl. support for MSSQL)
 
 
