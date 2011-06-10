@@ -69,7 +69,7 @@ def get_dbapi_compliant_module(driver, prefered_drivers=None, quiet=False,
     except NoAdapterFound, err:
         if not quiet:
             msg = 'No Adapter found for %s, returning native module'
-            print >> sys.stderr, msg % err.objname
+            _LOGGER.warning(msg,  err.objname)
         mod = err.adapted_obj
     return mod
 
@@ -83,8 +83,8 @@ def get_connection(driver='postgres', host='', database='', user='',
         adapter = _ADAPTER_DIRECTORY.get_adapter(driver, modname)
     except NoAdapterFound, err:
         if not quiet:
-            msg = 'No Adapter found for %s, using default one' % err.objname
-            print >> sys.stderr, msg
+            msg = 'No Adapter found for %s, using default one' 
+            _LOGGER.warning(msg, err.objname)
         adapted_module = DBAPIAdapter(module, pywrap)
     else:
         adapted_module = adapter(module, pywrap)
@@ -178,12 +178,12 @@ def _import_driver_module(driver, drivers, quiet=True):
     for modname in drivers[driver]:
         try:
             if not quiet:
-                print >> sys.stderr, 'Trying %s' % modname
+                _LOGGER.info('Trying %s', modname)
             module = load_module_from_name(modname, use_sys=False)
             break
         except ImportError:
             if not quiet:
-                print >> sys.stderr, '%s is not available' % modname
+                _LOGGER.warning('%s is not available', modname)
             continue
     else:
         raise ImportError('Unable to import a %s module' % driver)
@@ -280,6 +280,7 @@ class DBAPIAdapter(object):
         """
         self._native_module = native_module
         self._pywrap = pywrap
+        self.logger = _LOGGER
         # optimization: copy type codes from the native module to this instance
         # since the .process_value method may be heavily used
         for typecode in ('STRING', 'BOOLEAN', 'BINARY', 'DATETIME', 'NUMBER',
@@ -287,8 +288,8 @@ class DBAPIAdapter(object):
             try:
                 setattr(self, typecode, getattr(self, typecode))
             except AttributeError:
-                print >>sys.stderr, 'WARNING: %s adapter has no %s type code' \
-                      % (self, typecode)
+                self.logger.warning('%s adapter has no %s type code',
+                                    self, typecode)
 
     def connect(self, host='', database='', user='', password='', port='',
                 extra_args=None):
@@ -352,7 +353,9 @@ class UnknownFunction(BadQuery):
 # mostly for sqlite'stored procedures that have to be registered...
 SQL_CONNECT_HOOKS = {}
 ALL_BACKENDS = object()
-
+# marker for cases where rtype depends on arguments passed to the function
+# In that case, functions should implement dynamic_rtype() method
+DYNAMIC_RTYPE = object()
 
 class FunctionDescr(object):
     supported_backends = ALL_BACKENDS
@@ -376,10 +379,10 @@ class FunctionDescr(object):
     def check_nbargs(cls, nbargs):
         if cls.minargs is not None and \
                nbargs < cls.minargs:
-            raise BadQuery('not enough argument for function %s' % cls.name)
+            raise BadQuery('not enough argument for function %s' % cls.__name__)
         if cls.maxargs is not None and \
                nbargs < cls.maxargs:
-            raise BadQuery('too many arguments for function %s' % cls.name)
+            raise BadQuery('too many arguments for function %s' % cls.__name__)
     check_nbargs = classmethod(check_nbargs)
 
     def as_sql(self, backend, args):
@@ -466,6 +469,21 @@ class MINUTE(ExtractDateField):
 class SECOND(ExtractDateField):
     field = 'SECOND'
 
+class CAST(FunctionDescr):
+    """usage is CAST(datatype, expression)
+
+    sql-92 standard says (CAST <expr> as <type>)
+    """
+    minargs = maxargs = 2
+    supported_backends = ('postgres', 'sqlite', 'mysql', 'sqlserver2005')
+    rtype = DYNAMIC_RTYPE
+
+    def as_sql(self, backend, args):
+        yamstype, varname = args
+        db_helper = get_db_helper(backend)
+        sqltype = db_helper.TYPE_MAPPING[yamstype]
+        return 'CAST(%s AS %s)' % (varname, sqltype)
+
 
 class _FunctionRegistry(object):
     def __init__(self, registry=None):
@@ -510,6 +528,8 @@ for func_class in (
     # transformation functions
     ABS, UPPER, LOWER, LENGTH, DATE, RANDOM,
     YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, SUBSTRING,
+    # cast functions
+    CAST,
     # keyword function
     IN):
     SQL_FUNCTIONS_REGISTRY.register_function(func_class())
@@ -546,6 +566,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         'Password' : 'bytea',
         'Bytes' :    'bytea',
         'Int' :      'integer',
+        'BigInt':    'bigint',
         'Float' :    'float',
         'Decimal' :  'decimal',
         'Boolean' :  'boolean',
@@ -574,6 +595,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         self.dbencoding = encoding
         self._cnx = _cnx
         self.dbapi_module = get_dbapi_compliant_module(self.backend_name)
+        self.logger = _LOGGER
 
     def __repr__(self):
         if self.dbname is not None:
@@ -600,10 +622,10 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         paramaters.
         """
         if self.dbuser:
-            _LOGGER.info('connecting to %s@%s for user %s', self.dbname,
+            self.logger.info('connecting to %s@%s for user %s', self.dbname,
                          self.dbhost or 'localhost', self.dbuser)
         else:
-            _LOGGER.info('connecting to %s@%s', self.dbname,
+            self.logger.info('connecting to %s@%s', self.dbname,
                          self.dbhost or 'localhost')
         cnx = self.dbapi_module.connect(self.dbhost, self.dbname,
                                         self.dbuser,self.dbpasswd,
@@ -655,7 +677,6 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         raise NotImplementedError('not supported by this DBMS')
 
     # helpers to standardize SQL according to the database
-
     def sql_current_date(self):
         return 'CURRENT_DATE'
 
@@ -667,6 +688,10 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
 
     def sql_concat_string(self, lhs, rhs):
         return '%s || %s' % (lhs, rhs)
+
+    def sql_regexp_match_expression(self, pattern):
+        """pattern matching using regexp"""
+        raise NotImplementedError('not supported by this DBMS')
 
     def sql_create_index(self, table, column, unique=False):
         idx = self._index_name(table, column, unique)
@@ -699,6 +724,12 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
     def sql_create_sequence(self, seq_name):
         return '''CREATE TABLE %s (last INTEGER);
 INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
+
+    def sql_restart_sequence(self, seq_name, initial_value=1):
+        return 'UPDATE %s SET last=%s;' % (seq_name, initial_value-1)
+
+    def sql_sequence_current_state(self, seq_name):
+        return 'SELECT last FROM %s;' % seq_name
 
     def sql_drop_sequence(self, seq_name):
         return 'DROP TABLE %s;' % seq_name
