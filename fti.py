@@ -38,18 +38,11 @@ def normalize(word):
 
     stop words are :
        _ single letter
-       _ numbers
     """
     assert isinstance(word, unicode), '%r should be unicode' % word
     # do not index single letters
     if len(word) == 1:
         raise StopWord()
-    # do not index numbers
-    try:
-        float(word)
-        raise StopWord()
-    except ValueError:
-        pass
     word = unormalize(word.lower(), substitute='')
     return word.encode('ascii', 'ignore')
 
