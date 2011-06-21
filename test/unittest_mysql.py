@@ -1,4 +1,4 @@
-# copyright 2003-2010 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# copyright 2003-2011 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 # contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
 #
 # This file is part of logilab-database.
@@ -41,7 +41,7 @@ class MyHelperTC(unittest.TestCase):
         self.helper.index_object(1, IndexableObject())
         self.assertEqual(self.cnx.received,
                           [('INSERT INTO appears(uid, words) VALUES (%(uid)s, %(wrds)s);',
-                            {'wrds': 'ginco jpl bla blip blop blap cubic', 'uid': 1})])
+                            {'wrds': 'ginco jpl bla blip blop blap cubic 456', 'uid': 1})])
 
     def test_fulltext_search(self):
         self.helper.fulltext_search(u'ginco-jpl')

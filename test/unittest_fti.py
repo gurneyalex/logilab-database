@@ -31,18 +31,23 @@ def _tokenize(string):
             continue
     return words
 
+
 class TokenizeTC(unittest.TestCase):
 
     def test_utf8(self):
         self.assertEqual(_tokenize(u'n°2'),
                           ['n2'])
 
+    def test_numbers(self):
+        self.assertEqual(_tokenize(u'123'),
+                          ['123'])
+
 
 class IndexableObject:
     entity_weight = 1.0
     def get_words(self):
         return {'A': tokenize(u'gïnco-jpl blâ blîp blôp blàp'),
-                'B': tokenize(u'cubic')}
+                'B': tokenize(u'cubic 456')}
 
 
 class IndexerTC(TestCase):
@@ -69,7 +74,9 @@ class IndexerTC(TestCase):
                            ('SELECT word_id FROM word WHERE word=%(word)s;', {'word': 'blap'}),
                            ('INSERT INTO appears(uid, word_id, pos) VALUES (%(uid)s,%(wid)s,%(position)s);', {'position': 5, 'wid': 1, 'uid': 1}),
                            ('SELECT word_id FROM word WHERE word=%(word)s;', {'word': 'cubic'}),
-                           ('INSERT INTO appears(uid, word_id, pos) VALUES (%(uid)s,%(wid)s,%(position)s);', {'position': 6, 'wid': 1, 'uid': 1})])
+                           ('INSERT INTO appears(uid, word_id, pos) VALUES (%(uid)s,%(wid)s,%(position)s);', {'position': 6, 'wid': 1, 'uid': 1}),
+                           ('SELECT word_id FROM word WHERE word=%(word)s;', {'word': '456'}),
+                           ('INSERT INTO appears(uid, word_id, pos) VALUES (%(uid)s,%(wid)s,%(position)s);', {'position': 7, 'wid': 1, 'uid': 1})])
 
     def test_fulltext_search(self):
         list(self.indexer.fulltext_search(u'ginco'))
