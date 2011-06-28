@@ -1,6 +1,9 @@
 Changelog for logilab database package
 ======================================
 
+--
+    * [fti] exclude numbers from stop words in fti parser (closes: #69471)
+
 2011-06-09  --  1.6.0
     * new CAST function
 
