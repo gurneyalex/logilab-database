@@ -423,7 +423,7 @@ class IN(FunctionDescr):
 class LENGTH(FunctionDescr):
     rtype = 'Int'
 
-class DATE(FunctionDescr):
+class DATE(FunctionDescr): # XXX deprecates now we've CAST
     rtype = 'Date'
 
 class RANDOM(FunctionDescr):
