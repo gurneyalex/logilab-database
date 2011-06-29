@@ -236,15 +236,12 @@ class _SqliteAdvFuncHelper(db._GenericAdvFuncHelper):
     def backup_commands(self, backupfile, keepownership=True,
                         dbname=None, dbhost=None, dbport=None, dbuser=None):
         dbname = dbname or self.dbname
-        return [['gzip', dbname], ['mv', dbname + '.gz', backupfile]]
+        return ['gzip -c %s > %s' % (dbname, backupfile)]
 
     def restore_commands(self, backupfile, keepownership=True, drop=True,
                          dbname=None, dbhost=None, dbport=None, dbuser=None,
                          dbencoding=None):
-        gunziped, ext = os.path.splitext(backupfile)
-        msg = 'extension is %s but .gz or .z expected. Are you sure this is a sqlite dump?' % ext.lower()
-        assert ext.lower() in ('.gz', '.z'), msg # else gunzip will fail anyway
-        return [['gunzip', backupfile], ['mv', gunziped, dbname or self.dbname]]
+        return ['zcat %s > %s' % (backupfile, dbname or self.dbname)]
 
     def sql_create_index(self, table, column, unique=False):
         idx = self._index_name(table, column, unique)
