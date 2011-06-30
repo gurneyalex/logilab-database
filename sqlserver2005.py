@@ -169,9 +169,13 @@ AND j.column_id = k.column_id;"""
             order_by = outer_aliases
         else:
             order_by = []
-            for term in orderby:
+            for i, term in enumerate(orderby):
                 split = term.split()
-                split[0] = aliases_cols[int(split[0])-1][1]
+                try:
+                    idx = int(split[0]) - 1 
+                except ValueError:
+                    idx = i
+                split[0] = aliases_cols[idx][1]
                 order_by.append(' '.join(split))
             order_by = ', '.join(order_by)
         new_query = ['WITH orderedrows AS (',
