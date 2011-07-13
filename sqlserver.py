@@ -136,6 +136,13 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
                     rows.append(self._replace_smalldate(row, smalldate_cols))
                 return rows
 
+            def fetchmany(self, *args):
+                smalldate_cols = self._get_smalldate_columns()
+                rows = []
+                for row in self._cursor.fetchmany(*args):
+                    rows.append(self._replace_smalldate(row, smalldate_cols))
+                return rows
+
             def _replace_smalldate(self, row, smalldate_cols):
                 if smalldate_cols:
                     new_row = row[:]
