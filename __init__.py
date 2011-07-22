@@ -381,7 +381,7 @@ class FunctionDescr(object):
                nbargs < cls.minargs:
             raise BadQuery('not enough argument for function %s' % cls.__name__)
         if cls.maxargs is not None and \
-               nbargs < cls.maxargs:
+               nbargs > cls.maxargs:
             raise BadQuery('too many arguments for function %s' % cls.__name__)
     check_nbargs = classmethod(check_nbargs)
 
