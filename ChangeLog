@@ -5,6 +5,7 @@ Changelog for logilab database package
     * [fti] exclude numbers from stop words in fti parser (closes: #69471)
     * fix backup/restore commands for sqlite backend (closes: #69607)
     * fix checking of maximum number of function (closes: #71413)
+    * support for COUNT(DISTINCT ...) (closes: #71414)
 
 2011-06-09  --  1.6.0
     * new CAST function
