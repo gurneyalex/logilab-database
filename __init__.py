@@ -405,8 +405,15 @@ class AggrFunctionDescr(FunctionDescr):
 class MAX(AggrFunctionDescr): pass
 class MIN(AggrFunctionDescr): pass
 class SUM(AggrFunctionDescr): pass
+
 class COUNT(AggrFunctionDescr):
     rtype = 'Int'
+    maxargs = 2
+
+    def as_sql(self, backend, args):
+        if len(args) == 2 and args[1] == get_db_helper(backend).boolean_value(True):
+            return '%s(DISTINCT %s)' % (self.name, args[0])
+        return '%s(%s)' % (self.name, args[0])
 
 class AVG(AggrFunctionDescr):
     rtype = 'Float'
