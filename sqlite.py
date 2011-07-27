@@ -62,17 +62,6 @@ class _PySqlite2Adapter(db.DBAPIAdapter):
             return Binary(data)
         sqlite.register_converter('bytea', convert_bytea)
 
-        # boolean type handling
-        def adapt_boolean(bval):
-            return str(bval).upper()
-        sqlite.register_adapter(bool, adapt_boolean)
-        def convert_boolean(ustr):
-            if ustr.upper() in ('F', 'FALSE'):
-                return False
-            return True
-        sqlite.register_converter('boolean', convert_boolean)
-
-
         # decimal type handling
         from decimal import Decimal
         def adapt_decimal(data):
@@ -235,9 +224,9 @@ class _SqliteAdvFuncHelper(db._GenericAdvFuncHelper):
 
     def boolean_value(self, value):
         if value:
-            return '1'
+            return 1
         else:
-            return '0'
+            return 0
 
     def backup_commands(self, backupfile, keepownership=True,
                         dbname=None, dbhost=None, dbport=None, dbuser=None):
