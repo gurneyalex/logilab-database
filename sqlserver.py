@@ -147,7 +147,8 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
                 if smalldate_cols:
                     new_row = row[:]
                     for col in smalldate_cols:
-                        new_row[col] = new_row[col].date()
+                        if new_row[col] is not None:
+                            new_row[col] = new_row[col].date()
                     return new_row
                 else:
                     return row
