@@ -233,6 +233,12 @@ class _SqliteAdvFuncHelper(db._GenericAdvFuncHelper):
     intersect_all_support = False
     alter_column_support = False
 
+    def boolean_value(self, value):
+        if value:
+            return '1'
+        else:
+            return '0'
+
     def backup_commands(self, backupfile, keepownership=True,
                         dbname=None, dbhost=None, dbport=None, dbuser=None):
         dbname = dbname or self.dbname
