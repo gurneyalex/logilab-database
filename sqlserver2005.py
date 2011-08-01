@@ -57,6 +57,12 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
     TYPE_MAPPING['Bytes'] =    'varbinary(max)'
     TYPE_MAPPING['SizeConstrainedString'] = 'nvarchar(%s)'
 
+    def boolean_value(self, value):
+        if value:
+            return 1
+        else:
+            return 0
+
     def list_tables(self, cursor):
         """return the list of tables of a database"""
         cursor.execute('''sys.sp_tables @table_type = "'TABLE'"''')

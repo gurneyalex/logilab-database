@@ -1,6 +1,9 @@
 Changelog for logilab database package
 ======================================
 
+--
+* closes #72219: sqlserver doesn't support TRUE/FALSE
+
 2011-07-27  --  1.6.2
     * actually fix sqlite boolean type to use 0 and 1 properly
 
