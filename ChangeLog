@@ -1,6 +1,10 @@
 Changelog for logilab database package
 ======================================
 
+--
+    * new WEEKDAY date extraction function
+    * sqlserver support for other existing date extraction function
+
 2011-08-05  --  1.6.3
     * closes #72219: sqlserver doesn't support TRUE/FALSE
 

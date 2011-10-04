@@ -479,6 +479,28 @@ class MINUTE(ExtractDateField):
 class SECOND(ExtractDateField):
     field = 'SECOND'
 
+class WEEKDAY(FunctionDescr):
+    """Return the day of the week represented by the date.
+
+    Sunday == 1, Saturday = 7
+
+    (pick those values since that's what mysql and sqlserver do, and what's in
+    the ODBC standard)
+    """
+    rtype = 'Int'
+    minargs = maxargs = 1
+
+    def as_sql_sqlserver2005(self, args):
+        return 'DATEPART(WEEKDAY, %s)' % (', '.join(args))
+
+    def as_sql_mysql(self, args):
+        return 'DAYOFWEEK(%s)' % (', '.join(args))
+
+    def as_sql_postgres(self, args):
+        # for postgres, sunday is 0
+        return '(CAST(EXTRACT(DOW from %s) AS INTEGER) + 1)' % (', '.join(args))
+
+
 class CAST(FunctionDescr):
     """usage is CAST(datatype, expression)
 
@@ -536,8 +558,10 @@ for func_class in (
     # aggregate functions
     MIN, MAX, SUM, COUNT, AVG,
     # transformation functions
-    ABS, UPPER, LOWER, LENGTH, DATE, RANDOM,
-    YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, SUBSTRING,
+    ABS, RANDOM,
+    UPPER, LOWER, SUBSTRING, LENGTH,
+    DATE,
+    YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, WEEKDAY,
     # cast functions
     CAST,
     # keyword function
