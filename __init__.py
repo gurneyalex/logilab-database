@@ -452,6 +452,9 @@ class ExtractDateField(FunctionDescr):
     minargs = maxargs = 1
     field = None # YEAR, MONTH, DAY, etc.
 
+    def as_sql_sqlserver2005(self, args):
+        return 'DATEPART(%s, %s)' % (self.field, ', '.join(args))
+
     def as_sql_mysql(self, args):
         return 'EXTRACT(%s from %s)' % (self.field, ', '.join(args))
 
