@@ -760,7 +760,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
 INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
 
     def sql_restart_sequence(self, seq_name, initial_value=1):
-        return 'UPDATE %s SET last=%s;' % (seq_name, initial_value-1)
+        return 'UPDATE %s SET last=%s;' % (seq_name, initial_value)
 
     def sql_sequence_current_state(self, seq_name):
         return 'SELECT last FROM %s;' % seq_name

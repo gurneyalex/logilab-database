@@ -1,3 +1,9 @@
+logilab-database (1.6.4-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Alexandre Fayolle <afayolle@debian.org>  Mon, 10 Oct 2011 15:02:11 +0200
+
 logilab-database (1.6.3-1) unstable; urgency=low
 
   * new upstream release
