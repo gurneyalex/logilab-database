@@ -70,6 +70,11 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         # cursor.tables()
         # return  [row.table_name for row in cursor.fetchall()]
 
+    def list_views(self, cursor):
+        cursor.execute('SELECT table_name FROM INFORMATION_SCHEMA.VIEWS;')
+        return [row[0] for row in cursor.fetchall()]
+            
+            
     def list_indices(self, cursor, table=None):
         """return the list of indices of a database, only for the given table if specified"""
         sql = "SELECT name FROM sys.indexes"
