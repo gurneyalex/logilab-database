@@ -272,6 +272,10 @@ class PyCursor(object):
 class DBAPIAdapter(object):
     """Base class for all DBAPI adapters"""
     UNKNOWN = None
+    # True if the fetch*() methods return a mutable structure (i.e. not a tuple)
+    row_is_mutable = False
+    # True if the fetch*() methods return unicode and not binary strings
+    returns_unicode = False
 
     def __init__(self, native_module, pywrap=False):
         """
@@ -309,29 +313,77 @@ class DBAPIAdapter(object):
     def __getattr__(self, attrname):
         return getattr(self._native_module, attrname)
 
+    #@cached ?
+    def _transformation_callback(self, description, encoding='utf-8', binarywrap=None):
+        typecode = description[1]
+        assert typecode is not None, self
+        transform = None
+        if typecode == self.STRING and not self.returns_unicode:
+            transform = lambda v: unicode(v, encoding, 'replace')
+        elif typecode == self.BOOLEAN:
+            transform = bool
+        elif typecode == self.BINARY and binarywrap is not None:
+            transform = binarywrap
+        elif typecode == self.UNKNOWN:
+            # may occurs on constant selection for instance (e.g. SELECT 'hop')
+            # with postgresql at least
+            transform = lambda v: unicode(v, encoding, 'replace') if isinstance(v, str) else v
+        return transform
+
+    def process_cursor(self, cursor, encoding, binarywrap=None):
+        """return an iterator on results.
+
+        Each record is returned a list (not a tuple) and each element
+        of the record is processed :
+        - database  strings are all unicode
+        - database booleans are python boolean objects
+        - if `binarywrap` is provided, it is used to wrap binary data
+        """
+        cursor.arraysize = 100
+        # compute transformations (str->unicode, int->bool, etc.) required for each cell
+        transformations = self._transformations(cursor.description, encoding, binarywrap)
+        row_is_mutable = self.row_is_mutable
+        while True:
+            results = cursor.fetchmany()
+            if not results:
+                break
+            for line in results:
+                result = line if row_is_mutable else list(line)
+                # apply required transformations on each cell
+                for col, transform in transformations:
+                    if result[col] is None:
+                        continue
+                    result[col] = transform(result[col])
+                yield result
+
+    def _transformations(self, description, encoding='utf-8', binarywrap=None):
+        """returns the set of required transformations on the resultset
+
+        Transformations are the functions used to convert raw results as
+        returned by the dbapi module to standard python objects (e.g.
+        unicode, bool, etc.)
+        """
+        transformations = []
+        for i, coldescr in enumerate(description):
+            transform = self._transformation_callback(coldescr, encoding, binarywrap)
+            if transform is not None:
+                transformations.append((i, transform))
+        return transformations
+
     def process_value(self, value, description, encoding='utf-8',
                       binarywrap=None):
         # if the dbapi module isn't supporting type codes, override to return
         # value directly
-        typecode = description[1]
-        assert typecode is not None, self
-        if typecode == self.STRING:
-            if isinstance(value, str):
-                return unicode(value, encoding, 'replace')
-        elif typecode == self.BOOLEAN:
-            return bool(value)
-        elif typecode == self.BINARY and binarywrap is not None:
-            return binarywrap(value)
-        elif typecode == self.UNKNOWN:
-            # may occurs on constant selection for instance (e.g. SELECT 'hop')
-            # with postgresql at least
-            if isinstance(value, str):
-                return unicode(value, encoding, 'replace')
+        transform = self._transformation_callback(description,
+                                                  encoding,
+                                                  binarywrap)
+        if transform is not None:
+            value = transform(value)
         elif getattr(value, 'tzinfo', None):
             if isinstance(value, time):
-                return utctime(value)
+                value = utctime(value)
             assert isinstance(value, datetime), value
-            return utcdatetime(value)
+            value = utcdatetime(value)
         return value
 
     def binary_to_str(self, value):

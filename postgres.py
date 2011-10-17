@@ -91,9 +91,12 @@ class _Psycopg2Adapter(_PsycopgAdapter):
     # not defined in psycopg2.extensions
     # "select typname from pg_type where oid=705";
     UNKNOWN = 705
+    returns_unicode = True
 
     def __init__(self, native_module, pywrap=False):
         from psycopg2 import extensions
+        extensions.register_type(extensions.UNICODE)
+        extensions.register_type(extensions.UNICODEARRAY)
         self.BOOLEAN = extensions.BOOLEAN
         db.DBAPIAdapter.__init__(self, native_module, pywrap)
         self._init_psycopg2()
