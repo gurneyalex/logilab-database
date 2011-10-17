@@ -1,6 +1,9 @@
 Changelog for logilab database package
 ======================================
 
+  --  1.8.0
+    * process_cursor (closes #77769)
+
 2011-10-17 -- 1.7.0
     * new WEEKDAY date extraction function
     * sqlserver support for other existing date extraction function, added

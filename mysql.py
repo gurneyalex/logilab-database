@@ -69,29 +69,31 @@ class _MySqlDBAdapter(db.DBAPIAdapter):
             cnx.set_character_set(charset)
         return self._wrap_if_needed(cnx)
 
-    def process_value(self, value, description, encoding='utf-8', binarywrap=None):
+    def _transformation_callback(self, description, encoding='utf-8', binarywrap=None):
         typecode = description[1]
         # hack to differentiate mediumtext (String) and tinyblob/longblog
         # (Password/Bytes) which are all sharing the same type code :(
         if typecode == self.BINARY:
-            if hasattr(value, 'tostring'): # may be an array
-                value = value.tostring()
-            maxsize = description[3]
-            # mediumtext can hold up to (2**24 - 1) characters (16777215)
-            # but if utf8 is set, each character is stored on 3 bytes words,
-            # so we have to test for 3 * (2**24 - 1)  (i.e. 50331645)
-            # XXX: what about other encodings ??
-            if maxsize in (16777215, 50331645): # mediumtext (2**24 - 1)
-                if isinstance(value, str):
-                    return unicode(value, encoding, 'replace')
-                return value
-            #if maxsize == 255: # tinyblob (2**8 - 1)
-            #    return value
-            if binarywrap is None:
-                return value
-            return binarywrap(value)
-        return db.DBAPIAdapter.process_value(self, value, description, encoding,
-                                             binarywrap)
+            def _transform(value):
+                if hasattr(value, 'tostring'): # may be an array
+                    value = value.tostring()
+                maxsize = description[3]
+                # mediumtext can hold up to (2**24 - 1) characters (16777215)
+                # but if utf8 is set, each character is stored on 3 bytes words,
+                # so we have to test for 3 * (2**24 - 1)  (i.e. 50331645)
+                # XXX: what about other encodings ??
+                if maxsize in (16777215, 50331645): # mediumtext (2**24 - 1)
+                    if isinstance(value, str):
+                        return unicode(value, encoding, 'replace')
+                    return value
+                #if maxsize == 255: # tinyblob (2**8 - 1)
+                #    return value
+                if binarywrap is None:
+                    return value
+                return binarywrap(value)
+        else:
+            return super(_MySqlDBAdapter, self)._transformation_callback(description,
+                                                                         encoding, binarywrap)
 
     def binary_to_str(self, value):
         """turn raw value returned by the db-api module into a python string"""

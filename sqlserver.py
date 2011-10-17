@@ -118,6 +118,7 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
                 self._cursor.executemany(final_sql, argss)
 
             def _get_smalldate_columns(self):
+                # XXX once CW uses the process_cursor method, we can move this to an upper level
                 cols = []
                 for i, coldef in enumerate(self._cursor.description):
                     if coldef[1] is datetime.datetime and coldef[3] == 16:
@@ -166,24 +167,22 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
         cnx = self._connect(host=host, database=database, user=user, password=password, port=port, extra_args=extra_args)
         return self._wrap_if_needed(SqlServerCnxWrapper(cnx))
 
-    def process_value(self, value, description, encoding='utf-8', binarywrap=None):
-        # if the dbapi module isn't supporting type codes, override to return value directly
+    def _transformation_callback(self, description, encoding='utf-8', binarywrap=None):
         typecode = description[1]
         assert typecode is not None, self
-        if typecode == self.STRING:
-            if isinstance(value, str):
-                return unicode(value, encoding, 'replace')
+        transform = None
+        if typecode == self.STRING and not self.returns_unicode:
+            transform = lambda v: unicode(v, encoding, 'replace')
         elif typecode == self.BINARY:  # value is a python buffer
-            if binarywrap is not None:
-                return binarywrap(value[:])
+            if binarywrap is None:
+                transforn = lambda v: v[:]
             else:
-                return value[:]
+                transform = lambda v: binarywrap(v[:])
         elif typecode == self.UNKNOWN:
             # may occurs on constant selection for instance (e.g. SELECT 'hop')
             # with postgresql at least
-            if isinstance(value, str):
-                return unicode(value, encoding, 'replace')
-        return value
+            transform = lambda v: unicode(value, encoding, 'replace') if isinstance(v, str) else v
+        return transform
 
 
 class _PyodbcAdapter(_BaseSqlServerAdapter):

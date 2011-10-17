@@ -182,10 +182,12 @@ class _PySqlite2Adapter(db.DBAPIAdapter):
                              detect_types=sqlite.PARSE_DECLTYPES)
         return self._wrap_if_needed(PySqlite2CnxWrapper(cnx))
 
-    def process_value(self, value, description, encoding='utf-8', binarywrap=None):
-        if binarywrap is not None and isinstance(value, self._native_module.Binary):
-            return binarywrap(value)
-        return value # no type code support, can't do anything
+    def _transformation_callback(self, description, encoding='utf-8', binarywrap=None):
+        def _transform(value):
+            if binarywrap is not None and isinstance(value, self._native_module.Binary):
+                return binarywrap(value)
+            return value # no type code support, can't do anything
+        return _transform
 
 
 class _SqliteAdapter(db.DBAPIAdapter):
