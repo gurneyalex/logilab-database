@@ -1,9 +1,10 @@
 Changelog for logilab database package
 ======================================
 
---
+2011-10-17 -- 1.7.0
     * new WEEKDAY date extraction function
-    * sqlserver support for other existing date extraction function
+    * sqlserver support for other existing date extraction function, added
+	helper to get list of VIEWs
 
 2011-08-05  --  1.6.3
     * closes #72219: sqlserver doesn't support TRUE/FALSE
