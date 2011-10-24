@@ -552,6 +552,15 @@ class WEEKDAY(FunctionDescr):
         # for postgres, sunday is 0
         return '(CAST(EXTRACT(DOW from %s) AS INTEGER) + 1)' % (', '.join(args))
 
+class AT_TZ(FunctionDescr):
+    """AT_TZ(TZDatetime, timezone) -> Return a datetime at a given time zone.
+    """
+    supported_backends = ('postgres',)
+    minargs = maxargs = 2
+
+    def as_sql_postgres(self, args):
+        return "%s at time zone %s" % tuple(args)
+
 
 class CAST(FunctionDescr):
     """usage is CAST(datatype, expression)
@@ -613,7 +622,7 @@ for func_class in (
     ABS, RANDOM,
     UPPER, LOWER, SUBSTRING, LENGTH,
     DATE,
-    YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, WEEKDAY,
+    YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, WEEKDAY, AT_TZ,
     # cast functions
     CAST,
     # keyword function
