@@ -1,9 +1,11 @@
 Changelog for logilab database package
 ======================================
 
-  --  1.8.0
-    * process_cursor (closes #77769)
+  --  
+    * new process_cursor method (closes #77769)
     * new "at_tz" function to get back a timestamp at a given time-zone (closes #81267)
+    * dropped support for posgres < 8.3 (closes #76944)
+
 
 2011-10-17 -- 1.7.0
     * new WEEKDAY date extraction function
