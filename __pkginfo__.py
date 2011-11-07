@@ -24,20 +24,9 @@ version = '.'.join([str(num) for num in numversion])
 license = 'LGPL'
 
 author = "Logilab"
-author_email = "devel@logilab.fr"
+author_email = "contact@logilab.fr"
 
 description = "true unified database access"
-
-long_desc = """logilab-database provides some classes to make unified access
-to different RDBMS possible:
-  * actually compatible db-api from different drivers to postgres, mysql,
-    sqlite and sqlserver
-  * additional api for full text search
-  * extensions functions for common tasks such as creating database, index,
-    users, dump and restore, etc...
-  * sql generation for INSERT/UPDATE/DELETE (in sqlgen.py)
-"""
-
 
 web = "http://www.logilab.org/project/%s" % distname
 ftp = "ftp://ftp.logilab.org/pub/%s" % modname
@@ -45,8 +34,6 @@ mailinglist = "mailto://python-projects@lists.logilab.org"
 
 subpackage_of = 'logilab'
 subpackage_master = True
-
-pyversions = ['2.4', '2.5', '2.6']
 
 install_requires = [
     'logilab-common >= 0.55.2',
