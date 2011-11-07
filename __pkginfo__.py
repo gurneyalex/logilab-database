@@ -19,7 +19,7 @@
 
 distname = 'logilab-database'
 modname = 'database'
-numversion = (1, 7, 0)
+numversion = (1, 8, 0)
 version = '.'.join([str(num) for num in numversion])
 license = 'LGPL'
 
