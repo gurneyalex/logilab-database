@@ -25,6 +25,7 @@ Supported drivers, in order of preference:
 import os
 import sys
 import shutil
+import datetime
 
 from logilab import database as db
 from logilab.database.sqlserver import _PyodbcAdapter, _AdodbapiAdapter
@@ -57,6 +58,12 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
     TYPE_MAPPING['Bytes'] =    'varbinary(max)'
     TYPE_MAPPING['SizeConstrainedString'] = 'nvarchar(%s)'
 
+    def sql_current_date(self):
+        return datetime.date.today()
+
+    def sql_current_timestamp(self):
+        return datetime.datetime.now()
+
     def boolean_value(self, value):
         if value:
             return 1
@@ -73,8 +80,7 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
     def list_views(self, cursor):
         cursor.execute('SELECT table_name FROM INFORMATION_SCHEMA.VIEWS;')
         return [row[0] for row in cursor.fetchall()]
-            
-            
+
     def list_indices(self, cursor, table=None):
         """return the list of indices of a database, only for the given table if specified"""
         sql = "SELECT name FROM sys.indexes"
