@@ -1,6 +1,11 @@
 Changelog for logilab database package
 ======================================
 
+2011-12-01  --  1.8.1
+    * implement db helper date manipulation helpers for sqlserver  (closes
+	#83603)
+
+
 2011-11-07  --  1.8.0
     * new process_cursor method (closes #77769)
 
