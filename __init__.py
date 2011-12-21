@@ -324,6 +324,8 @@ class DBAPIAdapter(object):
             transform = bool
         elif typecode == self.BINARY and binarywrap is not None:
             transform = binarywrap
+        elif typecode == self.DATETIME: # XXX only for TZDatetime w/ backend returning some tzinfo
+            transform = utcdatetime
         elif typecode == self.UNKNOWN:
             # may occurs on constant selection for instance (e.g. SELECT 'hop')
             # with postgresql at least
@@ -342,7 +344,7 @@ class DBAPIAdapter(object):
         cursor.arraysize = 100
         # compute transformations (str->unicode, int->bool, etc.) required for each cell
         transformations = self._transformations(cursor.description, encoding, binarywrap)
-        row_is_mutable = self.row_is_mutable
+        row_is_mutable = self.row_is_mutable or not transformations
         while True:
             results = cursor.fetchmany()
             if not results:
@@ -367,7 +369,7 @@ class DBAPIAdapter(object):
         for i, coldescr in enumerate(description):
             transform = self._transformation_callback(coldescr, encoding, binarywrap)
             if transform is not None:
-                transformations.append((i, transform))
+                transformations.append( (i, transform) )
         return transformations
 
     def process_value(self, value, description, encoding='utf-8',
