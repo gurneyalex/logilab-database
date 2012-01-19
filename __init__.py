@@ -325,7 +325,7 @@ class DBAPIAdapter(object):
         elif typecode == self.BINARY and binarywrap is not None:
             transform = binarywrap
         elif typecode == self.DATETIME: # XXX only for TZDatetime w/ backend returning some tzinfo
-            transform = utcdatetime
+            transform = lambda v: utcdatetime(v) if isinstance(v, datetime) else v
         elif typecode == self.UNKNOWN:
             # may occurs on constant selection for instance (e.g. SELECT 'hop')
             # with postgresql at least
