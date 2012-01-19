@@ -25,7 +25,6 @@ Supported drivers, in order of preference:
 import os
 import sys
 import shutil
-import datetime
 
 from logilab import database as db
 from logilab.database.sqlserver import _PyodbcAdapter, _AdodbapiAdapter
@@ -57,12 +56,6 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
     TYPE_MAPPING['Password'] = 'varbinary(255)'
     TYPE_MAPPING['Bytes'] =    'varbinary(max)'
     TYPE_MAPPING['SizeConstrainedString'] = 'nvarchar(%s)'
-
-    def sql_current_date(self):
-        return datetime.date.today()
-
-    def sql_current_timestamp(self):
-        return datetime.datetime.now()
 
     def boolean_value(self, value):
         if value:
