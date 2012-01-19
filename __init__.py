@@ -344,7 +344,7 @@ class DBAPIAdapter(object):
         cursor.arraysize = 100
         # compute transformations (str->unicode, int->bool, etc.) required for each cell
         transformations = self._transformations(cursor.description, encoding, binarywrap)
-        row_is_mutable = self.row_is_mutable or not transformations
+        row_is_mutable = self.row_is_mutable
         while True:
             results = cursor.fetchmany()
             if not results:
