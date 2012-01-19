@@ -751,7 +751,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
 
     def backup_commands(self, backupfile, keepownership=True,
                         dbname=None, dbhost=None, dbport=None, dbuser=None):
-        """return a list of commands to backup the given database.
+        """Return a list of commands to backup the given database.
 
         Each command may be given as a list or as a string. In the latter case,
         expected to be used with a subshell (for instance using `os.system(cmd)`
@@ -762,7 +762,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
     def restore_commands(self, backupfile, keepownership=True, drop=True,
                          dbname=None, dbhost=None, dbport=None, dbuser=None,
                          dbencoding=None):
-        """return a list of commands to restore a backup of the given database
+        """Return a list of commands to restore a backup of the given database.
 
 
         Each command may be given as a list or as a string. In the latter case,
@@ -771,17 +771,36 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         """
         raise NotImplementedError('not supported by this DBMS')
 
-    # helpers to standardize SQL according to the database
+    # helpers to standardize SQL according to the database #####################
+
     def sql_current_date(self):
+        """Return sql for the current date.
+
+        Take care default implementation return date at the beginning of the
+        transaction on some backend (eg postgres)
+        """
         return 'CURRENT_DATE'
 
     def sql_current_time(self):
+        """Return sql for the current time.
+
+        Take care default implementation return time at the beginning of the
+        transaction on some backend (eg postgres)
+        """
         return 'CURRENT_TIME'
 
     def sql_current_timestamp(self):
+        """Return sql for the current date and time.
+
+        Take care default implementation return date and time at the beginning
+        of the transaction on some backend (eg postgres)
+        """
         return 'CURRENT_TIMESTAMP'
 
     def sql_concat_string(self, lhs, rhs):
+        """Return sql for concatenating given arguments (expected to be
+        evaluated as string when executing the query).
+        """
         return '%s || %s' % (lhs, rhs)
 
     def sql_regexp_match_expression(self, pattern):
