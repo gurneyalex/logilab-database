@@ -219,6 +219,15 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         cmds.append(cmd)
         return cmds
 
+    def sql_current_date(self):
+        return 'CAST(clock_timestamp() AS DATE)'
+
+    def sql_current_time(self):
+        return 'CAST(clock_timestamp() AS TIME)'
+
+    def sql_current_timestamp(self):
+        return 'clock_timestamp()'
+
     def sql_regexp_match_expression(self, pattern):
         """pattern matching using regexp"""
         return "~ %s" % (pattern)
