@@ -1,9 +1,19 @@
 Changelog for logilab database package
 ======================================
 
+2012-02-03  --  1.8.2
+    * don't use CURRENT_DATETIME for postgresql (#83892)
+
+    * sqlserver: sql_current_[date|timestamp] shouldn't return date[time] objects (#88279)
+
+    * process_cursor fixes (#88281)
+
+
+
 2011-12-01  --  1.8.1
     * implement db helper date manipulation helpers for sqlserver  (closes
 	#83603)
+
 
 
 2011-11-07  --  1.8.0
