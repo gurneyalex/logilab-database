@@ -1,0 +1,172 @@
+Changelog for logilab database package
+======================================
+
+2012-02-03  --  1.8.2
+    * don't use CURRENT_DATETIME for postgresql (#83892)
+
+    * sqlserver: sql_current_[date|timestamp] shouldn't return date[time] objects (#88279)
+
+    * process_cursor fixes (#88281)
+
+
+
+2011-12-01  --  1.8.1
+    * implement db helper date manipulation helpers for sqlserver  (closes
+	#83603)
+
+
+
+2011-11-07  --  1.8.0
+    * new process_cursor method (closes #77769)
+
+    * new "at_tz" function to get back a timestamp at a given time-zone (closes #81267)
+
+    * dropped support for posgres < 8.3 (closes #76944)
+
+
+
+2011-10-17  --  1.7.0
+    * new WEEKDAY date extraction function
+
+    * sqlserver support for other existing date extraction function, added
+	helper to get list of VIEWs
+
+
+
+2011-08-05  --  1.6.3
+    * closes #72219: sqlserver doesn't support TRUE/FALSE
+
+
+
+2011-07-27  --  1.6.2
+    * actually fix sqlite boolean type to use 0 and 1 properly
+
+
+
+2011-07-27  --  1.6.1
+    * [fti] exclude numbers from stop words in fti parser (closes: #69471)
+
+    * fix backup/restore commands for sqlite backend (closes: #69607)
+
+    * fix checking of maximum number of function (closes: #71413)
+
+    * support for COUNT(DISTINCT ...) (closes: #71414)
+
+    * sqlite has no boolean type, should use 0 and 1
+
+
+
+2011-06-09  --  1.6.0
+    * new CAST function
+
+    * new methods on db_helpers to support regexp-based pattern
+      matching, using a REGEXP operator
+
+    * support BigInt mapping
+
+    * added sql_restart_sequence to dbhelper classes
+
+    * tz datetime fix (don't return datetime with tz info set )
+
+    * use logging and not print statements (closes #64792)
+
+
+
+2011-04-01  --  1.5.0
+    * fix deprecation warning and depend on common 0.55.2
+
+    * TZ datetime and time support
+
+
+
+2011-03-28  --  1.4.0
+    * abstract OFFSET LIMIT support (incl. support for MSSQL)
+
+
+
+2011-01-13  --  1.3.2
+    * fix index dropping on sql server 2005
+
+    * new sql_rename_table function on db helper
+
+    * sqlite: fix restore command
+
+
+
+2010-10-11  --  1.3.1
+    * nice repr() on dbhelper
+
+    * fix binary column value conversion by dbhelper.binary_value
+
+
+
+2010-09-23  --  1.3.0
+    * methods to create/remove multi-columns unique index updated to
+      return a list of sql statements and renamed to
+      sqls_create_multicol_unique_index / sqls_drop_multicol_unique_index.
+      This has been necessary to properly implements them with sql server,
+      which doesn't like such kind of index w/ NULL values.
+
+
+
+2010-09-10  --  1.2.0
+    * new methods to create/remove multi-columns unique index:
+      sql_create_multicol_unique_index / sql_drop_multicol_unique_index
+
+    * add support for sql ABS() function
+
+
+
+2010-07-05  --  1.1.0
+    * change fti api to allow support for ranking control when using postgres
+
+
+
+2010-07-02  --  1.0.5
+    * provide new change_col_type / set_null_allowed method on advanced
+      helpers, similar to sql_change_col_type / sql_set_null_allowed but
+      taking a cursor as argument and actually doing necessary stuff. You
+      should prefer those method to the sql_* ones since in some case we're
+      unable to do what's necessary in those (eg sqlserver2005).
+
+
+
+2010-06-21  --  1.0.4
+    * enhanced sqlserver support:
+
+    * list_indices implementation
+
+    * sql_change_col_type, sql_set_null_allowed implementation
+
+    * new sql_concat_string method on db-helpers, with specific implementation
+      for sqlserver
+
+    * fix sqlite datetime parsing
+
+
+
+2010-06-11  --  1.0.3
+    * add support for wildcard search when using postgres (require postgres >= 8.4)
+
+    * repair backup/restore for sqlserver
+
+    * fix licensing information (LGPL)
+
+
+
+2010-04-11  --  1.0.2
+    * new SUBSTRING function
+
+
+
+2010-03-18  --  1.0.1
+    * remove non existant test/data dir from __pkginfo__.includes_dir
+
+
+
+2010-03-16  --  1.0.0
+    * initial release, containing code originally in logilab.common.db, logilab.
+      common.adbh, and the indexer package
+
+
+

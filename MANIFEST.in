@@ -1,0 +1,4 @@
+include ChangeLog
+include COPYING
+include COPYING.LESSER
+include ftiparser.g
