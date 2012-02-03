@@ -324,6 +324,8 @@ class DBAPIAdapter(object):
             transform = bool
         elif typecode == self.BINARY and binarywrap is not None:
             transform = binarywrap
+        elif typecode == self.DATETIME: # XXX only for TZDatetime w/ backend returning some tzinfo
+            transform = lambda v: utcdatetime(v) if isinstance(v, datetime) else v
         elif typecode == self.UNKNOWN:
             # may occurs on constant selection for instance (e.g. SELECT 'hop')
             # with postgresql at least
@@ -367,7 +369,7 @@ class DBAPIAdapter(object):
         for i, coldescr in enumerate(description):
             transform = self._transformation_callback(coldescr, encoding, binarywrap)
             if transform is not None:
-                transformations.append((i, transform))
+                transformations.append( (i, transform) )
         return transformations
 
     def process_value(self, value, description, encoding='utf-8',
