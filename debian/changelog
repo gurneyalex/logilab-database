@@ -1,3 +1,9 @@
+logilab-database (1.8.2-2) unstable; urgency=low
+
+  * Mark the package as incompatible with python < 2.5.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 22 Jun 2012 14:03:59 +0200
+
 logilab-database (1.8.2-1) unstable; urgency=low
 
   * new upstream release
