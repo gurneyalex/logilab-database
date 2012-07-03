@@ -190,22 +190,11 @@ class _PySqlite2Adapter(db.DBAPIAdapter):
         return _transform
 
 
-class _SqliteAdapter(db.DBAPIAdapter):
-    """Simple sqlite Adapter to DBAPI
-    """
-    def __init__(self, native_module, pywrap=False):
-        db.DBAPIAdapter.__init__(self, native_module, pywrap)
-        self.DATETIME = native_module.TIMESTAMP
-
-    def connect(self, host='', database='', user='', password='', port='', extra_args=None):
-        """Handles sqlite connection format"""
-        return self._wrap_if_needed(self._native_module.connect(database))
-
-
-db._PREFERED_DRIVERS['sqlite'] = ['pysqlite2.dbapi2', 'sqlite', 'sqlite3']
+db._PREFERED_DRIVERS['sqlite'] = [
+    'pysqlite2.dbapi2',
+    'sqlite3']
 db._ADAPTER_DIRECTORY['sqlite'] = {
     'pysqlite2.dbapi2' : _PySqlite2Adapter,
-    'sqlite' : _SqliteAdapter,
     'sqlite3' : _PySqlite2Adapter,
     }
 
