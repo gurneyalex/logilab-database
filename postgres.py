@@ -96,7 +96,12 @@ class _Psycopg2Adapter(_PsycopgAdapter):
     def __init__(self, native_module, pywrap=False):
         from psycopg2 import extensions
         extensions.register_type(extensions.UNICODE)
-        extensions.register_type(extensions.UNICODEARRAY)
+        try:
+            unicodearray = extensions.UNICODEARRAY
+        except AttributeError:
+            from from psycopg2 import _psycopg
+            unicodearray = _psycopg.UNICODEARRAY
+        extensions.register_type(unicodearray)
         self.BOOLEAN = extensions.BOOLEAN
         db.DBAPIAdapter.__init__(self, native_module, pywrap)
         self._init_psycopg2()
