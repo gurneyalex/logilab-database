@@ -99,7 +99,7 @@ class _Psycopg2Adapter(_PsycopgAdapter):
         try:
             unicodearray = extensions.UNICODEARRAY
         except AttributeError:
-            from from psycopg2 import _psycopg
+            from psycopg2 import _psycopg
             unicodearray = _psycopg.UNICODEARRAY
         extensions.register_type(unicodearray)
         self.BOOLEAN = extensions.BOOLEAN
