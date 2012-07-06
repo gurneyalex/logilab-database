@@ -276,6 +276,8 @@ class DBAPIAdapter(object):
     row_is_mutable = False
     # True if the fetch*() methods return unicode and not binary strings
     returns_unicode = False
+    # True is the backend support COPY FROM method
+    support_copy_from = False
 
     def __init__(self, native_module, pywrap=False):
         """

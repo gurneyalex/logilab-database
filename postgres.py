@@ -92,6 +92,8 @@ class _Psycopg2Adapter(_PsycopgAdapter):
     # "select typname from pg_type where oid=705";
     UNKNOWN = 705
     returns_unicode = True
+    # True is the backend support COPY FROM method
+    support_copy_from = True
 
     def __init__(self, native_module, pywrap=False):
         from psycopg2 import extensions
