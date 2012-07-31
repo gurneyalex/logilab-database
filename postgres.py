@@ -134,6 +134,17 @@ class _Psycopg2Adapter(_PsycopgAdapter):
             #extensions.register_adapter(cStringIO.StringIO, adapt_stringio)
 
 
+class _Psycopg2CtypesAdapter(_Psycopg2Adapter):
+    """psycopg2-ctypes adapter
+
+    cf. https://github.com/mvantellingen/psycopg2-ctypes
+    """
+    def __init__(self, native_module, pywrap=False):
+        # install psycopg2 compatibility
+        from psycopg2ct import compat
+        compat.register()
+        _Psycopg2Adapter.__init__(self, native_module, pywrap)
+
 class _PgsqlAdapter(db.DBAPIAdapter):
     """Simple pyPgSQL Adapter to DBAPI
     """
@@ -157,12 +168,13 @@ class _PgsqlAdapter(db.DBAPIAdapter):
 
 db._PREFERED_DRIVERS['postgres'] = [
     #'logilab.database._pyodbcwrap',
-    'psycopg2', 'psycopg', 'pgdb', 'pyPgSQL.PgSQL',
+    'psycopg2', 'psycopg2ct', 'psycopg', 'pgdb', 'pyPgSQL.PgSQL',
     ]
 db._ADAPTER_DIRECTORY['postgres'] = {
     'pgdb' : _PgdbAdapter,
     'psycopg' : _PsycopgAdapter,
     'psycopg2' : _Psycopg2Adapter,
+    'psycopg2ct' : _Psycopg2CtypesAdapter,
     'pyPgSQL.PgSQL' : _PgsqlAdapter,
     }
 
