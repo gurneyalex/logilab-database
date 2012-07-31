@@ -438,13 +438,14 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
 
         Require extensions to be already in.
         """
-        # XXX create GIN or GIST index, see FTS wiki
         return """
 CREATE table appears(
   uid     INTEGER PRIMARY KEY NOT NULL,
   words   tsvector,
   weight  FLOAT
 );
+
+CREATE INDEX appears_words_idx ON appears USING gin(words);
 """
 
     def sql_drop_fti(self):
