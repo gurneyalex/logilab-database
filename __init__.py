@@ -535,6 +535,12 @@ class MINUTE(ExtractDateField):
 class SECOND(ExtractDateField):
     field = 'SECOND'
 
+class EPOCH(ExtractDateField):
+    """Return EPOCH timestamp from a datetime/date ;
+    return number of seconds for an interval.
+    """
+    field = 'EPOCH'
+
 class WEEKDAY(FunctionDescr):
     """Return the day of the week represented by the date.
 
@@ -626,7 +632,7 @@ for func_class in (
     ABS, RANDOM,
     UPPER, LOWER, SUBSTRING, LENGTH,
     DATE,
-    YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, WEEKDAY, AT_TZ,
+    YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, WEEKDAY, EPOCH, AT_TZ,
     # cast functions
     CAST,
     # keyword function
