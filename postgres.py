@@ -38,7 +38,7 @@ from warnings import warn
 from logilab.common.deprecation import deprecated
 
 from logilab import database as db
-from logilab.database.fti import normalize_words, tokenize, tokenize_query
+from logilab.database.fti import normalize_words, tokenize_query
 
 
 TSEARCH_SCHEMA_PATH = ('/usr/share/postgresql/?.?/contrib/tsearch2.sql', # current debian
@@ -383,7 +383,6 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         """
         if isinstance(querystr, str):
             querystr = unicode(querystr, self.dbencoding)
-        words = normalize_words(tokenize(querystr))
         searched = self._fti_query_to_tsquery_words(querystr)
         sql = "%s.words @@ to_tsquery('%s', '%s')" % (tablename, self.config, searched)
         if not_:
@@ -398,7 +397,6 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         """
         if isinstance(querystr, str):
             querystr = unicode(querystr, self.dbencoding)
-        words = normalize_words(tokenize(querystr))
         searched = self._fti_query_to_tsquery_words(querystr)
         return "ts_rank(%s.words, to_tsquery('%s', '%s'))*%s.weight" % (
             tablename, self.config, searched, tablename)
