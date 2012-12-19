@@ -1,4 +1,4 @@
-# copyright 2003-2011 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# copyright 2003-2012 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 # contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
 #
 # This file is part of logilab-database.
@@ -23,6 +23,7 @@ Currently support:
 - postgresql (pgdb, psycopg, psycopg2, pyPgSQL)
 - mysql (MySQLdb)
 - sqlite (pysqlite2, sqlite, sqlite3)
+- sqlserver 2000, 2005, 2008 (pyodbc, adodbapi)
 
 just use the `get_connection` function from this module to get a
 wrapped connection.  If multiple drivers for a database are available,
@@ -33,10 +34,12 @@ Additional helpers are also provided for advanced functionalities such
 as listing existing users or databases, creating database... Get the
 helper for your database using the `get_db_helper` function.
 """
+from __future__ import with_statement
 
 __docformat__ = "restructuredtext en"
 
 import sys
+import threading
 import logging
 from datetime import datetime, time
 
@@ -47,12 +50,16 @@ _LOGGER = logging.getLogger('logilab.database')
 
 USE_MX_DATETIME = False
 
+_LOAD_MODULES_LOCK = threading.Lock()
+
 _PREFERED_DRIVERS = {}
 _ADV_FUNC_HELPER_DIRECTORY = {}
 
 def _ensure_module_loaded(driver):
     if driver in ('postgres', 'sqlite', 'mysql', 'sqlserver2005'):
-        __import__('logilab.database.%s' % driver)
+        with _LOAD_MODULES_LOCK:
+            __import__('logilab.database.%s' % driver)
+
 # main functions ###############################################################
 
 def get_db_helper(driver):
@@ -83,7 +90,7 @@ def get_connection(driver='postgres', host='', database='', user='',
         adapter = _ADAPTER_DIRECTORY.get_adapter(driver, modname)
     except NoAdapterFound, err:
         if not quiet:
-            msg = 'No Adapter found for %s, using default one' 
+            msg = 'No Adapter found for %s, using default one'
             _LOGGER.warning(msg, err.objname)
         adapted_module = DBAPIAdapter(module, pywrap)
     else:
@@ -106,16 +113,17 @@ def set_prefered_driver(driver, module, _drivers=_PREFERED_DRIVERS):
     _drivers is a optional dictionary of drivers
     """
     _ensure_module_loaded(driver)
-    try:
-        modules = _drivers[driver]
-    except KeyError:
-        raise UnknownDriver('Unknown driver %s' % driver)
-    # Remove module from modules list, and re-insert it in first position
-    try:
-        modules.remove(module)
-    except ValueError:
-        raise UnknownDriver('Unknown module %s for %s' % (module, driver))
-    modules.insert(0, module)
+    with _LOAD_MODULES_LOCK:
+        try:
+            modules = _drivers[driver]
+        except KeyError:
+            raise UnknownDriver('Unknown driver %s' % driver)
+        # Remove module from modules list, and re-insert it in first position
+        try:
+            modules.remove(module)
+        except ValueError:
+            raise UnknownDriver('Unknown module %s for %s' % (module, driver))
+        modules.insert(0, module)
 
 
 # unified db api ###############################################################
@@ -175,18 +183,19 @@ def _import_driver_module(driver, drivers, quiet=True):
     """
     if not driver in drivers:
         raise UnknownDriver(driver)
-    for modname in drivers[driver]:
-        try:
-            if not quiet:
-                _LOGGER.info('Trying %s', modname)
-            module = load_module_from_name(modname, use_sys=False)
-            break
-        except ImportError:
-            if not quiet:
-                _LOGGER.warning('%s is not available', modname)
-            continue
-    else:
-        raise ImportError('Unable to import a %s module' % driver)
+    with _LOAD_MODULES_LOCK:
+        for modname in drivers[driver]:
+            try:
+                if not quiet:
+                    _LOGGER.info('Trying %s', modname)
+                module = load_module_from_name(modname, use_sys=False)
+                break
+            except ImportError:
+                if not quiet:
+                    _LOGGER.warning('%s is not available', modname)
+                continue
+        else:
+            raise ImportError('Unable to import a %s module' % driver)
     return module, modname
 
 
