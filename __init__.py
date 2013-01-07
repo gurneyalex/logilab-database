@@ -595,7 +595,7 @@ class _FunctionRegistry(object):
             pass
         assert isinstance(funcdef, FunctionDescr)
         funcname = funcname or funcdef.name
-        self.functions[funcname] = funcdef
+        self.functions[funcname.upper()] = funcdef
 
     def get_function(self, funcname):
         try:
