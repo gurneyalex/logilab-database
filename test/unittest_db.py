@@ -113,37 +113,45 @@ class GetCnxTC(TestCase):
     def testPgsql(self):
         PREFERED_DRIVERS['postgres'] = ['pyPgSQL.PgSQL']
         try:
+            import pyPgSQL.PgSQL
+        except ImportError:
+            self.skipTest('python-pygresql is not installed')
+        try:
             cnx = get_connection('postgres',
                                  self.host, self.db, self.user, self.passwd,
                                  quiet=1)
-        except ImportError:
-            self.skipTest('python-pygresql is not installed')
+        except pyPgSQL.PgSQL.DatabaseError, ex:
+            if str(ex).startswith('could not connect to server:'):
+                    self.skipTest('pgsql test requires a specific configuration')
+            raise
 
     def testMysql(self):
         PREFERED_DRIVERS['mysql'] = ['MySQLdb']
         try:
-            cnx = get_connection('mysql', self.host, database='', user='root',
-                                 quiet=1)
+            import MySQLdb
         except ImportError:
             self.skipTest('python-mysqldb is not installed')
-        except Exception, ex:
-            # no mysql running ?
-            import MySQLdb
-            if isinstance(ex, MySQLdb.OperationalError):
-                if ex.args[0] == 1045: # find MysqlDb
-                    self.skipTest('mysql test requires a specific configuration')
-                elif ex.args[0] != 2003:
-                    raise
-            raise
+        try:
+            cnx = get_connection('mysql', self.host, database='', user='root',
+                                 quiet=1)
+        except  MySQLdb.OperationalError, ex:
+            if ex.args[0] == 1045: # find MysqlDb
+                self.skipTest('mysql test requires a specific configuration')
+            elif ex.args[0] != 2003:
+                raise
 
     def test_connection_wrap(self):
         """Tests the connection wrapping"""
         try:
+            import psycopg2
+        except ImportError:
+            self.skipTest('psycopg2 module not installed')
+        try:
             cnx = get_connection('postgres',
                                  self.host, self.db, self.user, self.passwd,
                                  quiet=1)
-        except ImportError:
-            self.skipTest('postgresql dbapi module not installed')
+        except psycopg2.OperationalError, ex:
+            self.skipTest('pgsql test requires a specific configuration')
         self.failIf(isinstance(cnx, PyConnection),
                     'cnx should *not* be a PyConnection instance')
         cnx = get_connection('postgres',
@@ -156,11 +164,15 @@ class GetCnxTC(TestCase):
     def test_cursor_wrap(self):
         """Tests cursor wrapping"""
         try:
+            import psycopg2
+        except ImportError:
+            self.skipTest('psycopg2 module not installed')
+        try:
             cnx = get_connection('postgres',
                                  self.host, self.db, self.user, self.passwd,
                                  quiet=1, pywrap=True)
-        except ImportError:
-            self.skipTest('postgresql dbapi module not installed')
+        except psycopg2.OperationalError, ex:
+            self.skipTest('pgsql test requires a specific configuration')
         cursor = cnx.cursor()
         self.failUnless(isinstance(cursor, PyCursor),
                         'cnx should be a PyCursor instance')
