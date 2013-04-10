@@ -2,7 +2,6 @@
 %if 0%{?el5}
 %define python python26
 %define __python /usr/bin/python2.6
-%{!?python_scriptarch: %define python_scriptarch %(%{__python} -c "from distutils.sysconfig import get_python_lib; from os.path import join; print join(get_python_lib(1, 1), 'scripts')")}
 %else
 %define python python
 %define __python /usr/bin/python
@@ -10,7 +9,7 @@
 %{!?_python_sitelib: %define _python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           %{python}-logilab-database
-Version:        1.8.2
+Version:        1.9.0
 Release:        logilab.1%{?dist}
 Summary:        Unified database access library for python
 
@@ -48,11 +47,9 @@ find . -name '*.py' -type f -print0 |  xargs -0 sed -i '1,3s;^#!.*python.*$;#! /
 
 %install
 rm -rf $RPM_BUILD_ROOT
-NO_SETUPTOOLS=1 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT %{?python_scriptarch: --install-scripts=%{python_scriptarch}}
+NO_SETUPTOOLS=1 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_ROOT%{_python_sitelib}/logilab/database/test
-
-%check
-%{__python} setup.py test
+rm -rf $RPM_BUILD_ROOT%{_python_sitelib}/logilab/__init__.py*
 
 %clean
 rm -rf $RPM_BUILD_ROOT
