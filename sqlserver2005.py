@@ -1,4 +1,4 @@
-# copyright 2003-2011 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# copyright 2003-2013 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 # contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
 #
 # This file is part of logilab-database.
@@ -25,10 +25,10 @@ Supported drivers, in order of preference:
 import os
 import sys
 import shutil
+import StringIO
 
 from logilab import database as db
 from logilab.database.sqlserver import _PyodbcAdapter, _AdodbapiAdapter
-import StringIO
 
 class _PyodbcSqlServer2005Adapter(_PyodbcAdapter):
     driver = "SQL Server Native Client 10.0"
@@ -56,12 +56,7 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
     TYPE_MAPPING['Password'] = 'varbinary(255)'
     TYPE_MAPPING['Bytes'] =    'varbinary(max)'
     TYPE_MAPPING['SizeConstrainedString'] = 'nvarchar(%s)'
-
-    def boolean_value(self, value):
-        if value:
-            return 1
-        else:
-            return 0
+    TYPE_CONVERTERS = db._GenericAdvFuncHelper.TYPE_CONVERTERS.copy()
 
     def list_tables(self, cursor):
         """return the list of tables of a database"""

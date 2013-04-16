@@ -1,4 +1,4 @@
-# copyright 2003-2011 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# copyright 2003-2013 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 # contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
 #
 # This file is part of logilab-database.
@@ -213,11 +213,7 @@ class _SqliteAdvFuncHelper(db._GenericAdvFuncHelper):
     intersect_all_support = False
     alter_column_support = False
 
-    def boolean_value(self, value):
-        if value:
-            return 1
-        else:
-            return 0
+    TYPE_CONVERTERS = db._GenericAdvFuncHelper.TYPE_CONVERTERS.copy()
 
     def backup_commands(self, backupfile, keepownership=True,
                         dbname=None, dbhost=None, dbport=None, dbuser=None):

@@ -1,6 +1,11 @@
 Changelog for logilab database package
 ======================================
 
+
+--
+    * #132587: TYPE_CONVERTERS dictionary on db helper containing type 
+      conversion callback
+
 2012-02-03  --  1.8.2
     * don't use CURRENT_DATETIME for postgresql (#83892)
 
