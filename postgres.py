@@ -1,4 +1,4 @@
-# copyright 2003-2011 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# copyright 2003-2013 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 # contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
 #
 # This file is part of logilab-database.
@@ -178,6 +178,11 @@ db._ADAPTER_DIRECTORY['postgres'] = {
     'pyPgSQL.PgSQL' : _PgsqlAdapter,
     }
 
+def convert_boolean(value):
+    if value:
+        return 'TRUE'
+    else:
+        return 'FALSE'
 
 
 class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
@@ -189,6 +194,8 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
     TYPE_MAPPING.update({
         'TZTime' :   'time with time zone',
         'TZDatetime':'timestamp with time zone'})
+    TYPE_CONVERTERS = db._GenericAdvFuncHelper.TYPE_CONVERTERS.copy()
+    TYPE_CONVERTERS['Boolean'] = convert_boolean
 
     def pgdbcmd(self, cmd, dbhost, dbport, dbuser, *args):
         cmd = [cmd]
