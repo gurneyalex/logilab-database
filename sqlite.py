@@ -17,11 +17,7 @@
 # with logilab-database. If not, see <http://www.gnu.org/licenses/>.
 """Sqlite RDBMS support
 
-Supported drivers, in order of preference:
-- pysqlite2 (recommended, others are not well tested)
-- sqlite
-- sqlite3
-
+Supported driver: sqlite3
 """
 __docformat__ = "restructuredtext en"
 
@@ -32,26 +28,33 @@ import re
 from logilab.common.date import strptime
 from logilab import database as db
 
-class _PySqlite2Adapter(db.DBAPIAdapter):
-    """Simple pysqlite2 Adapter to DBAPI
-    """
-    # no type code in pysqlite2
+class _Sqlite3Adapter(db.DBAPIAdapter):
+    # no type code in sqlite3
     BINARY = 'XXX'
     STRING = 'XXX'
     DATETIME = 'XXX'
     NUMBER = 'XXX'
     BOOLEAN = 'XXX'
+    _module_is_initialized = False
 
     def __init__(self, native_module, pywrap=False):
         db.DBAPIAdapter.__init__(self, native_module, pywrap)
-        self._init_pysqlite2()
+        self._init_module()
 
-    def _init_pysqlite2(self):
-        """initialize pysqlite2 to use mx.DateTime for date and timestamps"""
-        sqlite = self._native_module
-        if hasattr(sqlite, '_lc_initialized'):
+    def _init_module(self):
+        """ This declares adapters for the sqlite _module_
+        and should be called only once.
+
+        We do this here in order to be as lazy as possible
+        (these adapters won't be added until we instantiate at
+        least one Sqlite3Adapter object).
+        """
+        if self._module_is_initialized:
             return
-        sqlite._lc_initialized = 1
+        _Sqlite3Adapter._module_is_initialized = True
+
+        # let's register adapters
+        sqlite = self._native_module
 
         # bytea type handling
         from StringIO import StringIO
@@ -142,7 +145,7 @@ class _PySqlite2Adapter(db.DBAPIAdapter):
         """Handles sqlite connection format"""
         sqlite = self._native_module
 
-        class PySqlite2Cursor(sqlite.Cursor):
+        class Sqlite3Cursor(sqlite.Cursor):
             """cursor adapting usual dict format to pysqlite named format
             in SQL queries
             """
@@ -167,12 +170,12 @@ class _PySqlite2Adapter(db.DBAPIAdapter):
                     kwargss = tuple(kwargss)
                 self.__class__.__bases__[0].executemany(self, self._replace_parameters(sql, kwargss[0]), kwargss)
 
-        class PySqlite2CnxWrapper:
+        class Sqlite3CnxWrapper:
             def __init__(self, cnx):
                 self._cnx = cnx
 
             def cursor(self):
-                return self._cnx.cursor(PySqlite2Cursor)
+                return self._cnx.cursor(Sqlite3Cursor)
             def __getattr__(self, attrname):
                 return getattr(self._cnx, attrname)
 
@@ -180,7 +183,7 @@ class _PySqlite2Adapter(db.DBAPIAdapter):
         # database
         cnx = sqlite.connect(abspath(database),
                              detect_types=sqlite.PARSE_DECLTYPES)
-        return self._wrap_if_needed(PySqlite2CnxWrapper(cnx))
+        return self._wrap_if_needed(Sqlite3CnxWrapper(cnx))
 
     def _transformation_callback(self, description, encoding='utf-8', binarywrap=None):
         def _transform(value):
@@ -191,11 +194,9 @@ class _PySqlite2Adapter(db.DBAPIAdapter):
 
 
 db._PREFERED_DRIVERS['sqlite'] = [
-    'pysqlite2.dbapi2',
     'sqlite3']
 db._ADAPTER_DIRECTORY['sqlite'] = {
-    'pysqlite2.dbapi2' : _PySqlite2Adapter,
-    'sqlite3' : _PySqlite2Adapter,
+    'sqlite3' : _Sqlite3Adapter,
     }
 
 
