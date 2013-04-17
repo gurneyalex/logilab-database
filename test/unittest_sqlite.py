@@ -34,6 +34,14 @@ class SQLiteHelperTC(unittest.TestCase):
         self.assertEqual(self.helper.TYPE_MAPPING['Password'], 'bytea')
         self.assertEqual(self.helper.TYPE_MAPPING['Bytes'], 'bytea')
 
+class SQLiteAdapterTC(unittest.TestCase):
+
+    def test_only_one_lazy_module_initialization(self):
+        import sqlite3
+        from logilab.database import sqlite as lgdbsqlite
+        self.assertFalse(lgdbsqlite._Sqlite3Adapter._module_is_initialized)
+        adapter = lgdbsqlite._Sqlite3Adapter(sqlite3)
+        self.assertTrue(adapter._module_is_initialized)
 
 if __name__ == '__main__':
     unittest.main()
