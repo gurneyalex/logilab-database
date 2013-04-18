@@ -144,7 +144,6 @@ class _MyAdvFuncHelper(db._GenericAdvFuncHelper):
     TYPE_MAPPING['Datetime'] = 'datetime'
 
     TYPE_CONVERTERS = db._GenericAdvFuncHelper.TYPE_CONVERTERS.copy()
-    TYPE_CONVERTERS['Boolean'] = mysql_convert_boolean
 
     def mycmd(self, cmd, dbhost, dbport, dbuser):
         cmd = [cmd]
