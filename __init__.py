@@ -42,6 +42,7 @@ import sys
 import threading
 import logging
 from datetime import datetime, time, date
+from warnings import warn
 
 from logilab.common.modutils import load_module_from_name
 from logilab.common.date import todate, todatetime, utcdatetime, utctime
@@ -503,9 +504,18 @@ class COUNT(AggrFunctionDescr):
     maxargs = 2
 
     def as_sql(self, backend, args):
-        if len(args) == 2 and args[1] == get_db_helper(backend).boolean_value(True):
+        if len(args) == 2:
+            # deprecated COUNT DISTINCT form, suppose 2nd argument is true
+            warn('[lgdb 1.10] use COUNTDISTINCT instead of COUNT(X, TRUE)',
+                 DeprecationWarning)
             return '%s(DISTINCT %s)' % (self.name, args[0])
         return '%s(%s)' % (self.name, args[0])
+
+class COUNTDISTINCT(AggrFunctionDescr):
+    rtype = 'Int'
+
+    def as_sql(self, backend, args):
+        return '%s(DISTINCT %s)' % (self.name, args[0])
 
 class AVG(AggrFunctionDescr):
     rtype = 'Float'
@@ -663,7 +673,7 @@ SQL_FUNCTIONS_REGISTRY = _FunctionRegistry()
 
 for func_class in (
     # aggregate functions
-    MIN, MAX, SUM, COUNT, AVG,
+    MIN, MAX, SUM, COUNT, COUNTDISTINCT, AVG,
     # transformation functions
     ABS, RANDOM,
     UPPER, LOWER, SUBSTRING, LENGTH,
