@@ -35,6 +35,8 @@ __docformat__ = "restructuredtext en"
 from os.path import join, dirname, isfile
 from warnings import warn
 
+from logilab.common.deprecation import deprecated
+
 from logilab import database as db
 from logilab.database.fti import normalize_words, tokenize, tokenize_query
 
@@ -455,6 +457,7 @@ CREATE INDEX appears_words_idx ON appears USING gin(words);
     def sql_grant_user_on_fti(self, user):
         return 'GRANT ALL ON appears TO %s;' % (user)
 
+    @deprecated('[lgdb 1.10] deprecated method')
     def boolean_value(self, value):
         if value:
             return 'TRUE'
