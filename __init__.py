@@ -970,9 +970,6 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
         table_name = self.temporary_table_name(table_name)
         return "CREATE TEMPORARY TABLE %s (%s);" % (table_name, table_schema)
 
-    def boolean_value(self, value): # XXX deprecate?
-        return self.TYPE_CONVERTERS['Boolean'](value)
-
     def binary_value(self, value):
         """convert a value to a python object known by the driver to
         be mapped to a binary column"""
@@ -1039,3 +1036,6 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
     def list_indices(self, cursor, table=None):
         """return the list of indices of a database, only for the given table if specified"""
         raise NotImplementedError('not supported by this DBMS')
+
+    def boolean_value(self, value): # XXX deprecate?
+        return int(bool(value))
