@@ -4,12 +4,14 @@ Changelog for logilab database package
 
 --
 
-    * #132590 (sqlgen): allow to give arbitrary SQL expression (e.g. function call)
-      as argument to select/insert/delete/set methods by giving SQLExpression instances 
-      instead of bare strings
+    * #132590 (sqlgen): allow to give arbitrary SQL expression
+      (e.g. function call) as argument to select/insert/delete/set
+      methods by giving SQLExpression instances instead of bare strings
 
-    * #132587: TYPE_CONVERTERS dictionary on db helper containing type 
+    * #132587: TYPE_CONVERTERS dictionary on db helper containing type
       conversion callback
+
+    * deprecate helper's boolean_value method
 
 2012-02-03  --  1.8.2
     * don't use CURRENT_DATETIME for postgresql (#83892)

@@ -46,6 +46,7 @@ from warnings import warn
 
 from logilab.common.modutils import load_module_from_name
 from logilab.common.date import todate, todatetime, utcdatetime, utctime
+from logilab.common.deprecation import deprecated
 
 _LOGGER = logging.getLogger('logilab.database')
 
@@ -1047,5 +1048,6 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
         """return the list of indices of a database, only for the given table if specified"""
         raise NotImplementedError('not supported by this DBMS')
 
-    def boolean_value(self, value): # XXX deprecate?
+    @deprecated('[lgdb 1.10] deprecated method')
+    def boolean_value(self, value):
         return int(bool(value))
