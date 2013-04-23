@@ -1,4 +1,4 @@
-# copyright 2003-2011 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# copyright 2003-2013 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 # contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
 #
 # This file is part of logilab-database.
@@ -179,7 +179,6 @@ db._ADAPTER_DIRECTORY['postgres'] = {
     }
 
 
-
 class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
     """Postgres helper, taking advantage of postgres SEQUENCE support
     """
@@ -189,6 +188,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
     TYPE_MAPPING.update({
         'TZTime' :   'time with time zone',
         'TZDatetime':'timestamp with time zone'})
+    TYPE_CONVERTERS = db._GenericAdvFuncHelper.TYPE_CONVERTERS.copy()
 
     def pgdbcmd(self, cmd, dbhost, dbport, dbuser, *args):
         cmd = [cmd]
@@ -454,6 +454,12 @@ CREATE INDEX appears_words_idx ON appears USING gin(words);
 
     def sql_grant_user_on_fti(self, user):
         return 'GRANT ALL ON appears TO %s;' % (user)
+
+    def boolean_value(self, value):
+        if value:
+            return 'TRUE'
+        else:
+            return 'FALSE'
 
 
 db._ADV_FUNC_HELPER_DIRECTORY['postgres'] = _PGAdvFuncHelper

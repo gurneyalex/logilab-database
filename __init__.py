@@ -1,4 +1,4 @@
-# copyright 2003-2012 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# copyright 2003-2013 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 # contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
 #
 # This file is part of logilab-database.
@@ -41,10 +41,10 @@ __docformat__ = "restructuredtext en"
 import sys
 import threading
 import logging
-from datetime import datetime, time
+from datetime import datetime, time, date
 
 from logilab.common.modutils import load_module_from_name
-from logilab.common.date import utcdatetime, utctime
+from logilab.common.date import todate, todatetime, utcdatetime, utctime
 
 _LOGGER = logging.getLogger('logilab.database')
 
@@ -124,6 +124,33 @@ def set_prefered_driver(driver, module, _drivers=_PREFERED_DRIVERS):
         except ValueError:
             raise UnknownDriver('Unknown module %s for %s' % (module, driver))
         modules.insert(0, module)
+
+
+# types converters #############################################################
+
+def convert_datetime(value):
+    # Note: use is __class__ since issubclass(datetime, date)
+    if type(value) is date:
+        value = todatetime(value)
+    return value
+
+def convert_date(value):
+    if isinstance(value, datetime):
+        value = todate(value)
+    return value
+
+def convert_tzdatetime(value):
+    # Note: use is __class__ since issubclass(datetime, date)
+    if type(value) is date:
+        value = todatetime(value)
+    elif getattr(value, 'tzinfo', None):
+        value = utcdatetime(value)
+    return value
+
+def convert_tztime(value):
+    if getattr(value, 'tzinfo', None):
+        value = utctime(value)
+    return value
 
 
 # unified db api ###############################################################
@@ -652,6 +679,7 @@ def register_function(funcdef):
     """register the function `funcdef` on supported backends"""
     SQL_FUNCTIONS_REGISTRY.register_function(funcdef)
 
+
 class _TypeMapping(dict):
     def __getitem__(self, key):
         try:
@@ -665,6 +693,7 @@ class _TypeMapping(dict):
 
     def copy(self):
         return _TypeMapping(dict.copy(self))
+
 
 class _GenericAdvFuncHelper(FTIndexerMixIn):
     """Generic helper, trying to provide generic way to implement
@@ -689,6 +718,15 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         'Datetime' : 'timestamp',
         'Interval' : 'interval',
         })
+
+    TYPE_CONVERTERS = {
+        'Boolean': bool,
+        # XXX needed for sqlite but I don't think it is for other backends
+        'Datetime': convert_datetime,
+        'Date': convert_date,
+        'TZDatetime': convert_tzdatetime,
+        'TZTime': convert_tztime,
+        }
 
     # DBMS resources descriptors and accessors
     backend_name = None # overridden in subclasses ('postgres', 'sqlite', etc.)
@@ -932,12 +970,6 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
         table_name = self.temporary_table_name(table_name)
         return "CREATE TEMPORARY TABLE %s (%s);" % (table_name, table_schema)
 
-    def boolean_value(self, value):
-        if value:
-            return 'TRUE'
-        else:
-            return 'FALSE'
-
     def binary_value(self, value):
         """convert a value to a python object known by the driver to
         be mapped to a binary column"""
@@ -1004,3 +1036,6 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
     def list_indices(self, cursor, table=None):
         """return the list of indices of a database, only for the given table if specified"""
         raise NotImplementedError('not supported by this DBMS')
+
+    def boolean_value(self, value): # XXX deprecate?
+        return int(bool(value))
