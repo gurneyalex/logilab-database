@@ -13,6 +13,16 @@ Changelog for logilab database package
 
     * deprecate helper's boolean_value method
 
+
+2012-12-19  --  1.9.0
+
+    * #112904: get_connection function is now locked for thread safetyness
+
+    * #99125:  add support_copy_from boolean on helpers, telling if the 
+      backend support COPY FROM
+
+    * #101711: register EPOCH function
+
 2012-02-03  --  1.8.2
     * don't use CURRENT_DATETIME for postgresql (#83892)
 
