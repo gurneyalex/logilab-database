@@ -1,9 +1,7 @@
 Changelog for logilab database package
 ======================================
 
-
---
-
+2013-04-23  --  1.10.0
     * #132590 (sqlgen): allow to give arbitrary SQL expression
       (e.g. function call) as argument to select/insert/delete/set
       methods by giving SQLExpression instances instead of bare strings
@@ -22,6 +20,7 @@ Changelog for logilab database package
       backend support COPY FROM
 
     * #101711: register EPOCH function
+
 
 2012-02-03  --  1.8.2
     * don't use CURRENT_DATETIME for postgresql (#83892)
