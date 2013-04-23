@@ -27,13 +27,14 @@ class TYPEConvertersTC(unittest.TestCase):
         self.helper = get_db_helper('sqlite')
         self.assertEqual(len(self.helper.TYPE_CONVERTERS), 5)
 
-    def test_convert_boolean_sqlite(self):
+    def test_convert_boolean(self):
         self.helper = get_db_helper('sqlite')
-        self.assertEqual(self.helper.TYPE_CONVERTERS['Boolean'](False), 0)
-
-    def test_convert_boolean_postgres(self):
-        self.helper = get_db_helper('postgres')
-        self.assertEqual(self.helper.TYPE_CONVERTERS['Boolean'](False), 'FALSE')
+        self.assertEqual(self.helper.TYPE_CONVERTERS['Boolean'](False), False)
+        self.assertEqual(self.helper.TYPE_CONVERTERS['Boolean'](True), True)
+        self.assertEqual(self.helper.TYPE_CONVERTERS['Boolean'](0), False)
+        self.assertEqual(self.helper.TYPE_CONVERTERS['Boolean'](1), True)
+        self.assertEqual(self.helper.TYPE_CONVERTERS['Boolean'](''), False)
+        self.assertEqual(self.helper.TYPE_CONVERTERS['Boolean']('1'), True)
 
     def test_convert_datetime(self):
         _date = date(1900,10,1)
