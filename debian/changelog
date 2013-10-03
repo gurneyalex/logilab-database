@@ -1,3 +1,9 @@
+logilab-database (1.10.0-2) UNRELEASED; urgency=low
+
+  * fix debian/control
+
+ -- David Douard <david.douard@logilab.fr>  Thu, 03 Oct 2013 13:45:53 +0200
+
 logilab-database (1.10.0-1) unstable; urgency=low
 
   * new upstream release
