@@ -228,24 +228,32 @@ AND j.column_id = k.column_id;"""
 
         return sql
 
-    def sqls_create_multicol_unique_index(self, table, columns):
+    def sqls_create_multicol_unique_index(self, table, columns, indexname=None):
         columns = sorted(columns)
-        view = 'utv_%s_%s' % (table, '_'.join(columns))
+        view = 'utv_%s_%s' % (table, indexname or '_'.join(columns))
         where = ' AND '.join(['%s IS NOT NULL' % c for c in columns])
-        idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
+        if indexname is None:
+            warn('You should provide an explicit index name else you risk '
+                 'a silent truncation of the computed index name.',
+                 DeprecationWarning)
+            indexname = 'unique_%s_%s_idx' % (table, '_'.join(columns))
         sql = ['CREATE VIEW %s WITH SCHEMABINDING AS SELECT %s FROM dbo.%s WHERE %s ;'%(view.lower(), 
                                                       ', '.join(columns),
                                                       table,
                                                       where),
-               'CREATE UNIQUE CLUSTERED INDEX %s ON %s(%s);' % (idx.lower(),
+               'CREATE UNIQUE CLUSTERED INDEX %s ON %s(%s);' % (indexname.lower(),
                                                                 view.lower(),
                                                                 ','.join(columns))
             ]
         return sql
 
-    def sqls_drop_multicol_unique_index(self, table, columns):
+    def sqls_drop_multicol_unique_index(self, table, columns, indexname=None):
+        if indexname is None:
+            warn('You should provide an explicit index name else you risk '
+                 'a silent truncation of the computed index name.',
+                 DeprecationWarning)
         columns = sorted(columns)
-        view = 'utv_%s_%s' % (table, '_'.join(columns))
+        view = 'utv_%s_%s' % (table, indexname or '_'.join(columns))
         sql = 'DROP VIEW %s' % (view.lower()) # also drops the index
         return [sql]
 
