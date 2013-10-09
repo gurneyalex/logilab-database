@@ -889,18 +889,25 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         else:
             return 'DROP INDEX %s' % idx
 
-    def sqls_create_multicol_unique_index(self, table, columns):
+    def sqls_create_multicol_unique_index(self, table, columns, indexname=None):
         columns = sorted(columns)
-        idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
-        sql = 'CREATE UNIQUE INDEX %s ON %s(%s);' % (idx.lower(),
-                                                     table,
-                                                     ','.join(columns))
+        if indexname is None:
+            warn('You should provide an explicit index name else you risk '
+                 'a silent truncation of the computed index name.',
+                 DeprecationWarning)
+            indexname = 'unique_%s_%s_idx' % (table, '_'.join(columns))
+        sql = 'CREATE UNIQUE INDEX %s ON %s(%s);' % (indexname.lower(),
+                                                     table, ','.join(columns))
         return [sql]
 
-    def sqls_drop_multicol_unique_index(self, table, columns):
+    def sqls_drop_multicol_unique_index(self, table, columns, indexname=None):
         columns = sorted(columns)
-        idx = 'unique_%s_%s_idx' % (table, '_'.join(columns))
-        sql = 'DROP INDEX %s;' % (idx.lower())
+        if indexname is None:
+            warn('You should provide an explicit index name else you risk '
+                 'a silent truncation of the computed index name.',
+                 DeprecationWarning)
+            indexname = 'unique_%s_%s_idx' % (table, '_'.join(columns))
+        sql = 'DROP INDEX %s;' % (indexname.lower())
         return [sql]
 
     def sql_create_sequence(self, seq_name):
