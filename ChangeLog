@@ -1,6 +1,10 @@
 Changelog for logilab database package
 ======================================
 
+2014-01-09  --  1.11.0
+    * #151507: add indexname parameter to sqls_create_multicol_unique_index
+      and sqls_drop_multicol_unique_index
+
 2013-04-23  --  1.10.0
     * #132590 (sqlgen): allow to give arbitrary SQL expression
       (e.g. function call) as argument to select/insert/delete/set
