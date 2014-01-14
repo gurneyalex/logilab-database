@@ -43,6 +43,10 @@ class TokenizeTC(unittest.TestCase):
         self.assertEqual(_tokenize(u'123'),
                           ['123'])
 
+    def test_aphostrophe(self):
+        self.assertEqual(_tokenize(u"l\u2019Échelle"),
+                          ['echelle'])
+
 
 class IndexableObject:
     entity_weight = 1.0
