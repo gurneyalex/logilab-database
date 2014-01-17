@@ -212,7 +212,7 @@ class _MyAdvFuncHelper(db._GenericAdvFuncHelper):
             cmd = 'DEFAULT'
         else:
             cmd = 'NOT'
-        return 'ALTER TABLE %s MODIFY COLUMN %s %s NULL' % (
+        return 'ALTER TABLE %s MODIFY COLUMN %s %s %s NULL' % (
             table, column, coltype, cmd)
 
     def sql_set_null_allowed(self, table, column, coltype, null_allowed):
