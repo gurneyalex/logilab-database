@@ -26,6 +26,7 @@ import os
 import sys
 import shutil
 import StringIO
+from warnings import warn
 
 from logilab import database as db
 from logilab.database.sqlserver import _PyodbcAdapter, _AdodbapiAdapter
