@@ -1,3 +1,9 @@
+logilab-database (1.11.1-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Aurelien Campeas <aurelien.campeas@logilab.fr>  Mon, 17 Feb 2014 11:39:13 +0100
+
 logilab-database (1.11.0-1) unstable; urgency=low
 
   * new upstream release
