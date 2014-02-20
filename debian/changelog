@@ -1,3 +1,9 @@
+logilab-database (1.11.2-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Julien Cristau <julien.cristau@logilab.fr>  Thu, 20 Feb 2014 13:40:34 +0100
+
 logilab-database (1.11.1-1) unstable; urgency=low
 
   * new upstream release
