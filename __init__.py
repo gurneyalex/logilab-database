@@ -1,4 +1,4 @@
-# copyright 2003-2013 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# copyright 2003-2014 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 # contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
 #
 # This file is part of logilab-database.
@@ -910,9 +910,11 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         sql = 'DROP INDEX %s;' % (indexname.lower())
         return [sql]
 
+    # sequence protocol
+
     def sql_create_sequence(self, seq_name):
-        return '''CREATE TABLE %s (last INTEGER);
-INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
+        return ('CREATE TABLE %s (last INTEGER);'
+                'INSERT INTO %s VALUES (0);') % (seq_name, seq_name)
 
     def sql_restart_sequence(self, seq_name, initial_value=1):
         return 'UPDATE %s SET last=%s;' % (seq_name, initial_value)
@@ -926,6 +928,20 @@ INSERT INTO %s VALUES (0);''' % (seq_name, seq_name)
     def sqls_increment_sequence(self, seq_name):
         return ('UPDATE %s SET last=last+1;' % seq_name,
                 'SELECT last FROM %s;' % seq_name)
+
+    # /sequence
+    # numrange protocol
+    # this is like sequence, but allows whole range allocations
+    sql_create_numrange = sql_create_sequence
+    sql_restart_numrange = sql_restart_sequence
+    sql_numrange_current_state = sql_sequence_current_state
+    sql_drop_numrange = sql_drop_sequence
+
+    def sqls_increment_numrange(self, seq_name, count=1):
+        return ('UPDATE %s SET last=last+%s;' % (seq_name, count),
+                'SELECT last FROM %s;' % seq_name)
+
+    # /numrange
 
     def sql_add_limit_offset(self, sql, limit=None, offset=0, orderby=None):
         """
