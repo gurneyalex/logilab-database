@@ -58,12 +58,12 @@ def normalize_words(rawwords):
 RE_DATE = r"\d{2,4}[/-]\d{2,2}[/-]\d{2,4}"
 RE_HOUR = r"\d{1,2}[:h]\d{2,2}:?\d{0,2}"
 # indexation tokenizer
-RE_WORD_INDEX = "[^ ,.;:!?\"\n\r\t)(«»\\<\\>/\\\\\\|\\[\\]{}^#@$£_'=+\\-&§]+"
+RE_WORD_INDEX = u"[^ ,.;:!?\"\n\r\t)(«»\\<\\>/\\\\\\|\\[\\]{}^#@$£_'=+\\-&§\u2019]+"
 TOKENIZE_RE_INDEX = re.compile('(?:%s)|(?:%s)|(?:%s)' % (RE_DATE, RE_HOUR, RE_WORD_INDEX),
                                re.L & re.U)
 tokenize = TOKENIZE_RE_INDEX.findall
 # query tokenizer
-RE_WORD_QUERY = "[^ ,.;:!?\"\n\r\t)(«»\\<\\>/\\\\\\|\\[\\]{}^#@$£_'=+\\-&§]+"
+RE_WORD_QUERY = u"[^ ,.;:!?\"\n\r\t)(«»\\<\\>/\\\\\\|\\[\\]{}^#@$£_'=+\\-&§\u2019]+"
 TOKENIZE_RE_QUERY = re.compile('(?:%s)|(?:%s)|(?:%s)' % (RE_DATE, RE_HOUR, RE_WORD_QUERY),
                                re.L & re.U)
 tokenize_query = TOKENIZE_RE_QUERY.findall

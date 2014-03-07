@@ -20,7 +20,8 @@ import unittest
 
 from logilab.common.testlib import MockConnection, TestCase
 
-from logilab.database.fti import FTIndexerMixIn, tokenize, normalize
+from logilab.database.fti import FTIndexerMixIn, tokenize, normalize, \
+     StopWord
 
 def _tokenize(string):
     words = []
@@ -41,6 +42,10 @@ class TokenizeTC(unittest.TestCase):
     def test_numbers(self):
         self.assertEqual(_tokenize(u'123'),
                           ['123'])
+
+    def test_aphostrophe(self):
+        self.assertEqual(_tokenize(u"l\u2019Échelle"),
+                          ['echelle'])
 
 
 class IndexableObject:
