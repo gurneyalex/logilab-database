@@ -75,14 +75,20 @@ class _Psycopg2Adapter(db.DBAPIAdapter):
 
     def connect(self, host='', database='', user='', password='', port='', extra_args=None):
         """Handles psycopg connection format"""
+        args = {}
         if host:
-            cnx_string = 'host=%s  dbname=%s  user=%s' % (host, database, user)
-        else:
-            cnx_string = 'dbname=%s  user=%s' % (database, user)
+            args.setdefault('host', host)
+        if database:
+            args.setdefault('dbname', database)
+        if user:
+            args.setdefault('user', user)
         if port:
-            cnx_string += ' port=%s' % port
+            args.setdefault('port', port)
         if password:
-            cnx_string = '%s password=%s' % (cnx_string, password)
+            args.setdefault('password', password)
+        cnx_string = ' '.join('%s=%s' % item for item in args.iteritems())
+        if extra_args is not None:
+            cnx_string += ' ' + extra_args
         cnx = self._native_module.connect(cnx_string)
         cnx.set_isolation_level(1)
         return self._wrap_if_needed(cnx)

@@ -86,7 +86,9 @@ def get_dbapi_compliant_module(driver, prefered_drivers=None, quiet=False,
 def get_connection(driver='postgres', host='', database='', user='',
                   password='', port='', quiet=False, drivers=_PREFERED_DRIVERS,
                   pywrap=False, extra_args=None):
-    """return a db connection according to given arguments"""
+    """return a db connection according to given arguments
+
+    extra_args is an optional string that is appended to the DSN"""
     _ensure_module_loaded(driver)
     module, modname = _import_driver_module(driver, drivers)
     try:
