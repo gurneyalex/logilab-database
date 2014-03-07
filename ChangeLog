@@ -1,6 +1,13 @@
 Changelog for logilab database package
 ======================================
 
+2014-02-20  --  1.11.2
+    * #146815 (fti): add "RIGHT SINGLE QUOTATION MARK" (U+2019) character as
+      word delimiter
+
+2014-02-17  --  1.11.1
+    * #210970: fix crash on sqlserver
+
 2014-01-09  --  1.11.0
     * #151507: add indexname parameter to sqls_create_multicol_unique_index
       and sqls_drop_multicol_unique_index
