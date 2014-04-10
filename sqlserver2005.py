@@ -94,6 +94,10 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
                  dbname or self.dbname, backupfile],
                 ]
 
+    def sql_current_date(self):
+        """Return sql for the current date. """
+        return 'GETDATE()'
+
     def _index_names(self, cursor, table, column):
         """
         return the list of index_information for table.column
