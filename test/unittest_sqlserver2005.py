@@ -15,11 +15,10 @@
 #
 # You should have received a copy of the GNU Lesser General Public License along
 # with logilab-database. If not, see <http://www.gnu.org/licenses/>.
+import sys
 import unittest
 
 from logilab.common.testlib import TestCase, MockConnection
-
-from unittest_fti import IndexableObject
 
 from logilab.database import get_db_helper
 
