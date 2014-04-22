@@ -182,7 +182,7 @@ class _Sqlite3Adapter(db.DBAPIAdapter):
         # abspath so we can change cwd without breaking further queries on the
         # database
         cnx = sqlite.connect(abspath(database),
-                             detect_types=sqlite.PARSE_DECLTYPES)
+                             detect_types=sqlite.PARSE_DECLTYPES, check_same_thread=False)
         return self._wrap_if_needed(Sqlite3CnxWrapper(cnx))
 
     def _transformation_callback(self, description, encoding='utf-8', binarywrap=None):
