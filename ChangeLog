@@ -1,6 +1,9 @@
 Changelog for logilab database package
 ======================================
 
+2014-04-23  --  1.12.1
+    * #240184: disable python's "same thread" check for sqlite connections
+
 2014-04-09  --  1.12.0
     * #208555: add `numrange`, a variant on sequences that allows reserving a
       range of ids
