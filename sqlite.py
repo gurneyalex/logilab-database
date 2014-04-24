@@ -21,6 +21,7 @@ Supported driver: sqlite3
 """
 __docformat__ = "restructuredtext en"
 
+from warnings import warn
 from os.path import abspath
 import os
 import re
@@ -150,12 +151,14 @@ class _Sqlite3Adapter(db.DBAPIAdapter):
             in SQL queries
             """
             def _replace_parameters(self, sql, kwargs):
-                for k,v in kwargs.iteritems():
-                    if type(v) is str:
-                        kwargs[k] = v.decode('utf-8')
                 if isinstance(kwargs, dict):
+                    for k,v in kwargs.iteritems():
+                        if isinstance(v, str):
+                            warn('Sanitizing an input dictionary with str values, '
+                                 'please check your data (key = %r)' % k,
+                                 DeprecationWarning)
+                            kwargs[k] = v.decode('utf-8')
                     return re.sub(r'%\(([^\)]+)\)s', r':\1', sql)
-                # XXX dumb
                 return re.sub(r'%s', r'?', sql)
 
             def execute(self, sql, kwargs=None):
