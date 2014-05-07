@@ -9,7 +9,7 @@
 %{!?_python_sitelib: %define _python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           %{python}-logilab-database
-Version:        1.12.1
+Version:        1.12.2
 Release:        logilab.1%{?dist}
 Summary:        Unified database access library for python
 
