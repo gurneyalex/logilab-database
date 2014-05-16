@@ -27,6 +27,7 @@ __docformat__ = "restructuredtext en"
 
 import datetime
 import re
+from warnings import warn
 
 from logilab import database as db
 
@@ -59,7 +60,8 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
         if 'autocommit' in arguments:
             cls.use_autocommit(True)
 
-    def connect(self, host='', database='', user='', password='', port=None, extra_args=None):
+    def connect(self, host='', database='', user='', password='', port=None,
+                schema=None, extra_args=None):
         """Handles pyodbc connection format
 
         If extra_args is not None, it is expected to be a string
@@ -70,6 +72,11 @@ class _BaseSqlServerAdapter(db.DBAPIAdapter):
         Windows Authentication, and therefore no login/password is
         required.
         """
+        if schema is not None:
+            # NOTE: SQLServer supports schemas
+            # cf. http://msdn.microsoft.com/en-us/library/ms189462%28v=SQL.90%29.aspx
+            warn('schema support is not implemented on sqlserver backends, ignoring schema %s'
+                 % schema)
         class SqlServerCursor(object):
             """cursor adapting usual dict format to pyodbc/adobdapi format
             in SQL queries

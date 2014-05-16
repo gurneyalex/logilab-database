@@ -21,6 +21,8 @@ Full-text search based on MyISAM full text search capabilities.
 """
 __docformat__ = "restructuredtext en"
 
+from warnings import warn
+
 from logilab import database as db
 from logilab.database.fti import normalize_words, tokenize
 
@@ -51,11 +53,14 @@ class _MySqlDBAdapter(db.DBAPIAdapter):
             times.DateTimeDeltaType = mxdt.DateTimeDeltaType
 
     def connect(self, host='', database='', user='', password='', port=None,
-                unicode=True, charset='utf8', extra_args=None):
+                unicode=True, charset='utf8', schema=None, extra_args=None):
         """Handles mysqldb connection format
         the unicode named argument asks to use Unicode objects for strings
         in result sets and query parameters
         """
+        if schema is not None:
+            warn('schema support is not implemented on mysql backends, ignoring schema %s'
+                 % schema)
         kwargs = {'host' : host or '', 'db' : database,
                   'user' : user, 'passwd' : password,
                   'use_unicode' : unicode}
@@ -162,14 +167,14 @@ class _MyAdvFuncHelper(db._GenericAdvFuncHelper):
         return ''
 
     def backup_commands(self, backupfile, keepownership=True,
-                        dbname=None, dbhost=None, dbport=None, dbuser=None):
+                        dbname=None, dbhost=None, dbport=None, dbuser=None, dbschema=None):
         cmd = self.mycmd('mysqldump', dbhost, dbport, dbuser)
         cmd += ('-p', '-r', backupfile, dbname or self.dbname)
         return [cmd]
 
     def restore_commands(self, backupfile, keepownership=True, drop=True,
                          dbname=None, dbhost=None, dbport=None, dbuser=None,
-                         dbencoding=None):
+                         dbencoding=None, dbschema=None):
         dbname = dbname or self.dbname
         cmds = []
         mysqlcmd = ' '.join(self.mycmd('mysql', dbhost, dbport, dbuser))
