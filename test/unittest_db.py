@@ -381,6 +381,29 @@ class PostgresqlDatabaseSchemaTC(TestCase):
             cnx.rollback()
             cnx.close()
 
+    def test_list_tables(self):
+        helper = get_db_helper('postgres')
+        cnx = self.get_connection(schema=self.schema)
+        cursor = cnx.cursor()
+        try:
+            cursor.execute('CREATE TABLE x(x integer)')
+            self.assertNotIn('x', helper.list_tables(cursor))
+            self.assertIn('x', helper.list_tables(cursor, schema=self.schema))
+        finally:
+            cnx.close()
+
+    def test_list_indices(self):
+        helper = get_db_helper('postgres')
+        cnx = self.get_connection(schema=self.schema)
+        cursor = cnx.cursor()
+        try:
+            cursor.execute('CREATE TABLE x(x integer)')
+            cursor.execute('CREATE INDEX x_idx ON x(x)')
+            self.assertIn('x_idx', helper.list_indices(cursor))
+            self.assertIn('x_idx', helper.list_indices(cursor, table='x'))
+        finally:
+            cnx.close()
+
 
 if __name__ == '__main__':
     unittest_main()
