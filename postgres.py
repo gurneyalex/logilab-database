@@ -321,17 +321,26 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         cursor.execute('SELECT datname FROM pg_database')
         return [r[0] for r in cursor.fetchall()]
 
-    def list_tables(self, cursor):
+    def list_tables(self, cursor, schema=None):
         """return the list of tables of a database"""
-        cursor.execute("SELECT tablename FROM pg_tables")
+        schema = schema or self.dbschema
+        sql = "SELECT tablename FROM pg_tables"
+        if schema:
+            sql += " WHERE schemaname=%(s)s"
+        cursor.execute(sql, {'s': schema})
         return [r[0] for r in cursor.fetchall()]
 
     def list_indices(self, cursor, table=None):
         """return the list of indices of a database, only for the given table if specified"""
         sql = "SELECT indexname FROM pg_indexes"
+        restrictions = []
         if table:
-            sql += " WHERE LOWER(tablename)='%s'" % table.lower()
-        cursor.execute(sql)
+            restrictions.append('LOWER(tablename)=%(table)s')
+        if self.dbschema:
+            restrictions.append('schemaname=%(s)s')
+        if restrictions:
+            sql += ' WHERE %s' % ' AND '.join(restrictions)
+        cursor.execute(sql, {'s': self.dbschema, 'table': table})
         return [r[0] for r in cursor.fetchall()]
 
     # full-text search customization ###########################################
@@ -431,7 +440,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         For postgres, install tsearch2 if not installed by the template.
         """
         tstables = []
-        for table in self.list_tables(cursor):
+        for table in self.list_tables(cursor, schema='pg_catalog'):
             if table.startswith('pg_ts'):
                 tstables.append(table)
         if tstables:
