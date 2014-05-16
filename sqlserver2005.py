@@ -82,14 +82,14 @@ class _SqlServer2005FuncHelper(db._GenericAdvFuncHelper):
         return [r[0] for r in cursor.fetchall()]
 
     def backup_commands(self, backupfile, keepownership=True,
-                        dbname=None, dbhost=None, dbport=None, dbuser=None):
+                        dbname=None, dbhost=None, dbport=None, dbuser=None, dbschema=None):
         return [[sys.executable, os.path.normpath(__file__),
                  "_SqlServer2005FuncHelper._do_backup", dbhost or self.dbhost,
                  dbname or self.dbname, backupfile]]
 
     def restore_commands(self, backupfile, keepownership=True, drop=True,
                          dbname=None, dbhost=None, dbport=None, dbuser=None,
-                         dbencoding=None):
+                         dbencoding=None, dbschema=None):
         return [[sys.executable, os.path.normpath(__file__),
                 "_SqlServer2005FuncHelper._do_restore", dbhost or self.dbhost,
                  dbname or self.dbname, backupfile],

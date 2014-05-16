@@ -148,9 +148,13 @@ class _Sqlite3Adapter(db.DBAPIAdapter):
             sqlite.register_converter('interval', convert_timedelta)
 
 
-    def connect(self, host='', database='', user='', password='', port=None, extra_args=None):
+    def connect(self, host='', database='', user='', password='', port=None,
+                schema=None, extra_args=None):
         """Handles sqlite connection format"""
         sqlite = self._native_module
+        if schema is not None:
+            warn('schema support is not implemented on sqlite backends, ignoring schema %s'
+                 % schema)
 
         class Sqlite3Cursor(sqlite.Cursor):
             """cursor adapting usual dict format to pysqlite named format
@@ -226,13 +230,13 @@ class _SqliteAdvFuncHelper(db._GenericAdvFuncHelper):
     TYPE_CONVERTERS = db._GenericAdvFuncHelper.TYPE_CONVERTERS.copy()
 
     def backup_commands(self, backupfile, keepownership=True,
-                        dbname=None, dbhost=None, dbport=None, dbuser=None):
+                        dbname=None, dbhost=None, dbport=None, dbuser=None, dbschema=None):
         dbname = dbname or self.dbname
         return ['gzip -c %s > %s' % (dbname, backupfile)]
 
     def restore_commands(self, backupfile, keepownership=True, drop=True,
                          dbname=None, dbhost=None, dbport=None, dbuser=None,
-                         dbencoding=None):
+                         dbencoding=None, dbschema=None):
         return ['zcat %s > %s' % (backupfile, dbname or self.dbname)]
 
     def sql_create_index(self, table, column, unique=False):

@@ -52,6 +52,9 @@ TSEARCH_SCHEMA_PATH = ('/usr/share/postgresql/?.?/contrib/tsearch2.sql', # curre
 
 class _Psycopg2Adapter(db.DBAPIAdapter):
     """Simple Psycopg2 Adapter to DBAPI (cnx_string differs from classical ones)
+
+    It provides basic support for postgresql schemas :
+    cf. http://www.postgresql.org/docs/current/static/ddl-schemas.html
     """
     # not defined in psycopg2.extensions
     # "select typname from pg_type where oid=705";
@@ -73,7 +76,7 @@ class _Psycopg2Adapter(db.DBAPIAdapter):
         db.DBAPIAdapter.__init__(self, native_module, pywrap)
         self._init_psycopg2()
 
-    def connect(self, host='', database='', user='', password='', port='', extra_args=None):
+    def connect(self, host='', database='', user='', password='', port='', schema=None, extra_args=None):
         """Handles psycopg connection format"""
         args = {}
         if host:
@@ -91,7 +94,30 @@ class _Psycopg2Adapter(db.DBAPIAdapter):
             cnx_string += ' ' + extra_args
         cnx = self._native_module.connect(cnx_string)
         cnx.set_isolation_level(1)
+        self.set_search_path(cnx, schema)
         return self._wrap_if_needed(cnx)
+
+    def _schema_exists(self, cursor, schema):
+        cursor.execute('SELECT nspname FROM pg_namespace WHERE nspname=%(s)s',
+                       {'s': schema})
+        return cursor.fetchone() is not None
+
+    def set_search_path(self, cnx, schema):
+        if schema:
+            cursor = cnx.cursor()
+            if not self._schema_exists(cursor, schema):
+                warn("%s schema doesn't exist, search path can't be set" % schema,
+                     UserWarning)
+                return
+            cursor.execute('SHOW search_path')
+            schemas = cursor.fetchone()[0].split(',')
+            if schema not in schemas:
+                schemas.insert(0, schema)
+            else:
+                schemas.pop(schemas.index(schema))
+                schemas.insert(0, schema)
+            cursor.execute('SET search_path TO %s;' % ','.join(schemas))
+            cursor.close()
 
     def _init_psycopg2(self):
         """initialize psycopg2 to use mx.DateTime for date and timestamps
@@ -164,7 +190,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         'TZDatetime':'timestamp with time zone'})
     TYPE_CONVERTERS = db._GenericAdvFuncHelper.TYPE_CONVERTERS.copy()
 
-    def pgdbcmd(self, cmd, dbhost, dbport, dbuser, *args):
+    def pgdbcmd(self, cmd, dbhost, dbport, dbuser, dbschema, *args):
         cmd = [cmd]
         cmd += args
         if dbhost or self.dbhost:
@@ -173,6 +199,8 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
             cmd.append('--port=%s' % (dbport or self.dbport))
         if dbuser or self.dbuser:
             cmd.append('--username=%s' % (dbuser or self.dbuser))
+        if dbschema or self.dbschema:
+            cmd.append('--schema=%s' % (dbschema or self.dbschema))
         return cmd
 
     def system_database(self):
@@ -180,8 +208,8 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         return 'template1'
 
     def backup_commands(self, backupfile, keepownership=True,
-                        dbname=None, dbhost=None, dbport=None, dbuser=None):
-        cmd = self.pgdbcmd('pg_dump', dbhost, dbport, dbuser, '-Fc')
+                        dbname=None, dbhost=None, dbport=None, dbuser=None, dbschema=None):
+        cmd = self.pgdbcmd('pg_dump', dbhost, dbport, dbuser, dbschema, '-Fc')
         if not keepownership:
             cmd.append('--no-owner')
         cmd.append('--file')
@@ -191,7 +219,8 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
 
     def restore_commands(self, backupfile, keepownership=True, drop=True,
                          dbname=None, dbhost=None, dbport=None, dbuser=None,
-                         dbencoding=None):
+                         dbencoding=None, dbschema=None):
+        # XXX what about dbschema ?
         dbname = dbname or self.dbname
         cmds = []
         if drop:
@@ -260,6 +289,17 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         if dbencoding:
             sql += " ENCODING='%(dbencoding)s'"
         cursor.execute(sql % locals())
+
+    def create_schema(self, cursor, schema, granted_user=None):
+        """create a new database schema"""
+        sql = 'CREATE SCHEMA %s' % schema
+        if granted_user is not None:
+            sql += ' AUTHORIZATION %s' % granted_user
+        cursor.execute(sql)
+
+    def drop_schema(self, cursor, schema):
+        """drop a database schema"""
+        cursor.execute('DROP SCHEMA %s CASCADE' % schema)
 
     def create_language(self, cursor, extlang):
         """postgres specific method to install a procedural language on a database"""

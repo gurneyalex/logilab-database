@@ -85,7 +85,7 @@ def get_dbapi_compliant_module(driver, prefered_drivers=None, quiet=False,
 
 def get_connection(driver='postgres', host='', database='', user='',
                   password='', port='', quiet=False, drivers=_PREFERED_DRIVERS,
-                  pywrap=False, extra_args=None):
+                  pywrap=False, schema=None, extra_args=None):
     """return a db connection according to given arguments
 
     extra_args is an optional string that is appended to the DSN"""
@@ -108,7 +108,8 @@ def get_connection(driver='postgres', host='', database='', user='',
     if port:
         port = int(port)
     return adapted_module.connect(host, database, user, password,
-                                  port=port, extra_args=extra_args)
+                                  port=port, schema=schema,
+                                  extra_args=extra_args)
 
 def set_prefered_driver(driver, module, _drivers=_PREFERED_DRIVERS):
     """sets the preferred driver module for driver
@@ -339,7 +340,7 @@ class DBAPIAdapter(object):
                                     self, typecode)
 
     def connect(self, host='', database='', user='', password='', port='',
-                extra_args=None):
+                schema=None, extra_args=None):
         """Wraps the native module connect method"""
         kwargs = {'host' : host, 'port' : port, 'database' : database,
                   'user' : user, 'password' : password}
@@ -755,7 +756,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
 
     # allow call to [backup|restore]_commands without previous call to
     # record_connection_information but by specifying argument explicitly
-    dbname = dbhost = dbport = dbuser = dbpassword = dbextraargs = dbencoding = None
+    dbname = dbhost = dbport = dbuser = dbpassword = dbextraargs = dbencoding = dbschema = None
 
     def __init__(self, encoding='utf-8', _cnx=None):
         self.dbencoding = encoding
@@ -771,7 +772,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
 
     def record_connection_info(self, dbname, dbhost=None, dbport=None,
                                dbuser=None, dbpassword=None, dbextraargs=None,
-                               dbencoding=None):
+                               dbencoding=None, dbschema=None):
         self.dbname = dbname
         self.dbhost = dbhost
         self.dbport = dbport
@@ -780,6 +781,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         self.dbextraargs = dbextraargs
         if dbencoding:
             self.dbencoding = dbencoding
+        self.dbschema = dbschema
 
     def get_connection(self, initcnx=True):
         """open and return a connection to the database
@@ -796,6 +798,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         cnx = self.dbapi_module.connect(self.dbhost, self.dbname,
                                         self.dbuser,self.dbpasswd,
                                         port=self.dbport,
+                                        schema=self.dbschema,
                                         extra_args=self.dbextraargs)
         if initcnx:
             for hook in SQL_CONNECT_HOOKS.get(self.backend_name, ()):
@@ -821,7 +824,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         raise NotImplementedError('not supported by this DBMS')
 
     def backup_commands(self, backupfile, keepownership=True,
-                        dbname=None, dbhost=None, dbport=None, dbuser=None):
+                        dbname=None, dbhost=None, dbport=None, dbuser=None, dbschema=None):
         """Return a list of commands to backup the given database.
 
         Each command may be given as a list or as a string. In the latter case,
@@ -1056,6 +1059,14 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
 
     def create_database(self, cursor, dbname, owner=None, dbencoding=None):
         """create a new database"""
+        raise NotImplementedError('not supported by this DBMS')
+
+    def create_schema(self, cursor, schema, granted_user=None):
+        """create a new database schema"""
+        raise NotImplementedError('not supported by this DBMS')
+
+    def drop_schema(self, cursor, schema):
+        """drop a database schema"""
         raise NotImplementedError('not supported by this DBMS')
 
     def list_databases(self):

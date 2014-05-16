@@ -80,11 +80,11 @@ class PreferedDriverTC(TestCase):
 
 class GetCnxTC(TestCase):
     def setUp(self):
+        self.host = 'localhost'
         try:
-            socket.gethostbyname('centaurus')
+            socket.gethostbyname(self.host)
         except:
             self.skipTest("those tests require specific DB configuration")
-        self.host = 'centaurus'
         self.db = 'template1'
         self.user = getlogin()
         self.passwd = getlogin()
@@ -320,6 +320,66 @@ else:
 
         def test_varbinary_none(self):
             self.varbinary_none()
+
+
+class PostgresqlDatabaseSchemaTC(TestCase):
+    host = 'localhost'
+    database = 'template1'
+    user = password = getlogin()
+    schema = 'tests'
+
+    def setUp(self):
+        try:
+            self.module = get_dbapi_compliant_module('postgres')
+        except ImportError:
+            self.skipTest('postgresql dbapi module not installed')
+        try:
+            cnx = self.get_connection()
+        except Exception:
+            self.skipTest('could not connect to %s:%s@%s/%s'
+                          % (self.user, self.password, self.host, self.database))
+        self._execute(cnx, 'CREATE SCHEMA %s' % self.schema)
+        cnx.close()
+
+    def tearDown(self):
+        cnx = self.get_connection()
+        self._execute(cnx, 'DROP SCHEMA %s' % self.schema)
+        cnx.close()
+
+    def _execute(self, cnx, sql):
+        cursor = cnx.cursor()
+        cursor.execute(sql)
+        cnx.commit()
+        cursor.close()
+        cnx.close()
+
+    def get_connection(self, schema=None):
+        return self.module.connect(host=self.host, database=self.database,
+                                   user=self.user, password=self.password,
+                                   schema=schema)
+
+    def assertRsetEqual(self, rset, expected_rset):
+        # NOTE: different drivers will use different result structures
+        #       (list of lists, list of tuples, etc.)
+        self.assertEqual(len(rset), len(expected_rset))
+        for line, expected_line in zip(rset, expected_rset):
+            self.assertSequenceEqual(line, expected_line)
+
+    def test_database_schema(self):
+        """Tests database schema support"""
+        cnx = self.get_connection(schema=self.schema)
+        cursor = cnx.cursor()
+        try:
+            cursor.execute('CREATE TABLE x(x integer)')
+            cursor.execute('INSERT INTO x VALUES(12)')
+            cursor.execute('SELECT x from x')
+            self.assertRsetEqual(cursor.fetchall(), [[12]])
+            cursor.execute('SELECT x from tests.x')
+            self.assertRsetEqual(cursor.fetchall(), [[12]])
+            self.assertRaises(self.module.Error, cursor.execute, 'SELECT x from public.x')
+        finally:
+            cnx.rollback()
+            cnx.close()
 
 
 if __name__ == '__main__':
