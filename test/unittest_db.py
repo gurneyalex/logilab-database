@@ -18,6 +18,7 @@
 """
 unit tests for module logilab.common.db
 """
+from __future__ import print_function
 from __future__ import with_statement
 
 import socket
@@ -283,12 +284,12 @@ class BaseSqlServer(TestCase):
         data_length = range(400*1024-10, 400*1024+10)
         for length in data_length:
             data = buffer('\x00'*length)
-            print "inserting string of length", len(data)
+            print("inserting string of length", len(data))
             cursor.execute('insert into TestBlob(id, data) VALUES(%(id)s, %(data)s)',
                            {'id': length, 'data': data})
             self.cnx.commit()
         cursor.execute('select count(*) from TestBlob')
-        print '%d rows in table' % (cursor.fetchone()[0])
+        print('%d rows in table' % (cursor.fetchone()[0]))
         cursor.close()
 
     def large_string(self):
@@ -296,12 +297,12 @@ class BaseSqlServer(TestCase):
         data_length = range(400*1024-10, 400*1024+10)
         for length in data_length:
             data = '1'*length
-            print "inserting string of length", len(data)
+            print("inserting string of length", len(data))
             cursor.execute('insert into TestLargeString(id, data) VALUES(%(id)s, %(data)s)',
                            {'id': length, 'data': data})
             self.cnx.commit()
         cursor.execute('select count(*) from TestLargeString')
-        print '%d rows in table' % (cursor.fetchone()[0])
+        print('%d rows in table' % (cursor.fetchone()[0]))
         cursor.close()
 
     def varbinary_none(self):
@@ -309,22 +310,22 @@ class BaseSqlServer(TestCase):
         cursor.execute('insert into TestBlob (id) values (42)')
         self.cnx.commit()
         cursor.execute('select * from TestBlob where id=42')
-        print cursor.fetchall()
+        print(cursor.fetchall())
         cursor.execute('update TestBlob set id=43, data=NULL where id=42')
         self.cnx.commit()
         cursor.execute('select * from TestBlob where id=43')
-        print cursor.fetchall()
+        print(cursor.fetchall())
         cursor.execute('update TestBlob set id = %(id)s, data=%(data)s where id=%(old_id)s', {'data': None, 'id': 42, 'old_id': 43})
         self.cnx.commit()
         cursor.execute('select * from TestBlob where id=42')
-        print cursor.fetchall()
+        print(cursor.fetchall())
         cursor.close()
 
 
 try:
     import pyodbc
 except ImportError:
-    print "pyodbc tests skipped"
+    print("pyodbc tests skipped")
 else:
     class pyodbcTC(BaseSqlServer):
         def setUp(self):
@@ -338,7 +339,7 @@ else:
                 cursor.execute('create table TestLargeString (id int, data varchar(max))')
                 cursor.execute('create table TestBlob (id int, data varbinary(max))')
             except Exception as exc:
-                print exc
+                print(exc)
             cursor.close()
 
         def test_blob(self):
@@ -353,7 +354,7 @@ else:
 try:
     import adodbapi as adb
 except ImportError:
-    print "adodbapi tests skipped"
+    print("adodbapi tests skipped")
 else:
     class adodbapiTC(BaseSqlServer):
         def setUp(self):
@@ -368,7 +369,7 @@ else:
                 cursor.execute('create table TestLargeString (id int, data varchar(max))')
                 cursor.execute('create table TestBlob (id int, data varbinary(max))')
             except Exception as exc:
-                print exc
+                print(exc)
             cursor.close()
 
         def test_blob(self):
