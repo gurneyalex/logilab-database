@@ -76,7 +76,7 @@ def get_dbapi_compliant_module(driver, prefered_drivers=None, quiet=False,
     _ensure_module_loaded(driver)
     try:
         mod = _ADAPTER_DIRECTORY.adapt(driver, prefered_drivers, pywrap=pywrap)
-    except NoAdapterFound, err:
+    except NoAdapterFound as err:
         if not quiet:
             msg = 'No Adapter found for %s, returning native module'
             _LOGGER.warning(msg,  err.objname)
@@ -91,7 +91,7 @@ def get_connection(driver='postgres', host='', database='', user='',
     module, modname = _import_driver_module(driver, drivers)
     try:
         adapter = _ADAPTER_DIRECTORY.get_adapter(driver, modname)
-    except NoAdapterFound, err:
+    except NoAdapterFound as err:
         if not quiet:
             msg = 'No Adapter found for %s, using default one'
             _LOGGER.warning(msg, err.objname)
