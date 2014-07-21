@@ -18,6 +18,8 @@
 """Help to generate SQL strings usable by the Python DB-API.
 
 """
+from __future__ import print_function
+
 __docformat__ = "restructuredtext en"
 
 from six.moves import range
@@ -327,4 +329,4 @@ def sql_repr(type, val):
 if __name__ == "__main__":
     import doctest
     from logilab.database import sqlgen
-    print doctest.testmod(sqlgen)
+    print(doctest.testmod(sqlgen))

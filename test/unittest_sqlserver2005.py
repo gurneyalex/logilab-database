@@ -15,6 +15,8 @@
 #
 # You should have received a copy of the GNU Lesser General Public License along
 # with logilab-database. If not, see <http://www.gnu.org/licenses/>.
+from __future__ import print_function
+
 import sys
 import unittest
 
@@ -29,12 +31,12 @@ def monkey_patch_import_driver_module(driver, drivers, quiet=True):
     for modname in drivers[driver]:
         try:
             if not quiet:
-                print >> sys.stderr, 'Trying %s' % modname
+                print('Trying %s' % modname, file=sys.stderr)
             module = db.load_module_from_name(modname, use_sys=False)
             break
         except ImportError:
             if not quiet:
-                print >> sys.stderr, '%s is not available' % modname
+                print('%s is not available' % modname, file=sys.stderr)
             continue
     else:
         return None, drivers[driver][0]
