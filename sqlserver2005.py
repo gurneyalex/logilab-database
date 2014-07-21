@@ -25,7 +25,6 @@ Supported drivers, in order of preference:
 import os
 import sys
 import shutil
-import StringIO
 from warnings import warn
 
 from logilab import database as db
