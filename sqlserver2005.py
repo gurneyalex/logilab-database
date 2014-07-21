@@ -327,7 +327,7 @@ AND j.column_id = k.column_id;"""
             time.sleep(1)
             try:
                 size = os.path.getsize(file_share_filename)
-            except OSError, exc:
+            except OSError as exc:
                 self.logger.exception('error accessing %s', file_share_filename)
                 err_count += 1
             if size > prev_size:

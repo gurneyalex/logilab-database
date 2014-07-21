@@ -121,7 +121,7 @@ class GetCnxTC(TestCase):
             cnx = get_connection('postgres',
                                  self.host, self.db, self.user, self.passwd,
                                  quiet=1)
-        except pyPgSQL.PgSQL.DatabaseError, ex:
+        except pyPgSQL.PgSQL.DatabaseError as ex:
             if str(ex).startswith('could not connect to server:'):
                     self.skipTest('pgsql test requires a specific configuration')
             raise
@@ -135,7 +135,7 @@ class GetCnxTC(TestCase):
         try:
             cnx = get_connection('mysql', self.host, database='', user='root',
                                  quiet=1)
-        except  MySQLdb.OperationalError, ex:
+        except  MySQLdb.OperationalError as ex:
             if ex.args[0] == 1045: # find MysqlDb
                 self.skipTest('mysql test requires a specific configuration')
             elif ex.args[0] != 2003:
@@ -151,7 +151,7 @@ class GetCnxTC(TestCase):
             cnx = get_connection('postgres',
                                  self.host, self.db, self.user, self.passwd,
                                  quiet=1)
-        except psycopg2.OperationalError, ex:
+        except psycopg2.OperationalError as ex:
             self.skipTest('pgsql test requires a specific configuration')
         self.failIf(isinstance(cnx, PyConnection),
                     'cnx should *not* be a PyConnection instance')
@@ -172,7 +172,7 @@ class GetCnxTC(TestCase):
             cnx = get_connection('postgres',
                                  self.host, self.db, self.user, self.passwd,
                                  quiet=1, pywrap=True)
-        except psycopg2.OperationalError, ex:
+        except psycopg2.OperationalError as ex:
             self.skipTest('pgsql test requires a specific configuration')
         cursor = cnx.cursor()
         self.failUnless(isinstance(cursor, PyCursor),
@@ -216,7 +216,7 @@ class DBAPIAdaptersTC(TestCase):
             self.skipTest('postgresql dbapi module not installed')
         try:
             binary = module.BINARY
-        except AttributeError, err:
+        except AttributeError as err:
             raise
             self.fail(str(err))
 
@@ -331,13 +331,13 @@ else:
             try:
                 self.cnx = get_connection(driver='sqlserver2005', database='alf',
                                       host='localhost', extra_args='Trusted_Connection')
-            except pyodbc.Error, exc:
+            except pyodbc.Error as exc:
                 self.skipTest(str(exc))
             cursor = self.cnx.cursor()
             try:
                 cursor.execute('create table TestLargeString (id int, data varchar(max))')
                 cursor.execute('create table TestBlob (id int, data varbinary(max))')
-            except Exception, exc:
+            except Exception as exc:
                 print exc
             cursor.close()
 
@@ -360,14 +360,14 @@ else:
             try:
                 self.cnx = get_connection(driver='sqlserver2005', database='alf',
                                       host='localhost', extra_args='Trusted_Connection')
-            except adb.Error, exc:
+            except adb.Error as exc:
                 self.skipTest(str(exc))
             cursor = self.cnx.cursor()
             try:
 
                 cursor.execute('create table TestLargeString (id int, data varchar(max))')
                 cursor.execute('create table TestBlob (id int, data varbinary(max))')
-            except Exception, exc:
+            except Exception as exc:
                 print exc
             cursor.close()
 
