@@ -58,10 +58,16 @@ class _Sqlite3Adapter(db.DBAPIAdapter):
         sqlite = self._native_module
 
         # bytea type handling
-        from StringIO import StringIO
+        from io import BytesIO
         def adapt_bytea(data):
             return data.getvalue()
-        sqlite.register_adapter(StringIO, adapt_bytea)
+        sqlite.register_adapter(BytesIO, adapt_bytea)
+        try:
+            from StringIO import StringIO
+        except ImportError:
+            pass
+        else:
+            sqlite.register_adapter(StringIO, adapt_bytea)
         def convert_bytea(data, Binary=sqlite.Binary):
             return Binary(data)
         sqlite.register_converter('bytea', convert_bytea)
