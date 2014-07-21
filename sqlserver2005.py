@@ -27,6 +27,8 @@ import sys
 import shutil
 from warnings import warn
 
+from six.moves import range
+
 from logilab import database as db
 from logilab.database.sqlserver import _PyodbcAdapter, _AdodbapiAdapter
 
@@ -218,7 +220,7 @@ AND j.column_id = k.column_id;"""
         if has_limit_or_offset:
             return sql
         if sortterms and needwrap:
-            selection = ['T1.C%s' % i for i in xrange(len(selection))]
+            selection = ['T1.C%s' % i for i in range(len(selection))]
             renamed_sortterms = []
             for term in sortterms:
                 split = term.split()

@@ -44,6 +44,7 @@ import logging
 from datetime import datetime, time, date
 from warnings import warn
 
+from six.moves import range
 from logilab.common.modutils import load_module_from_name
 from logilab.common.date import todate, todatetime, utcdatetime, utctime
 from logilab.common.deprecation import deprecated
@@ -970,7 +971,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         """
         sql += '\nORDER BY %s' % ','.join(sortterms)
         if sortterms and needwrap:
-            selection = ['T1.C%s' % i for i in xrange(len(selection))]
+            selection = ['T1.C%s' % i for i in range(len(selection))]
             sql = 'SELECT %s FROM (%s) AS T1' % (','.join(selection), sql)
         return sql
 
