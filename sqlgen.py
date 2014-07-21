@@ -200,7 +200,7 @@ class SQLGenerator :
         """ Delete many using the IN clause
         """
         addons = []
-        for key, value in params.items():
+        for key, value in list(params.items()):
             if not isinstance(value, SQLExpression) and value.startswith('('): # we want IN
                 addons.append('%s IN %s' % (key, value))
                 # The value is pop as it is not needed for substitution
@@ -222,7 +222,7 @@ class SQLGenerator :
         where = self.where(unique)
         # Remove the unique keys from the params dictionnary
         unique_params = {}
-        for key, value in params.items():
+        for key, value in list(params.items()):
             if key in unique:
                 params.pop(key)
                 unique_params[key] = value
