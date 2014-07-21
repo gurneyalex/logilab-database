@@ -65,7 +65,7 @@ class Query(object):
         if not self.words:
             results = {}
         else:
-            results = KeywordsQuery(self.words.keys()).dict_query(cursor)
+            results = KeywordsQuery(list(self.words.keys())).dict_query(cursor)
             if not results:
                 raise StopIteration()
 
