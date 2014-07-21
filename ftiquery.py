@@ -21,6 +21,7 @@
 """
 __docformat__ = "restructuredtext en"
 
+from six.moves import range
 from logilab.database.fti import StopWord, tokenize
 
 class Query(object):

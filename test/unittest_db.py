@@ -22,6 +22,7 @@ from __future__ import with_statement
 
 import socket
 
+from six.moves import range
 from logilab.common.testlib import TestCase, unittest_main
 from logilab.common.shellutils import getlogin
 from logilab.database import *
@@ -279,7 +280,7 @@ class BaseSqlServer(TestCase):
 
     def blob(self):
         cursor = self.cnx.cursor()
-        data_length = xrange(400*1024-10, 400*1024+10)
+        data_length = range(400*1024-10, 400*1024+10)
         for length in data_length:
             data = buffer('\x00'*length)
             print "inserting string of length", len(data)
@@ -292,7 +293,7 @@ class BaseSqlServer(TestCase):
 
     def large_string(self):
         cursor = self.cnx.cursor()
-        data_length = xrange(400*1024-10, 400*1024+10)
+        data_length = range(400*1024-10, 400*1024+10)
         for length in data_length:
             data = '1'*length
             print "inserting string of length", len(data)
