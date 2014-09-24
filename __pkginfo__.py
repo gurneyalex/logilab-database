@@ -37,4 +37,5 @@ subpackage_master = True
 
 install_requires = [
     'logilab-common >= 0.55.2',
+    'six >= 1.4.0',
     ]
