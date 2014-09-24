@@ -22,6 +22,7 @@ BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires:  %{python}
 Requires:       %{python}, %{python}-logilab-common >= 0.55.2
+Requires:       %{python}-six >= 1.4.0
 
 
 %description
