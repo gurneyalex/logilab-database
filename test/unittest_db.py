@@ -215,11 +215,7 @@ class DBAPIAdaptersTC(TestCase):
             module = get_dbapi_compliant_module('postgres')
         except ImportError:
             self.skipTest('postgresql dbapi module not installed')
-        try:
-            binary = module.BINARY
-        except AttributeError as err:
-            raise
-            self.fail(str(err))
+        binary = module.BINARY
 
     def test_adv_func_helper(self):
         try:
