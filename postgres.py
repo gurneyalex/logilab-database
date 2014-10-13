@@ -35,6 +35,8 @@ __docformat__ = "restructuredtext en"
 from os.path import join, dirname, isfile
 from warnings import warn
 
+from six import binary_type
+
 from logilab.common.deprecation import deprecated
 
 from logilab import database as db
@@ -361,8 +363,8 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
                            % ('||'.join(tsvectors), obj.entity_weight), ctx)
 
     def _fti_query_to_tsquery_words(self, querystr):
-        if isinstance(querystr, str):
-            querystr = unicode(querystr, self.dbencoding)
+        if isinstance(querystr, binary_type):
+            querystr = querystr.decode(self.dbencoding)
         words = normalize_words(tokenize_query(querystr))
         # XXX replace '%' since it makes tsearch fail, dunno why yet, should
         # be properly fixed

@@ -18,6 +18,8 @@
 # with logilab-database. If not, see <http://www.gnu.org/licenses/>.
 import re
 
+from six import text_type
+
 from logilab.common.textutils import unormalize
 
 REM_PUNC = re.compile(r"[,.;:!?\n\r\t\)\(«»\<\>/\\\|\[\]{}^#@$£_=+\-*&§]")
@@ -39,12 +41,13 @@ def normalize(word):
     stop words are :
        _ single letter
     """
-    assert isinstance(word, unicode), '%r should be unicode' % word
+    assert isinstance(word, text_type), '%r should be unicode' % word
     # do not index single letters
     if len(word) == 1:
         raise StopWord()
     word = unormalize(word.lower(), substitute='')
-    return word.encode('ascii', 'ignore')
+    # we need an ascii-only unicode string, not bytes
+    return word.encode('ascii', 'ignore').decode('ascii')
 
 def normalize_words(rawwords):
     words = []
