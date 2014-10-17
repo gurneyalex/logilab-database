@@ -152,7 +152,7 @@ CREATE INDEX appears_word_id ON appears (word_id);
     def cursor_index_object(self, uid, obj, cursor):
         position = 0
         # sort for test predictability
-        for weight, words in sorted(obj.get_words().iteritems()):
+        for weight, words in sorted(obj.get_words().items()):
             for word in words:
                 self._save_word(uid, word, position, cursor)
                 position += 1

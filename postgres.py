@@ -340,7 +340,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         ctx = {'config': self.config, 'uid': int(uid)}
         tsvectors, size, oversized = [], 0, False
         # sort for test predictability
-        for (weight, words) in sorted(obj.get_words().iteritems()):
+        for (weight, words) in sorted(obj.get_words().items()):
             words = normalize_words(words)
             for i, word in enumerate(words):
                 size += len(word) + 1
