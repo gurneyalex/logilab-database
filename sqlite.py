@@ -158,7 +158,7 @@ class _Sqlite3Adapter(db.DBAPIAdapter):
             """
             def _replace_parameters(self, sql, kwargs):
                 if isinstance(kwargs, dict):
-                    for k,v in kwargs.iteritems():
+                    for k,v in kwargs.items():
                         if isinstance(v, str):
                             warn('Sanitizing an input dictionary with str values, '
                                  'please check your data (key = %r)' % k,

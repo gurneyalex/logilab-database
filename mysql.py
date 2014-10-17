@@ -267,7 +267,7 @@ class _MyAdvFuncHelper(db._GenericAdvFuncHelper):
         uid = int(uid)
         ftwords = []
         # sort for test predictability
-        for weight, words in sorted(obj.get_words().iteritems()):
+        for weight, words in sorted(obj.get_words().items()):
             ftwords += normalize_words(words)
         if ftwords:
             cursor.execute("INSERT INTO appears(uid, words) "
