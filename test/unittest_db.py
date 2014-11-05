@@ -69,12 +69,12 @@ class PreferedDriverTC(TestCase):
         #      set_prefered_driver ?
         old_drivers = PREFERED_DRIVERS['postgres'][:]
         expected = old_drivers[:]
-        expected.insert(0, expected.pop(expected.index('pgdb')))
-        set_prefered_driver('postgres', 'pgdb')
+        expected.insert(0, expected.pop(expected.index('psycopg2ct')))
+        set_prefered_driver('postgres', 'psycopg2ct')
         self.assertEqual(PREFERED_DRIVERS['postgres'], expected)
-        set_prefered_driver('postgres', 'psycopg')
+        set_prefered_driver('postgres', 'psycopg2')
         # self.assertEqual(PREFERED_DRIVERS['postgres'], old_drivers)
-        expected.insert(0, expected.pop(expected.index('psycopg')))
+        expected.insert(0, expected.pop(expected.index('psycopg2')))
         self.assertEqual(PREFERED_DRIVERS['postgres'], expected)
 
 
@@ -93,39 +93,6 @@ class GetCnxTC(TestCase):
     def tearDown(self):
         """Reset PREFERED_DRIVERS as it was"""
         PREFERED_DRIVERS['postgres'] = self.old_drivers
-
-    def testPsyco(self):
-        PREFERED_DRIVERS['postgres'] = ['psycopg']
-        try:
-            cnx = get_connection('postgres',
-                                 self.host, self.db, self.user, self.passwd,
-                                 quiet=1)
-        except ImportError:
-            self.skipTest('python-psycopg is not installed')
-
-    def testPgdb(self):
-        PREFERED_DRIVERS['postgres'] = ['pgdb']
-        try:
-            cnx = get_connection('postgres',
-                                 self.host, self.db, self.user, self.passwd,
-                                 quiet=1)
-        except ImportError:
-            self.skipTest('python-pgsql is not installed')
-
-    def testPgsql(self):
-        PREFERED_DRIVERS['postgres'] = ['pyPgSQL.PgSQL']
-        try:
-            import pyPgSQL.PgSQL
-        except ImportError:
-            self.skipTest('python-pygresql is not installed')
-        try:
-            cnx = get_connection('postgres',
-                                 self.host, self.db, self.user, self.passwd,
-                                 quiet=1)
-        except pyPgSQL.PgSQL.DatabaseError as ex:
-            if str(ex).startswith('could not connect to server:'):
-                    self.skipTest('pgsql test requires a specific configuration')
-            raise
 
     def testMysql(self):
         PREFERED_DRIVERS['mysql'] = ['MySQLdb']
@@ -193,29 +160,6 @@ class DBAPIAdaptersTC(TestCase):
 
     def test_raise(self):
         self.assertRaises(UnknownDriver, get_dbapi_compliant_module, 'pougloup')
-
-    def test_pgdb_types(self):
-        """Tests that NUMBER really wraps all number types"""
-        PREFERED_DRIVERS['postgres'] = ['pgdb']
-        try:
-            module = get_dbapi_compliant_module('postgres')
-        except ImportError:
-            self.skipTest('postgresql pgdb module not installed')
-        number_types = ('int2', 'int4', 'serial',
-                        'int8', 'float4', 'float8',
-                        'numeric', 'bool', 'money', 'decimal')
-        for num_type in number_types:
-            yield self.assertEqual, num_type, module.NUMBER
-        yield self.assertNotEqual, 'char', module.NUMBER
-
-    def test_pypgsql_getattr(self):
-        """Tests the getattr() delegation for pyPgSQL"""
-        PREFERED_DRIVERS['postgres'] = ['pyPgSQL.PgSQL']
-        try:
-            module = get_dbapi_compliant_module('postgres')
-        except ImportError:
-            self.skipTest('postgresql dbapi module not installed')
-        binary = module.BINARY
 
     def test_adv_func_helper(self):
         try:

@@ -18,10 +18,8 @@
 """Postgres RDBMS support
 
 Supported drivers, in order of preference:
-- psycopg2 (recommended, others are not well tested)
-- psycopg
-- pgdb
-- pyPgSQL
+- psycopg2
+- psycopg2ct
 
 Full-text search based on the tsearch2 extension from the openfts project
 (see http://openfts.sourceforge.net/)
@@ -52,44 +50,7 @@ TSEARCH_SCHEMA_PATH = ('/usr/share/postgresql/?.?/contrib/tsearch2.sql', # curre
                        'tsearch2.sql')
 
 
-class _PgdbAdapter(db.DBAPIAdapter):
-    """Simple PGDB Adapter to DBAPI (pgdb modules lacks Binary() and NUMBER)
-    """
-    def __init__(self, native_module, pywrap=False):
-        db.DBAPIAdapter.__init__(self, native_module, pywrap)
-        self.NUMBER = native_module.pgdbType('int2', 'int4', 'serial',
-                                             'int8', 'float4', 'float8',
-                                             'numeric', 'bool', 'money')
-
-    def connect(self, host='', database='', user='', password='', port='', extra_args=None):
-        """Wraps the native module connect method"""
-        if port:
-            warn("pgdb doesn't support 'port' parameter in connect()", UserWarning)
-        kwargs = {'host' : host, 'database' : database,
-                  'user' : user, 'password' : password}
-        cnx = self._native_module.connect(**kwargs)
-        return self._wrap_if_needed(cnx)
-
-
-class _PsycopgAdapter(db.DBAPIAdapter):
-    """Simple Psycopg Adapter to DBAPI (cnx_string differs from classical ones)
-    """
-    def connect(self, host='', database='', user='', password='', port='', extra_args=None):
-        """Handles psycopg connection format"""
-        if host:
-            cnx_string = 'host=%s  dbname=%s  user=%s' % (host, database, user)
-        else:
-            cnx_string = 'dbname=%s  user=%s' % (database, user)
-        if port:
-            cnx_string += ' port=%s' % port
-        if password:
-            cnx_string = '%s password=%s' % (cnx_string, password)
-        cnx = self._native_module.connect(cnx_string)
-        cnx.set_isolation_level(1)
-        return self._wrap_if_needed(cnx)
-
-
-class _Psycopg2Adapter(_PsycopgAdapter):
+class _Psycopg2Adapter(db.DBAPIAdapter):
     """Simple Psycopg2 Adapter to DBAPI (cnx_string differs from classical ones)
     """
     # not defined in psycopg2.extensions
@@ -111,6 +72,20 @@ class _Psycopg2Adapter(_PsycopgAdapter):
         self.BOOLEAN = extensions.BOOLEAN
         db.DBAPIAdapter.__init__(self, native_module, pywrap)
         self._init_psycopg2()
+
+    def connect(self, host='', database='', user='', password='', port='', extra_args=None):
+        """Handles psycopg connection format"""
+        if host:
+            cnx_string = 'host=%s  dbname=%s  user=%s' % (host, database, user)
+        else:
+            cnx_string = 'dbname=%s  user=%s' % (database, user)
+        if port:
+            cnx_string += ' port=%s' % port
+        if password:
+            cnx_string = '%s password=%s' % (cnx_string, password)
+        cnx = self._native_module.connect(cnx_string)
+        cnx.set_isolation_level(1)
+        return self._wrap_if_needed(cnx)
 
     def _init_psycopg2(self):
         """initialize psycopg2 to use mx.DateTime for date and timestamps
@@ -149,37 +124,14 @@ class _Psycopg2CtypesAdapter(_Psycopg2Adapter):
         compat.register()
         _Psycopg2Adapter.__init__(self, native_module, pywrap)
 
-class _PgsqlAdapter(db.DBAPIAdapter):
-    """Simple pyPgSQL Adapter to DBAPI
-    """
-    def connect(self, host='', database='', user='', password='', port='', extra_args=None):
-        """Handles psycopg connection format"""
-        kwargs = {'host' : host, 'port': port or None,
-                  'database' : database,
-                  'user' : user, 'password' : password or None}
-        cnx = self._native_module.connect(**kwargs)
-        return self._wrap_if_needed(cnx)
-
-
-    def Binary(self, string):
-        """Emulates the Binary (cf. DB-API) function"""
-        return str
-
-    def __getattr__(self, attrname):
-        # __import__('pyPgSQL.PgSQL', ...) imports the toplevel package
-        return getattr(self._native_module, attrname)
-
 
 db._PREFERED_DRIVERS['postgres'] = [
     #'logilab.database._pyodbcwrap',
-    'psycopg2', 'psycopg2ct', 'psycopg', 'pgdb', 'pyPgSQL.PgSQL',
+    'psycopg2', 'psycopg2ct',
     ]
 db._ADAPTER_DIRECTORY['postgres'] = {
-    'pgdb' : _PgdbAdapter,
-    'psycopg' : _PsycopgAdapter,
     'psycopg2' : _Psycopg2Adapter,
     'psycopg2ct' : _Psycopg2CtypesAdapter,
-    'pyPgSQL.PgSQL' : _PgsqlAdapter,
     }
 
 
