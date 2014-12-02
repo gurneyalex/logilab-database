@@ -106,8 +106,9 @@ class GetCnxTC(TestCase):
         except  MySQLdb.OperationalError as ex:
             if ex.args[0] == 1045: # find MysqlDb
                 self.skipTest('mysql test requires a specific configuration')
-            elif ex.args[0] != 2003:
-                raise
+            elif ex.args[0] in (2002, 2003):
+                self.skipTest('could not connect to mysql')
+            raise
 
     def test_connection_wrap(self):
         """Tests the connection wrapping"""
