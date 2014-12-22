@@ -224,15 +224,15 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         dbname = dbname or self.dbname
         cmds = []
         if drop:
-            cmd = self.pgdbcmd('dropdb', dbhost, dbport, dbuser)
+            cmd = self.pgdbcmd('dropdb', dbhost, dbport, dbuser, None)
             cmd.append(dbname)
             cmds.append(cmd)
-        cmd = self.pgdbcmd('createdb', dbhost, dbport, dbuser,
+        cmd = self.pgdbcmd('createdb', dbhost, dbport, dbuser, None,
                            '-T', 'template0',
                            '-E', dbencoding or self.dbencoding)
         cmd.append(dbname)
         cmds.append(cmd)
-        cmd = self.pgdbcmd('pg_restore', dbhost, dbport, dbuser, '-Fc')
+        cmd = self.pgdbcmd('pg_restore', dbhost, dbport, dbuser, None, '-Fc')
         cmd.append('--dbname')
         cmd.append(dbname)
         if not keepownership:
