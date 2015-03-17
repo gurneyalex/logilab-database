@@ -210,6 +210,14 @@ class _PyodbcAdapter(_BaseSqlServerAdapter):
             variables['autocommit'] = True
         return self._native_module.connect(**variables)
 
+    def _transformation_callback(self, description, encoding='utf-8', binarywrap=None):
+        # Work around pyodbc setting BINARY to bytearray but description[1] to buffer
+        # https://github.com/mkleehammer/pyodbc/pull/34
+        typecode = description[1]
+        if typecode is buffer:
+            return binarywrap
+        return super(_PyodbcAdapter, self)._transformation_callback(description, encoding, binarywrap)
+
 
 
 class _AdodbapiAdapter(_BaseSqlServerAdapter):
