@@ -1,6 +1,21 @@
 Changelog for logilab database package
 ======================================
 
+2015-03-18  --  1.13.2
+    * #266917: work around pyodbc 3 issue with binary values
+
+2015-01-05  --  1.13.1
+    * #284980: fix regression introduced in 1.13.0
+
+2014-12-02  --  1.13.0
+    * #266382: python 3.3+ compatibility
+    * #235432: removed non-psycopg2 postgresql drivers, add psycopg2cffi
+    * #74171: include extra_args in postgresql DSN
+    * #66133: add basic support for postgresql database schemas
+
+2014-05-13  --  1.12.2
+    * #242346: deprecate sqlite string "sanitizer"
+
 2014-04-23  --  1.12.1
     * #240184: disable python's "same thread" check for sqlite connections
 
