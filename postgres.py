@@ -335,6 +335,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
         sql = "SELECT indexname FROM pg_indexes"
         restrictions = []
         if table:
+            table = table.lower()
             restrictions.append('LOWER(tablename)=%(table)s')
         if self.dbschema:
             restrictions.append('schemaname=%(s)s')
