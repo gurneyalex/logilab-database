@@ -1,6 +1,10 @@
 Changelog for logilab database package
 ======================================
 
+2015-06-23  -- 1.13.3
+    * #288604: [ftiquery] make queries independent of hashing function
+    * #292644: [postgres] fix list_indices case sensitivity
+
 2015-03-18  --  1.13.2
     * #266917: work around pyodbc 3 issue with binary values
 
