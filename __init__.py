@@ -893,7 +893,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
         if unique:
             return 'ALTER TABLE %s DROP CONSTRAINT %s' % (table, idx)
         else:
-            return 'DROP INDEX %s' % idx
+            return 'DROP INDEX IF EXISTS %s' % idx
 
     def sqls_create_multicol_unique_index(self, table, columns, indexname=None):
         columns = sorted(columns)
@@ -913,7 +913,7 @@ class _GenericAdvFuncHelper(FTIndexerMixIn):
                  'a silent truncation of the computed index name.',
                  DeprecationWarning)
             indexname = 'unique_%s_%s_idx' % (table, '_'.join(columns))
-        sql = 'DROP INDEX %s;' % (indexname.lower())
+        sql = 'DROP INDEX IF EXISTS %s;' % (indexname.lower())
         return [sql]
 
     # sequence protocol
