@@ -260,7 +260,8 @@ AND j.column_id = k.column_id;"""
                  DeprecationWarning)
         columns = sorted(columns)
         view = 'utv_%s_%s' % (table, indexname or '_'.join(columns))
-        sql = 'DROP VIEW %s' % (view.lower()) # also drops the index
+        sql = ("IF OBJECT_ID ('%(v)s', 'V') IS NOT NULL DROP VIEW %(v)s"
+               % {'v': view.lower()}) # also drops the index
         return [sql]
 
     def sql_drop_index(self, table, column, unique=False):
