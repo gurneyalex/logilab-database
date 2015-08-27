@@ -126,6 +126,11 @@ AND j.column_id = k.column_id;"""
 
     def index_exists(self, cursor, table, column, unique=False):
         indexes = self._index_names(cursor, table, column)
+        if unique:
+            for name, itype, is_unique, is_utc in indexes:
+                if is_unique and not is_utc:
+                    return True
+            return False
         return len(indexes) > 0
 
     def sql_concat_string(self, lhs, rhs):
