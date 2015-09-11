@@ -20,7 +20,7 @@ Provides: ${python:Provides}
 Depends:
  ${python:Depends},
  ${misc:Depends},
- python-logilab-common (>= 0.55.2),
+ python-logilab-common (>= 0.63.2),
  python-six (>= 1.4.0),
 Conflicts: cubicweb-server (<= 3.9.0)
 Description: true unified databases access
@@ -37,7 +37,7 @@ Architecture: all
 Depends:
  ${python3:Depends},
  ${misc:Depends},
- python3-logilab-common (>= 0.55.2),
+ python3-logilab-common (>= 0.63.2),
  python3-six (>= 1.4.0),
 Description: true unified databases access
  logilab-database provides some classes to make unified access
