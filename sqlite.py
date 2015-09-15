@@ -26,6 +26,8 @@ from os.path import abspath
 import os
 import re
 
+from six import PY2
+
 from logilab.common.date import strptime
 from logilab import database as db
 
@@ -163,7 +165,7 @@ class _Sqlite3Adapter(db.DBAPIAdapter):
             def _replace_parameters(self, sql, kwargs):
                 if isinstance(kwargs, dict):
                     for k,v in kwargs.items():
-                        if isinstance(v, str):
+                        if PY2 and isinstance(v, str):
                             warn('Sanitizing an input dictionary with str values, '
                                  'please check your data (key = %r)' % k,
                                  DeprecationWarning)
