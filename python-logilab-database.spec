@@ -27,6 +27,7 @@ Requires:       %{python}-setuptools
 Requires:       %{python}-logilab-common >= 0.63.2
 Requires:       %{python}-six >= 1.4.0
 Requires:       %{python}-yapps2 >= 2.1.1
+Conflicts:      cubicweb < 3.22.0
 
 
 %description
