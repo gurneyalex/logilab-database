@@ -25,6 +25,7 @@ from warnings import warn
 from os.path import abspath
 import os
 import re
+import inspect
 
 from six import PY2
 
@@ -321,7 +322,7 @@ sqlite_hooks.append(init_sqlite_connexion)
 
 def register_sqlite_pyfunc(pyfunc, nb_params=None, funcname=None):
     if nb_params is None:
-        nb_params = pyfunc.func_code.co_argcount
+        nb_params = len(inspect.getargspec(pyfunc).args)
     if funcname is None:
         funcname = pyfunc.__name__.upper()
     def init_sqlite_connection(cnx):
