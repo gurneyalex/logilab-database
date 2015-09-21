@@ -33,7 +33,7 @@ __docformat__ = "restructuredtext en"
 from os.path import join, dirname, isfile
 from warnings import warn
 
-from six import binary_type
+from six import PY2, binary_type
 
 from logilab.common.deprecation import deprecated
 
@@ -403,7 +403,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
     def fti_restriction_sql(self, tablename, querystr, jointo=None, not_=False):
         """Execute a full text query and return a list of 2-uple (rating, uid).
         """
-        if isinstance(querystr, str):
+        if PY2 and isinstance(querystr, str):
             querystr = unicode(querystr, self.dbencoding)
         searched = self._fti_query_to_tsquery_words(querystr)
         sql = "%s.words @@ to_tsquery('%s', '%s')" % (tablename, self.config, searched)
@@ -417,7 +417,7 @@ class _PGAdvFuncHelper(db._GenericAdvFuncHelper):
     def fti_rank_order(self, tablename, querystr):
         """Execute a full text query and return a list of 2-uple (rating, uid).
         """
-        if isinstance(querystr, str):
+        if PY2 and isinstance(querystr, str):
             querystr = unicode(querystr, self.dbencoding)
         searched = self._fti_query_to_tsquery_words(querystr)
         return "ts_rank(%s.words, to_tsquery('%s', '%s'))*%s.weight" % (
