@@ -18,7 +18,7 @@
 # with logilab-database. If not, see <http://www.gnu.org/licenses/>.
 import re
 
-from six import text_type
+from six import PY2, text_type
 
 from logilab.common.textutils import unormalize
 
@@ -204,7 +204,7 @@ CREATE INDEX appears_word_id ON appears (word_id);
         return query.execute(cursor or self._cnx.cursor())
 
     def fti_restriction_sql(self, tablename, querystr, jointo=None, not_=False):
-        if isinstance(querystr, str):
+        if PY2 and isinstance(querystr, str):
             querystr = unicode(querystr, self.dbencoding)
         words = []
         for word in tokenize(querystr):
