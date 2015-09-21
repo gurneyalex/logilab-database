@@ -44,6 +44,7 @@ import logging
 from datetime import datetime, time, date
 from warnings import warn
 
+from six import binary_type
 from six.moves import range
 from logilab.common.modutils import load_module_from_name
 from logilab.common.date import todate, todatetime, utcdatetime, utctime
@@ -434,7 +435,7 @@ class DBAPIAdapter(object):
 
     def binary_to_str(self, value):
         """turn raw value returned by the db-api module into a python string"""
-        return str(value)
+        return binary_type(value)
 
 # advanced database helper #####################################################
 
