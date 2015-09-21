@@ -89,7 +89,7 @@ class _Psycopg2Adapter(db.DBAPIAdapter):
             args.setdefault('port', port)
         if password:
             args.setdefault('password', password)
-        cnx_string = ' '.join('%s=%s' % item for item in args.iteritems())
+        cnx_string = ' '.join('%s=%s' % item for item in args.items())
         if extra_args is not None:
             cnx_string += ' ' + extra_args
         cnx = self._native_module.connect(cnx_string)
