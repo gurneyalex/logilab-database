@@ -292,6 +292,16 @@ AND j.column_id = k.column_id;"""
                 else:
                     unique = ''
                 creates.append('CREATE %s %s INDEX %s ON %s(%s)' % (unique, idx_type, idx_name, table, column))
+        for view_name in self.list_views(cursor):
+            if not view_name.startswith('utv_%s_' % table.lower()):
+                continue
+            cursor.execute('SELECT column_name from information_schema.columns where table_name = %(t)s', {'t': view_name})
+            columns = [row[0] for row in cursor.fetchall()]
+            if column not in columns:
+                continue
+            indexname = view_name.split('_', 3)[-1]
+            drops += self.sqls_drop_multicol_unique_index(table, columns, indexname)
+            creates += self.sqls_create_multicol_unique_index(table, columns, indexname)
 
         if null_allowed:
             null = 'NULL'
