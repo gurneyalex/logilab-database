@@ -1,6 +1,16 @@
 Changelog for logilab database package
 ======================================
 
+2015-10-12  -- 1.14.0
+    * further python 3.3+ compatibility
+    * new setuptools-compliant project layout and packaging
+
+2015-09-28  -- 1.13.4
+    * #167781: Drop indexes only if they exist
+    * #739824: [sqlserver] Fix index_exists predicate for unique indexes
+    * #1710753: [sqlserver] drop/recreate unique_together views/indexes around
+      changing column type
+
 2015-06-23  -- 1.13.3
     * #288604: [ftiquery] make queries independent of hashing function
     * #292644: [postgres] fix list_indices case sensitivity
