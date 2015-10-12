@@ -21,8 +21,12 @@ BuildArch:      noarch
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires:  %{python}
-Requires:       %{python}, %{python}-logilab-common >= 0.63.2
+BuildRequires:  %{python}-setuptools
+Requires:       %{python}
+Requires:       %{python}-setuptools
+Requires:       %{python}-logilab-common >= 0.63.2
 Requires:       %{python}-six >= 1.4.0
+Requires:       %{python}-yapps2 >= 2.1.1
 
 
 %description
@@ -48,7 +52,7 @@ find . -name '*.py' -type f -print0 |  xargs -0 sed -i '1,3s;^#!.*python.*$;#! /
 
 %install
 rm -rf $RPM_BUILD_ROOT
-NO_SETUPTOOLS=1 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+%{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_ROOT%{_python_sitelib}/logilab/database/test
 rm -rf $RPM_BUILD_ROOT%{_python_sitelib}/logilab/__init__.py*
 
