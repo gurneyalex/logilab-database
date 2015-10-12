@@ -27,7 +27,7 @@ import os
 import re
 import inspect
 
-from six import PY2
+from six import PY2, text_type
 
 from logilab.common.date import strptime
 from logilab import database as db
@@ -277,7 +277,7 @@ db._ADV_FUNC_HELPER_DIRECTORY['sqlite'] = _SqliteAdvFuncHelper
 
 def init_sqlite_connexion(cnx):
     def _parse_sqlite_date(date):
-        if type(date) is unicode:
+        if isinstance(date, text_type):
             date = date.split('.')[0] # remove microseconds
             try:
                 date = strptime(date, '%Y-%m-%d %H:%M:%S')
