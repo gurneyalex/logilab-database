@@ -1,7 +1,5 @@
 #!/usr/bin/make -f
 
-export NO_SETUPTOOLS=1
-
 include /usr/share/python/python.mk
 
 # don't build the python3 package if python3 is < 3.3
