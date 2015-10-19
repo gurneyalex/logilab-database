@@ -23,6 +23,8 @@ __docformat__ = "restructuredtext en"
 
 from warnings import warn
 
+from six import PY2
+
 from logilab import database as db
 from logilab.database.fti import normalize_words, tokenize
 
@@ -88,7 +90,7 @@ class _MySqlDBAdapter(db.DBAPIAdapter):
                 # so we have to test for 3 * (2**24 - 1)  (i.e. 50331645)
                 # XXX: what about other encodings ??
                 if maxsize in (16777215, 50331645): # mediumtext (2**24 - 1)
-                    if isinstance(value, str):
+                    if PY2 and isinstance(value, str):
                         return unicode(value, encoding, 'replace')
                     return value
                 #if maxsize == 255: # tinyblob (2**8 - 1)
@@ -294,7 +296,7 @@ class _MyAdvFuncHelper(db._GenericAdvFuncHelper):
     def fti_restriction_sql(self, tablename, querystr, jointo=None, not_=False):
         """Execute a full text query and return a list of 2-uple (rating, uid).
         """
-        if isinstance(querystr, str):
+        if PY2 and isinstance(querystr, str):
             querystr = unicode(querystr, self.dbencoding)
         words = normalize_words(tokenize(querystr))
         sql = "MATCH (%s.words) AGAINST ('%s' IN BOOLEAN MODE)" % (tablename, ' '.join(words))
