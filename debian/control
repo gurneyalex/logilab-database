@@ -24,6 +24,7 @@ Depends:
  ${misc:Depends},
  python-logilab-common (>= 0.63.2),
  python-six (>= 1.4.0),
+ python-dateutil,
 Breaks:
  cubicweb-server (<< 3.22.0),
 Description: true unified databases access
@@ -42,6 +43,7 @@ Depends:
  ${misc:Depends},
  python3-logilab-common (>= 0.63.2),
  python3-six (>= 1.4.0),
+ python3-dateutil,
 Description: true unified databases access
  logilab-database provides some classes to make unified access
  to different RDBMS possible:

@@ -1,4 +1,4 @@
-# copyright 2003-2011 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
+# copyright 2003-2015 LOGILAB S.A. (Paris, FRANCE), all rights reserved.
 # contact http://www.logilab.fr/ -- mailto:contact@logilab.fr
 #
 # This file is part of logilab-database.
@@ -16,10 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License along
 # with logilab-database. If not, see <http://www.gnu.org/licenses/>.
 import unittest
+import sqlite3
+from datetime import datetime
+
+from dateutil.tz import tzutc
 
 from logilab.common.testlib import MockConnection
 
-from logilab.database import get_db_helper
+from logilab.database import sqlite as lgdbsqlite
+from logilab.database import get_connection, get_db_helper
 
 
 class SQLiteHelperTC(unittest.TestCase):
@@ -29,19 +34,34 @@ class SQLiteHelperTC(unittest.TestCase):
         self.helper = get_db_helper('sqlite')
 
     def test_type_map(self):
+        self.assertEqual(self.helper.TYPE_MAPPING['TZDatetime'], 'tzdatetime')
         self.assertEqual(self.helper.TYPE_MAPPING['Datetime'], 'timestamp')
         self.assertEqual(self.helper.TYPE_MAPPING['String'], 'text')
         self.assertEqual(self.helper.TYPE_MAPPING['Password'], 'bytea')
         self.assertEqual(self.helper.TYPE_MAPPING['Bytes'], 'bytea')
 
+
 class SQLiteAdapterTC(unittest.TestCase):
 
     def test_only_one_lazy_module_initialization(self):
-        import sqlite3
-        from logilab.database import sqlite as lgdbsqlite
         self.assertFalse(lgdbsqlite._Sqlite3Adapter._module_is_initialized)
         adapter = lgdbsqlite._Sqlite3Adapter(sqlite3)
         self.assertTrue(adapter._module_is_initialized)
+
+    def test_tzsupport(self):
+        cnx = get_connection(database=':memory:', driver='sqlite')
+        cu = cnx.cursor()
+        cu.execute('CREATE TABLE tztest(tzt tzdatetime)')
+        now = datetime.now(tzutc())
+        cu.execute('INSERT INTO tztest VALUES (%(tzt)s)', {'tzt': now})
+        cu.execute('SELECT * FROM tztest')
+        dbnow = cu.fetchone()[0]
+        self.assertEqual(dbnow, now)
+
+        cu.execute('UPDATE tztest SET tzt=(%(tzt)s)', {'tzt': datetime.utcnow()})
+        cu.execute('SELECT * FROM tztest')
+        dbnow = cu.fetchone()[0]
+        self.assertEqual(dbnow.tzinfo, tzutc())
 
 if __name__ == '__main__':
     unittest.main()
