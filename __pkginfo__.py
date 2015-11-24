@@ -40,6 +40,7 @@ install_requires = [
     'logilab-common >= 0.63.2',
     'six >= 1.4.0',
     'Yapps2',
+    'python-dateutil',
     ]
 
 tests_require = [

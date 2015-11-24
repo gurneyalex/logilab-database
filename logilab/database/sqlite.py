@@ -23,14 +23,15 @@ __docformat__ = "restructuredtext en"
 
 from warnings import warn
 from os.path import abspath
-import os
 import re
 import inspect
 
 from six import PY2, text_type
+from dateutil import tz, parser
 
 from logilab.common.date import strptime
 from logilab import database as db
+
 
 class _Sqlite3Adapter(db.DBAPIAdapter):
     # no type code in sqlite3
@@ -150,6 +151,13 @@ class _Sqlite3Adapter(db.DBAPIAdapter):
 
             sqlite.register_converter('interval', convert_timedelta)
 
+            def convert_tzdatetime(data):
+                dt = parser.parse(data)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=tz.tzutc())
+                return dt
+            sqlite.register_converter('tzdatetime', convert_tzdatetime)
+
 
     def connect(self, host='', database='', user='', password='', port=None,
                 schema=None, extra_args=None):
@@ -233,6 +241,12 @@ class _SqliteAdvFuncHelper(db._GenericAdvFuncHelper):
     alter_column_support = False
 
     TYPE_CONVERTERS = db._GenericAdvFuncHelper.TYPE_CONVERTERS.copy()
+
+    TYPE_MAPPING = db._GenericAdvFuncHelper.TYPE_MAPPING.copy()
+    TYPE_MAPPING.update({
+        'TZTime': 'tztime',
+        'TZDatetime': 'tzdatetime',
+    })
 
     def backup_commands(self, backupfile, keepownership=True,
                         dbname=None, dbhost=None, dbport=None, dbuser=None, dbschema=None):
