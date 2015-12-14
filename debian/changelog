@@ -1,6 +1,7 @@
 logilab-database (1.14.0-2) unstable; urgency=medium
 
   * Add pydist-overrides file to ensure proper dependency on yapps2-runtime.
+  * Update watch file.
 
  -- Julien Cristau <julien.cristau@logilab.fr>  Mon, 14 Dec 2015 10:56:41 +0100
 
