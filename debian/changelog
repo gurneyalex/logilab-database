@@ -1,3 +1,9 @@
+logilab-database (1.14.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Rémi Cardona <remi.cardona@logilab.fr>  Fri, 18 Dec 2015 14:08:24 +0100
+
 logilab-database (1.14.0-2) unstable; urgency=medium
 
   * Add pydist-overrides file to ensure proper dependency on yapps2-runtime.

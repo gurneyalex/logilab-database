@@ -1,6 +1,9 @@
 Changelog for logilab database package
 ======================================
 
+2015-10-18  -- 1.14.1
+    * #2777197: [sqlite] don't call abspath is :memory: is given
+
 2015-10-12  -- 1.14.0
     * further python 3.3+ compatibility
     * new setuptools-compliant project layout and packaging
