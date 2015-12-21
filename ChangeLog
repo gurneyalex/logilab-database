@@ -1,7 +1,12 @@
 Changelog for logilab database package
 ======================================
 
-2015-10-18  -- 1.14.1
+2015-12-22  --  1.15.0
+    * #1485893: stop dropping tzinfo attribute on datetime objects
+    * #2777713: [sqlite] add support for tz-aware datetime
+
+
+2015-12-18  -- 1.14.1
     * #2777197: [sqlite] don't call abspath is :memory: is given
 
 2015-10-12  -- 1.14.0
