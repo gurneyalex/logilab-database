@@ -22,9 +22,10 @@ from __future__ import print_function
 from __future__ import with_statement
 
 import socket
+import unittest
 
 from six.moves import range
-from logilab.common.testlib import TestCase, unittest_main
+
 from logilab.common.shellutils import getlogin
 from logilab.database import *
 from logilab.database import _PREFERED_DRIVERS as PREFERED_DRIVERS
@@ -40,7 +41,7 @@ from logilab.database import mysql, sqlserver # trigger registration
 
 
 
-class PreferedDriverTC(TestCase):
+class PreferedDriverTC(unittest.TestCase):
     def setUp(self):
         self.drivers = {"pg":[('foo', None), ('bar', None)]}
         self.drivers = {'pg' : ["foo", "bar"]}
@@ -78,7 +79,7 @@ class PreferedDriverTC(TestCase):
         self.assertEqual(PREFERED_DRIVERS['postgres'], expected)
 
 
-class GetCnxTC(TestCase):
+class GetCnxTC(unittest.TestCase):
     def setUp(self):
         self.host = 'localhost'
         try:
@@ -148,7 +149,7 @@ class GetCnxTC(TestCase):
                         'cnx should be a PyCursor instance')
 
 
-class DBAPIAdaptersTC(TestCase):
+class DBAPIAdaptersTC(unittest.TestCase):
     """Tests DbApi adapters management"""
 
     def setUp(self):
@@ -211,7 +212,7 @@ class DBAPIAdaptersTC(TestCase):
         self.assertEqual(pghelper.func_as_sql('MYFUNC', ('foo',)), 'MYFUNC(foo)')
         self.assertEqual(mshelper.func_as_sql('MYFUNC', ('foo', 'bar')), 'MYF(foo, bar)')
 
-class BaseSqlServer(TestCase):
+class BaseSqlServer(unittest.TestCase):
     def tearDown(self):
         cursor = self.cnx.cursor()
         cursor.execute('drop table TestBlob')
@@ -323,7 +324,7 @@ else:
             self.varbinary_none()
 
 
-class PostgresqlDatabaseSchemaTC(TestCase):
+class PostgresqlDatabaseSchemaTC(unittest.TestCase):
     host = 'localhost'
     database = 'template1'
     user = password = getlogin()
@@ -407,4 +408,4 @@ class PostgresqlDatabaseSchemaTC(TestCase):
 
 
 if __name__ == '__main__':
-    unittest_main()
+    unittest.main()

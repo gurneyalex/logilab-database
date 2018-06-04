@@ -20,7 +20,7 @@ from __future__ import print_function
 import sys
 import unittest
 
-from logilab.common.testlib import TestCase, MockConnection
+from logilab.common.testlib import MockConnection
 
 from logilab.database import get_db_helper
 
@@ -50,7 +50,7 @@ def tearDownModule():
     db._import_driver_module = db._backup_import_driver_module
     del db._backup_import_driver_module
 
-class SqlServer2005HelperTC(TestCase):
+class SqlServer2005HelperTC(unittest.TestCase):
     def setUp(self):
         self.helper = get_db_helper('sqlserver2005')
         self.cnx = MockConnection( () )
