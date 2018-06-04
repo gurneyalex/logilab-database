@@ -28,7 +28,10 @@ class MyHelperTC(unittest.TestCase):
 
     def setUp(self):
         self.cnx = MockConnection( () )
-        self.helper = get_db_helper('mysql')
+        try:
+            self.helper = get_db_helper('mysql')
+        except ImportError as exc:
+            raise unittest.SkipTest(str(exc))
         self.helper._cnx = self.cnx
 
     def test_type_map(self):
