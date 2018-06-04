@@ -201,11 +201,15 @@ class DBAPIAdaptersTC(unittest.TestCase):
         register_function(MYFUNC)
 
         pghelper = get_db_helper('postgres')
-        mshelper = get_db_helper('mysql')
+        try:
+            mshelper = get_db_helper('mysql')
+        except ImportError:
+            mshelper = None
         slhelper = get_db_helper('sqlite')
         self.assertEqual(slhelper.func_as_sql('MYFUNC', ()), 'SQLITE_MYFUNC()')
         self.assertEqual(pghelper.func_as_sql('MYFUNC', ('foo',)), 'MYFUNC(foo)')
-        self.assertEqual(mshelper.func_as_sql('MYFUNC', ('foo', 'bar')), 'MYF(foo, bar)')
+        if mshelper is not None:
+            self.assertEqual(mshelper.func_as_sql('MYFUNC', ('foo', 'bar')), 'MYF(foo, bar)')
 
 class BaseSqlServer(unittest.TestCase):
     def tearDown(self):
