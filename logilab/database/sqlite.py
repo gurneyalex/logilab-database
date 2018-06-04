@@ -132,15 +132,15 @@ class _Sqlite3Adapter(db.DBAPIAdapter):
                 return "%d %s" % (data.days, frac)
             sqlite.register_adapter(timedelta, adapt_timedelta)
             def convert_timedelta(data):
-                parts = data.split(" ")
+                parts = data.split(b" ")
                 if len(parts) == 2:
                     daypart, timepart = parts
                     days = int(daypart)
                 else:
                     days = 0
                     timepart = parts[-1]
-                timepart_full = timepart.split(".")
-                hours, minutes, seconds = map(int, timepart_full[0].split(":"))
+                timepart_full = timepart.split(b".")
+                hours, minutes, seconds = map(int, timepart_full[0].split(b":"))
                 if len(timepart_full) == 2:
                     microseconds = int(float("0." + timepart_full[1]) * 1000000)
                 else:
