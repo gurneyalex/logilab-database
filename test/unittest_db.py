@@ -178,24 +178,19 @@ class DBAPIAdaptersTC(unittest.TestCase):
 
     def test_register_funcdef(self):
         class MYFUNC(FunctionDescr):
-            supported_backends = ('postgres', 'sqlite',)
+            supported_backends = ('postgres', )
             name_mapping = {'postgres': 'MYFUNC',
                             'mysql': 'MYF',
                             'sqlite': 'SQLITE_MYFUNC'}
         register_function(MYFUNC)
 
         pghelper = get_db_helper('postgres')
-        mshelper = get_db_helper('mysql')
         slhelper = get_db_helper('sqlite')
-        self.assertRaises(UnsupportedFunction, mshelper.function_description, 'MYFUNC')
+        self.assertRaises(UnsupportedFunction, slhelper.function_description, 'MYFUNC')
         try:
             pghelper.function_description('MYFUNC')
         except UnsupportedFunction:
             self.fail('MYFUNC should support "postgres"')
-        try:
-            slhelper.function_description('MYFUNC')
-        except UnsupportedFunction:
-            self.fail('MYFUNC should support "sqlite"')
 
     def test_funcname_with_different_backend_names(self):
         class MYFUNC(FunctionDescr):
