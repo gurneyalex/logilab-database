@@ -514,7 +514,7 @@ class COUNTDISTINCT(AggrFunctionDescr):
     rtype = 'Int'
 
     def as_sql(self, backend, args):
-        return '%s(DISTINCT %s)' % (self.name, args[0])
+        return 'COUNT(DISTINCT %s)' % args[0]
 
 class AVG(AggrFunctionDescr):
     rtype = 'Float'
