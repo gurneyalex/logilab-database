@@ -1,3 +1,9 @@
+logilab-database (1.17.0-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Denis Laxalde <denis.laxalde@logilab.fr>  Tue, 21 May 2019 20:37:09 +0200
+
 logilab-database (1.15.0-1) unstable; urgency=medium
 
   * New upstream release.
