@@ -46,7 +46,7 @@ setup(
     license=pkginfo['license'],
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=pkginfo['classifiers'],
-    packages=find_packages(exclude=['contrib', 'docs', 'test*']),
+    packages=find_packages(exclude=['contrib', 'docs']),
     namespace_packages=[pkginfo['subpackage_of']],
     install_requires=pkginfo['install_requires'],
     tests_require=pkginfo['tests_require'],

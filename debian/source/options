@@ -1,1 +1,1 @@
-extend-diff-ignore = "^(.hg(/|ignore$|tags$)|[^/]*\.spec$|tox.ini$|test/)"
+extend-diff-ignore = "^(.hg(/|ignore$|tags$)|[^/]*\.spec$|tox.ini$)"
