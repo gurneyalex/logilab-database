@@ -1,0 +1,27 @@
+#!/bin/sh
+
+set -e
+set -x
+
+### Setup PostgreSQL
+
+# Test uses getlogin() to determine username connecting to PostgreSQL
+# So we need to disable any authentication and create the given user
+sed -i 's/peer$/trust/' /etc/postgresql/*/main/pg_hba.conf
+service postgresql restart || service postgresql start
+trap 'service postgresql stop' EXIT
+psql -c "CREATE USER nobody PASSWORD 'nobody'" -U postgres
+psql -c "GRANT ALL ON DATABASE template1 TO nobody" -U postgres
+
+### Setup tests
+
+cp -r test "$AUTOPKGTEST_TMP"
+
+### Run tests
+
+for py in $(pyversions -r 2>/dev/null) $(py3versions -r 2>/dev/null); do
+	cd "$AUTOPKGTEST_TMP"
+	echo "Testing with $py:"
+	su nobody --preserve-environment --shell /bin/sh \
+		-c "$py -m unittest discover -s test -p 'unittest_*.py' -v"
+done

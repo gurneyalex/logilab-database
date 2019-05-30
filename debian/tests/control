@@ -1,0 +1,6 @@
+Tests: unittest
+Depends:
+ @, @builddeps@,
+ postgresql,
+ python-mysqldb, python3-mysqldb, mariadb-server
+Restrictions: allow-stderr, isolation-container
