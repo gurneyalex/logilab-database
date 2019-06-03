@@ -1,28 +1,7 @@
 #!/usr/bin/make -f
 
-include /usr/share/python/python.mk
-
-# don't build the python3 package if python3 is < 3.3
-py3k = $(subst python3.,,$(shell py3versions -d))
-build_py3k = $(shell test "$(py3k)" -gt 2 && echo 1)
-
-ifeq (,$(build_py3k))
-    DH_OPTIONS += -Npython3-logilab-database
-    export DH_OPTIONS
-endif
+export PYBUILD_NAME = logilab-database
+export PYBUILD_DISABLE = test
 
 %:
-	dh $@ --with python2,python3
-
-install-python%:
-	python$* setup.py -q install --no-compile --root=$(CURDIR)/debian/tmp \
-	    $(py_setup_install_args)
-
-override_dh_auto_install: $(patsubst %,install-%,$(shell py3versions -r))
-	dh_auto_install
-	rm -f debian/tmp/usr/lib/python*/*/logilab/__init__.py
-
-override_dh_clean:
-	dh_clean
-	rm -rf logilab_database.egg-info
-	rm -rf build
+	dh $@ --with python2,python3 --buildsystem=pybuild

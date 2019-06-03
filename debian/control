@@ -4,16 +4,25 @@ Priority: optional
 Maintainer: Logilab SA <contact@logilab.fr>
 Build-Depends:
  debhelper (>= 9),
- python-all (>= 2.6.5),
+ dh-python,
+ python-all,
  python3-all,
  python-setuptools,
  python3-setuptools,
- yapps2-runtime,
- python3-yapps2-runtime | python3 (<< 3.3),
+ python-yapps,
+ python3-yapps,
+ python-six,
+ python3-six,
+ python-logilab-common,
+ python3-logilab-common,
+ python-psycopg2,
+ python3-psycopg2
 Build-Depends-Indep: python-epydoc, graphviz
-X-Python-Version: >= 2.6
-X-Python3-Version: >= 3.3
-Standards-Version: 3.9.6
+X-Python-Version: >= 2.7
+X-Python3-Version: >= 3.4
+Standards-Version: 4.3.0
+Vcs-Hg: https://hg.logilab.org/master/logilab/database
+Vcs-Browser: https://hg.logilab.org/master/logilab/database
 Homepage: http://www.logilab.org/project/logilab-database
 
 Package: python-logilab-database
