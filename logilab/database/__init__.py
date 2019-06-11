@@ -44,7 +44,7 @@ import logging
 from datetime import datetime, time, date
 from warnings import warn
 
-from six import binary_type
+from six import binary_type, text_type
 from six.moves import range
 from logilab.common.modutils import load_module_from_name
 from logilab.common.date import todate, todatetime, utcdatetime, utctime
@@ -364,7 +364,7 @@ class DBAPIAdapter(object):
         assert typecode is not None, self
         transform = None
         if typecode == self.STRING and not self.returns_unicode:
-            transform = lambda v: unicode(v, encoding, 'replace')
+            transform = lambda v: text_type(v, encoding, 'replace')
         elif typecode == self.BOOLEAN:
             transform = bool
         elif typecode == self.BINARY and binarywrap is not None:
@@ -372,7 +372,7 @@ class DBAPIAdapter(object):
         elif typecode == self.UNKNOWN:
             # may occurs on constant selection for instance (e.g. SELECT 'hop')
             # with postgresql at least
-            transform = lambda v: unicode(v, encoding, 'replace') if isinstance(v, str) else v
+            transform = lambda v: text_type(v, encoding, 'replace') if isinstance(v, binary_type) else v
         return transform
 
     def process_cursor(self, cursor, encoding, binarywrap=None):
